@@ -1,0 +1,659 @@
+#include "bottomgroupbox.h"
+#include <QMessageBox>
+#include <QDebug>
+
+//#include "dt_music.h"
+#include "databaseoperation.h"
+
+#include <QMouseEvent>
+#include <QToolButton>
+#include <QSlider>
+#include <QLabel>
+#include <QCheckBox>
+
+#include <QMediaMetaData>   //多媒体数据
+
+//布局
+#include <QHBoxLayout>
+#include <QGridLayout>
+
+//#include <windows.h>
+//#include <QFile>
+//#include <QIODevice>
+//#include <QTextStream>
+
+BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *parent) :
+    QGroupBox(parent)
+  ,musicList(object)
+  ,setupDatabaseName(programPath + "setUp.db")
+{
+    //设置样式
+    this ->setObjectName(tr("bottomGroupBox"));                         //显示 设置 对象名
+    setStyleSheet(
+                  "#bottomGroupBox{"                                    //设置 自身样式
+                        "border: 1px;"
+                        "background: rgba(65, 65, 65, 200);"
+                  "}");
+
+    //初始化 附属 部件
+    connect(this, SIGNAL(gotPlayModelFromIni(playModelValue)),
+            parent, SLOT(playModelState_changed(playModelValue)));
+    setChildrenWidgets();
+
+    //为部件安装 事件过滤器
+//    tbn_play_pause ->installEventFilter(this);
+//    tbn_play_previous ->installEventFilter(this);
+//    tbn_play_next ->installEventFilter(this);
+    tbn_volumn ->installEventFilter(this);
+//    cbx_lrc ->installEventFilter(this);
+    tbn_playModle ->installEventFilter(this);
+//    slider_progress->installEventFilter(this);
+
+    //信号/槽 关联
+    connect(musicList->player, SIGNAL(metaDataAvailableChanged(bool)),      //多媒体 可用数据信息 改变
+            this, SLOT(getMetaData(bool)));
+    connect(musicList->player, SIGNAL(durationChanged(qint64)),             //多媒体 时长信息 出现
+            this, SLOT(durationChanged(qint64)));
+    connect(tbn_play_pause, SIGNAL(clicked()),                              //单击 播放/暂停 按钮
+            this, SLOT(play_pause_clicked()));
+    connect(tbn_play_previous, SIGNAL(clicked()),                           //单击 上一曲    按钮
+            this, SLOT(play_previous_clicked()));
+    connect(tbn_play_next, SIGNAL(clicked()),                               //单击 下一曲    按钮
+            this, SLOT(play_next_clicked()));
+    connect(musicList->player, SIGNAL(stateChanged(QMediaPlayer::State)),   //播放状态 改变
+            this, SLOT(playStatusChanged(QMediaPlayer::State)));
+    connect(cbx_lrc, SIGNAL(clicked(bool)),                                 //单击 桌面歌词 　按钮
+            this, SIGNAL(lrc_click(bool)));
+    connect(slider_progress, SIGNAL(sliderMoved(int)),                    //拖动 播放 进度条
+            this, SLOT(slider_progress_moved(int)));
+//    connect(bottomGroupbox, SIGNAL(slider_progress_valueChange(qint64)),  //更新 进度条
+//            this, SLOT(seek(qint64)));
+    connect(musicList->player, SIGNAL(positionChanged(qint64)),             //更新进度条
+            this, SLOT(positionChanged(qint64)));
+    connect(slider_progress, SIGNAL(sliderMoved(int)),                      //定位播放进度
+            this, SLOT(seek(qint64)));
+}
+
+//忽略 鼠标按下 事件
+void BottomGroupBox::mousePressEvent(QMouseEvent *event)
+{
+    event ->ignore();
+}
+
+//忽略 鼠标移动 事件
+void BottomGroupBox::mouseMoveEvent(QMouseEvent *event)
+{
+    event ->ignore();
+}
+
+//事件过滤器
+bool BottomGroupBox::eventFilter(QObject *target, QEvent *event)
+{
+/*
+    if (target == tbn_play_pause ||
+            target == tbn_play_previous ||
+            target == tbn_play_next ||
+            target == cbx_lrc ||
+            target == tbn_volumn ||
+            target == tbn_playModle)
+    {
+        if (event ->type() == QEvent::MouseMove)
+        {
+            event ->accept();
+            event->ignore();
+            ;
+        }
+        else
+        {
+            return QGroupBox::eventFilter(target, event);
+        }
+    }
+*/
+    if (event->type() == QEvent::Enter)
+    {
+        if (target == tbn_volumn)
+        {
+            emit showVolumn(tbn_volumn->pos());
+        }
+        else if (target == tbn_playModle)
+        {
+            emit showPlayModle(tbn_playModle->pos());
+        }
+    }
+    if(event->type() == QEvent::MouseButtonPress)
+    {
+        if(((QMouseEvent *)event)->button() == Qt::LeftButton)
+        {
+            int max = ((QSlider*)target)->maximum();
+            int min = ((QSlider*)target)->minimum();
+            int pointPos = ((double)((QMouseEvent *)event)->x()) / ((QSlider*)target)->width()*(max - min)+min;
+            if(abs(pointPos - ((QSlider*)target)->value())> (((QSlider*)target)->pageStep()) )
+            {
+                ((QSlider*)target)->setValue(pointPos);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return QGroupBox::eventFilter(target, event);
+}
+
+//初始化 附属 部件
+void BottomGroupBox::setChildrenWidgets()
+{
+    //创建部件
+    tbn_play_previous = new QToolButton(this);                          //创建 上一曲    按钮
+    tbn_play_previous->setFixedSize(25, 25);                            //设置固定大小
+    tbn_play_previous  ->setShortcut(Qt::Key_Left);                     //设置 快捷键
+
+    tbn_play_pause = new QToolButton(this);                             //创建 播放/暂停　按钮
+    tbn_play_pause->setFixedSize(25, 25);                               //设置固定大小
+    tbn_play_pause ->setShortcut(Qt::Key_Space);                        //设置 快捷键
+
+    tbn_play_next = new QToolButton(this);                              //创建 下一曲    按钮
+    tbn_play_next->setFixedSize(25, 25);
+    tbn_play_next ->setShortcut(Qt::Key_Right);                         //设置 快捷键
+
+    lab_fram = new QLabel(this);                                        //创建 工具框    区域
+    lab_playLogo = new QLabel(this);                                    //创建 播放图标
+    slider_progress = new QSlider(Qt::Horizontal, this);                //创建 进度条    滑竿
+    slider_progress->setPageStep(1);
+    lab_musicMessage = new QLabel(tr("歌曲： 未知\n歌手： 未知"), this);    //创建 歌曲信息  标签
+    lab_currentTime = new QLabel(tr("00:00"), this);                    //创建 播放时间  标签
+    lab_totalTime = new QLabel(tr("/00:00"), this);                     //创建 总时长    标签
+    cbx_lrc = new QCheckBox("桌面歌词", this);                           //创建 歌词      按钮
+    tbn_volumn = new QToolButton(this);                                 //创建 音量      按钮
+    tbn_playModle = new QToolButton(this);                              //创建 播放模式   按钮
+    lab_fram->setFixedHeight(50);
+    lab_musicMessage->setFixedHeight(31);
+    lab_currentTime->setFixedSize(34, 31);
+    lab_totalTime->setFixedSize(41, 31);
+    slider_progress->setFixedHeight(19);
+    lab_playLogo->setFixedSize(40, 40);
+    cbx_lrc->setFixedSize(80, 26);
+    tbn_volumn->setFixedSize(26, 26);
+    tbn_playModle->setFixedSize(24, 24);
+
+    lab_currentTime->setAlignment(Qt::AlignRight | Qt::AlignBottom);
+    lab_totalTime->setAlignment(Qt::AlignRight | Qt::AlignBottom);
+
+/*
+    //设置 部件 大小位置
+    tbn_play_previous ->setGeometry(10, 20, 25, 25);    //上一曲    按钮
+    tbn_play_pause ->setGeometry(60, 20, 25, 25);       //播放/暂停　按钮
+    tbn_play_next ->setGeometry(105 , 20, 25, 25);      //下一曲    按钮
+
+    lab_fram ->setGeometry(170, 10, 605, 50);           //背景框
+    lab_playLogo ->setGeometry(175, 15, 40, 40);        //音乐logo
+    lab_musicMessage ->setGeometry(222, 10, 300, 31);   //歌曲信息 标签
+    lab_currentTime ->setGeometry(692, 19, 34, 31);     //当前时间 标签
+    lab_totalTime ->setGeometry(727, 19, 41, 31);       //总时间   标签775-768 8
+    slider_progress ->setGeometry(210, 40, 570, 19);    //进度条   滑竿
+
+    cbx_lrc ->setGeometry(820, 21, 80, 26);             //桌面歌词 按钮
+    tbn_volumn ->setGeometry(910, 21, 26, 26);          //音量     按钮
+    tbn_playModle ->setGeometry(959, 21, 24, 24);       //播放模式  按钮
+
+*/
+    //布局
+    layout_H = new QHBoxLayout;
+    layout_H->addWidget(lab_musicMessage);
+    layout_H->addWidget(lab_currentTime);
+    layout_H->addWidget(lab_totalTime);
+    layout_H->setSpacing(0);
+//    layout_H->setMargin(0);
+    layout_H->setContentsMargins(0, 0, 3, 0);
+
+    layout_G = new QGridLayout;
+    layout_G->addWidget(lab_fram, 0, 0, 50, 605);
+    layout_G->addWidget(lab_playLogo, 5, 5, 40, 40);
+    layout_G->addLayout(layout_H, 0, 52, 31, 545);
+    layout_G->addWidget(slider_progress, 36, 41, 13, 565);
+    layout_G->setSpacing(0);
+    layout_G->setMargin(0);
+
+    layout_top = new QHBoxLayout;
+    layout_top->addWidget(tbn_play_previous);
+    layout_top->addWidget(tbn_play_pause);
+    layout_top->addWidget(tbn_play_next);
+    layout_top->addLayout(layout_G);
+    layout_top->addWidget(cbx_lrc);
+    layout_top->addWidget(tbn_volumn);
+    layout_top->addWidget(tbn_playModle);
+    layout_top->setSpacing(25);
+    layout_top->setContentsMargins(10, 10, 18, 20);
+    setLayout(layout_top);
+
+
+    //将从配置文件获取的结果转化为对应的 播放模式 值
+    QString playModel_value = read_ini_toSet();         //配置文件读取结果
+    if (playModel_value == "playModel_random")
+    {
+        playModel_currentValue = play_random;
+    }
+    else if (playModel_value == "playModel_once")
+    {
+        playModel_currentValue = play_once;
+    }
+    else if (playModel_value == "playModel_single")
+    {
+        playModel_currentValue = play_single;
+    }
+    else if (playModel_value == "playModel_sequence")
+    {
+        playModel_currentValue = play_sequence;
+    }
+    else if (playModel_value == "playModel_loop")
+    {
+        playModel_currentValue = play_loop;
+    }
+    else if (playModel_value == "playModel_custom")
+    {
+        playModel_currentValue = play_custom;
+    }
+    else
+    {
+        playModel_value = "playModel_loop";
+        playModel_currentValue = play_loop;
+        qDebug() << "ERROR: BottomGroupbox::playModel_value::0000";
+    }
+    emit gotPlayModelFromIni(playModel_currentValue);
+
+    //初始化 样式
+    tbn_play_previous ->setStyleSheet(
+                                      "QToolButton{"                                                    //设置 上一曲 按钮    样式
+                                            "border-image: url(:/Images/play_previous.png);"
+                                      "}"
+                                      "QToolButton::hover{"
+                                            "border-image: url(:/Images/play_previous_hover.png);"
+                                      "}"
+                                      );
+    tbn_play_pause ->setStyleSheet(
+                                   "QToolButton{"                                                       //设置 播放/暂停 按钮 样式
+                                        "border-image: url(:/Images/play_play.png);"
+                                   "}"
+                                   "QToolButton::hover{"
+                                        "border-image: url(:/Images/play_play_hover.png);"
+                                   "}"
+                                  );
+    tbn_play_next ->setStyleSheet(
+                                  "QToolButton{"                                                        //设置 下一曲 按钮    样式
+                                        "border-image: url(:/Images/play_next.png);"
+                                  "}"
+                                  "QToolButton::hover{"
+                                        "border-image: url(:/Images/play_next_hover.png);"
+                                  "}"
+                                 );
+    lab_fram ->setStyleSheet(
+                            "QLabel{"
+                                    "border-radius: 5px;"
+//                                    "background: rgba(0, 0, 0, 180);"
+                                    "background: rgba(35, 35, 35, 200);"
+                            "}"
+                            );
+    lab_playLogo ->setStyleSheet(
+                                "QLabel{"
+                                        "border-image: url(:/Images/playLogo.png);"
+                                "}"
+                                );
+    slider_progress ->setStyleSheet(
+                                    "QSlider::groove:horizontal{"                                       //设置 进度条        样式
+                                        "border: 1px solid #000000;"
+                                        "height: 2px;"
+                                        "margin: 0px 0;"
+                                        "left: 12px;"
+                                        "right: 12px;"
+                                    "}"
+                                    "QSlider::handle:horizontal{"
+                                        "border: 1px solid #5c5c5c;"
+                                        "border-image: url(:/Images/sliderHandle.png);"
+                                        "width: 10px;"
+//                                        "height: 15px;"
+                                        "margin: -5px -5px -5px -5px;"
+                                    "}"
+                                    "QSlider::sub-page:horizontal{"
+                                        "background: rgb(115, 153, 1);"
+                                    "}"
+                                    "QSlider::add-page:horizontal{"
+                                        "background: rgb(83, 83, 83);"
+                                    "}"
+                                    "QSlider::handle::hover:horizontal{"
+                                        "border-image: url(:/Images/sliderHandle_hover.png);"
+                                    "}"
+                                    );
+
+    lab_musicMessage ->setStyleSheet(
+                                    "QLabel{"                                                          //设置 歌曲信息 样式
+                                         "color: rgb(36, 86, 18);"
+                                    "}"
+                                     );
+    lab_currentTime ->setStyleSheet(
+                                    "QLabel{"                                                           //设置 当前时间 样式
+                                         "color: rgb(36, 86, 18);"
+                                    "}"
+                                    );
+    lab_totalTime ->setStyleSheet(
+                                  "QLabel{"                                                             //设置 总时间   样式
+                                        "color: rgb(36, 86, 18);"
+                                  "}"
+                                  );
+    tbn_playModle ->setStyleSheet(tr(
+                                  "QToolButton{"                                                        //设置 播放模式 样式
+                                        "border-image: url(:/Images/%1.png);"
+                                   "}"
+                                  "QToolButton::hover{"
+                                        "border-image: url(:/Images/%2_hover.png);"
+                                   "}"
+                                  ).arg(playModel_value).arg(playModel_value));
+    cbx_lrc ->setStyleSheet(
+                           "QCheckBox{"
+                                "border: 0;"
+                                "color: white;"
+                           "}"
+                            );
+    tbn_volumn ->setStyleSheet(
+                               "QToolButton{"
+                                    "border-image: url(:/Images/volumn.png);"
+                               "}"
+                               "QToolButton::hover{"
+                                    "border-image: url(:/Images/volumn_hover.png);"
+                               "}"
+                               );
+
+    //设置 按钮提示
+    tbn_play_previous ->setToolTip(tr("上一曲"));
+    tbn_play_pause ->setToolTip(tr("播放/暂停"));
+    tbn_play_next ->setToolTip(tr("下一曲"));
+}
+
+//打开配置文件 设置初值
+QString BottomGroupBox::read_ini_toSet()
+{
+    //用来保存 读取配置文件 字符串
+    QString playModel_Value;
+/*
+    //打开配置文件 设置初值
+    QFile read_ini_toSet_PlayModel(".data.ini");
+    if (read_ini_toSet_PlayModel.open(QIODevice::ReadWrite))
+    {
+        QMap<QString, QString> map_ini;
+        QStringList iniList;
+        QTextStream in(&read_ini_toSet_PlayModel);
+        while (! in.atEnd())
+        {
+            iniList.append(in.readLine());
+        }
+        if (! iniList.isEmpty())
+        {
+            QString name;
+            QString value;
+            for (int i=0; i<iniList.length(); i++)
+            {
+                QStringList line = iniList[i].split(":");
+                name = line[0];
+                value = line[1];
+                map_ini.insert(name, value);
+            }
+            foreach(QString key, map_ini.keys())
+            {
+                if (key == "playModel")
+                {
+                    playModel_Value = map_ini.value(key);
+                    break;
+                }
+            }
+        }
+        else                                                //如果配置文件为空，
+        {
+            playModel_Value = "playModel_loop";             //默认设为 列表循环
+        }
+    }
+    else                                                    //如果文件打开失败，
+    {
+        playModel_Value = "playModel_loop";                 //默认设为 列表循环
+    }
+    read_ini_toSet_PlayModel.close();                       //关闭文件
+*/
+    return playModel_Value;
+}
+
+/*
+//单击 播放/暂停 按钮
+void BottomGroupBox::play_pause_clicked()
+{
+    emit play_pause_click();
+}
+
+//单击 上一曲 按钮
+void BottomGroupBox::play_previous_clicked()
+{
+    emit play_previous_click();
+}
+
+//单击 下一曲 按钮
+void BottomGroupBox::play_next_clicked()
+{
+    emit play_next_click();
+}*/
+
+//单击 桌面歌词 按钮
+//void BottomGroupBox::lrc_clicked(bool checked)
+//{
+//        emit lrc_click(checked, cbx_lrc->pos());
+//}
+
+//播放模式改变 处理
+void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
+{
+    switch(currentPlayModel)
+    {
+    case play_random:
+        for (int i=0; i<musicList->playlistVector.length(); ++i)
+        {
+            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Random);
+        }
+        tbn_playModle ->setStyleSheet(
+                    "QToolButton{"
+                        "border-image: url(:/Images/playModel_random.png);"
+                    "}"
+                    "QToolButton::hover{"
+                        "border-image: url(:/Images/playModel_random_hover.png);"
+                    "}"
+                    );
+        playModel_currentValue = currentPlayModel;
+        break;
+    case play_once:
+        for (int i=0; i<musicList->playlistVector.length(); ++i)
+        {
+            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemOnce);
+        }
+        tbn_playModle ->setStyleSheet(
+                    "QToolButton{"
+                        "border-image: url(:/Images/playModel_once.png);"
+                    "}"
+                    "QToolButton::hover{"
+                        "border-image: url(:/Images/playModel_once_hover.png);"
+                    "}"
+                    );
+        playModel_currentValue = currentPlayModel;
+        break;
+    case play_single:
+        for (int i=0; i<musicList->playlistVector.length(); ++i)
+        {
+            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+        }
+        tbn_playModle ->setStyleSheet(
+                    "QToolButton{"
+                        "border-image: url(:/Images/playModel_single.png);"
+                    "}"
+                    "QToolButton::hover{"
+                        "border-image: url(:/Images/playModel_single_hover.png);"
+                    "}"
+                    );
+        playModel_currentValue = currentPlayModel;
+        break;
+    case play_sequence:
+        for (int i=0; i<musicList->playlistVector.length(); ++i)
+        {
+            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Sequential);
+        }
+        tbn_playModle ->setStyleSheet(
+                    "QToolButton{"
+                        "border-image: url(:/Images/playModel_sequence.png);"
+                    "}"
+                    "QToolButton::hover{"
+                        "border-image: url(:/Images/playModel_sequence_hover.png);"
+                    "}"
+                    );
+        playModel_currentValue = currentPlayModel;
+        break;
+    case play_loop:
+        for (int i=0; i<musicList->playlistVector.length(); ++i)
+        {
+            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Loop);
+        }
+        tbn_playModle ->setStyleSheet(
+                    "QToolButton{"
+                        "border-image: url(:/Images/playModel_loop.png);"
+                    "}"
+                    "QToolButton::hover{"
+                        "border-image: url(:/Images/playModel_loop_hover.png);"
+                    "}"
+                    );
+        playModel_currentValue = currentPlayModel;
+        break;
+    case play_custom:
+        tbn_playModle ->setStyleSheet(
+                    "QToolButton{"
+                        "border-image: url(:/Images/playModel_custom.png);"
+                    "}"
+                    "QToolButton::hover{"
+                        "border-image: url(:/Images/playModel_custom_hover.png);"
+                    "}"
+                    );
+        playModel_currentValue = currentPlayModel;
+        break;
+    }
+}
+
+//播放 时长信息 出现
+void BottomGroupBox::durationChanged(qint64 totalTime)
+{
+    lab_totalTime ->setText(tr("%1").sprintf("/%02d:%02d",
+                                             (int)totalTime / 1000 / 60,
+                                             (int)totalTime / 1000 % 60));
+    slider_progress ->setMaximum(totalTime);
+}
+
+//提取 歌曲信息
+void BottomGroupBox::getMetaData(bool)
+{
+    QStringList title_author;
+    title_author.append(musicList->player->metaData(QMediaMetaData::Title).toString());
+    if (title_author.isEmpty())
+    {
+        title_author[0] = "未知";
+    }
+    title_author.append(musicList->player->metaData(QMediaMetaData::Author).toString());
+    if (title_author[1].isEmpty())
+    {
+        title_author[1] = "未知";
+    }
+    lab_musicMessage ->setText(tr("歌曲：%1\n歌手：%2").arg(title_author[0]).arg(title_author[1]));
+
+    //test
+    QImage coverArtImage;
+    QPixmap pixmap;
+    coverArtImage = musicList->player->metaData("CoverArtImage").value<QImage>();
+    if (coverArtImage.isNull())
+    {
+//        QMessageBox::warning(0, tr("image"), tr("没取到"), QMessageBox::Ok);
+    }
+    pixmap.convertFromImage(coverArtImage);
+    lab_playLogo->setPixmap(pixmap);
+}
+
+//播放 进度改变 处理
+void BottomGroupBox::positionChanged(qint64 currentPosition)
+{
+    lab_currentTime ->setText(tr("%1").sprintf("%02d:%02d",
+                                             (int)currentPosition / 1000 / 60,
+                                             (int)currentPosition / 1000 % 60));
+    slider_progress ->setValue(currentPosition);
+}
+
+void BottomGroupBox::slider_progress_moved(int currentPosition)
+{
+    musicList->player->setPosition(currentPosition);
+}
+
+//播放/暂停 处理
+void BottomGroupBox::play_pause_clicked()
+{
+    if (musicList->player->state() == musicList->player->PlayingState)
+    {
+        musicList->player->pause();
+    }
+    else
+    {
+        musicList->player->play();
+    }
+}
+
+//上一曲 处理
+void BottomGroupBox::play_previous_clicked()
+{
+//    thisMethod = click_next;
+    musicList->playlist->previous();
+}
+
+//下一曲 处理
+void BottomGroupBox::play_next_clicked()
+{
+//    thisMethod = click_next;
+    musicList->playlist->next();
+}
+
+//播放状态改变， 设置 “播放/暂停” 按钮图标
+void BottomGroupBox::playStatusChanged(QMediaPlayer::State state)
+{
+    switch(state)
+    {
+    case QMediaPlayer::PlayingState:
+        tbn_play_pause ->setStyleSheet(
+                    "QToolButton{"                                           //设置 播放 图标
+                        "border-image: url(:/Images/play_pause.png);"
+                    "}"
+                    "QToolButton::hover{"                                    //设置 伪状态 图标
+                        "border-image: url(:/Images/play_pause_hover.png);"
+                    "}"
+                    );
+        break;
+    case QMediaPlayer::PausedState:
+    case QMediaPlayer::StoppedState:
+        tbn_play_pause ->setStyleSheet(
+                    "QToolButton{"                                           //设置 暂停 图标
+                        "border-image: url(:/Images/play_play.png);"
+                    "}"
+                    "QToolButton::hover{"                                    //设置 伪状态 图标
+                        "border-image: url(:/Images/play_play_hover.png);"
+                    "}"
+                    );
+        break;
+    default:
+        qDebug() << "Recieved the unknown playStatus signal!!!";
+    }
+}
+
+//定位播放进度
+void BottomGroupBox::seek(qint64 current)
+{
+    musicList->player->setPosition(current);
+}
