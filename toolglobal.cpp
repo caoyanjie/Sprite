@@ -364,7 +364,7 @@ void ToolGlobal::timer_target_timeout()
         parentWidget() ->close();
         break;
     case shutdown:
-        system("shutdown -t 1");
+        system("shutdown -s -t 0");
         break;
     }
 }
