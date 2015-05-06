@@ -253,9 +253,10 @@ void ToolGlobal::pbn_lrc_game_clicked()
 {
     if (! gameState)
     {
-        pbn_lrc_game_state->move(gbx_lrc_game->x()+72, pbn_lrc_game_state->y());
+        pbn_lrc_game_state->move(gbx_lrc_game->x()+65, pbn_lrc_game_state->y());
         pbn_lrc_game->move(gbx_lrc_game->pos());
-        pbn_lrc_game_state ->setText(tr("游戏"));
+        pbn_lrc_game_state ->setText(tr("歌词"));
+        pbn_lrc_game->setText(tr("小游戏"));
         pbn_lrc_game_state ->setToolTip(tr("显示歌词"));
         pbn_lrc_game ->setToolTip(tr("显示歌词"));
 
@@ -264,11 +265,12 @@ void ToolGlobal::pbn_lrc_game_clicked()
     }
     else
     {
-        pbn_lrc_game_state->move(gbx_lrc_game->x()+18, pbn_lrc_game_state->y());
-        pbn_lrc_game->move(gbx_lrc_game->x()+50, pbn_lrc_game->y());
-        pbn_magic_state ->setText(tr("ON"));
-        pbn_magic_state ->setToolTip(tr("开启魔音"));
-        pbn_magic ->setToolTip(tr("开启魔音"));
+        pbn_lrc_game_state->move(gbx_lrc_game->x()+5, pbn_lrc_game_state->y());
+        pbn_lrc_game->move(gbx_lrc_game->x()+47, pbn_lrc_game->y());
+        pbn_lrc_game_state->setText(tr("小游戏"));
+        pbn_lrc_game->setText(tr("歌词"));
+        pbn_lrc_game_state->setToolTip(tr("本地小游戏"));
+        pbn_lrc_game->setToolTip(tr("本地小游戏"));
 
         gameState = false;
         emit gameStateChange(false);
