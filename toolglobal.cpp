@@ -71,6 +71,10 @@ ToolGlobal::ToolGlobal(QWidget *parent) :
     layout_timer->setSpacing(0);
     layout_timer->setMargin(0);
 
+    //LCD灯
+    widget_timingLCD = new QWidget;
+    widget_timingLCD->setFixedSize(80, 18);
+
     //创建 歌词/游戏 按钮
     gbx_lrc_game = new QGroupBox(this);                         //背景阴影
     pbn_lrc_game_state = new QPushButton("小游戏", this);        //状态标签
@@ -101,10 +105,12 @@ ToolGlobal::ToolGlobal(QWidget *parent) :
     layout_top = new QHBoxLayout;
     layout_top->addStretch(382);
     layout_top->addLayout(layout_magic);
+    layout_top->addStretch(widget_timingLCD->width()+10);
     layout_top->addLayout(layout_timer);
+    layout_top->addWidget(widget_timingLCD);
     layout_top->addLayout(layout_lrc);
     layout_top->addStretch(109);
-    layout_top->setSpacing(90);
+    layout_top->setSpacing(8);
     layout_top->setContentsMargins(12, 7, 12, 5);
     setLayout(layout_top);
 
@@ -292,8 +298,8 @@ void ToolGlobal::startTiming()
                 + second * 1000);
 
     //创建LCD显示器
-    lcdNumber = new QLCDNumber(this);
-    lcdNumber ->setGeometry(690, 8, 80, 18);
+    lcdNumber = new QLCDNumber(widget_timingLCD);
+    lcdNumber->resize(lcdNumber->parentWidget()->size());
     lcdNumber ->setDigitCount(8);
     lcdNumber ->display(tr("%1").sprintf("%02d:%02d:%02d", hour, minite, second));
     lcdNumber ->show();

@@ -42,6 +42,9 @@ private:
     QLCDNumber *lcdNumber;
     int timer_totalTime;
 
+    //定时器LCD灯
+    QWidget *widget_timingLCD;
+
     //歌词 按钮
     QGroupBox *gbx_lrc_game;
     QPushButton *pbn_lrc_game_state;
