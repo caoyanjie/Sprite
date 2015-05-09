@@ -266,7 +266,7 @@ void ToolGlobal::pbn_lrc_game_clicked()
     else
     {
         pbn_lrc_game_state->move(gbx_lrc_game->x()+5, pbn_lrc_game_state->y());
-        pbn_lrc_game->move(gbx_lrc_game->x()+47, pbn_lrc_game->y());
+        pbn_lrc_game->move(gbx_lrc_game->x()+46, pbn_lrc_game->y());
         pbn_lrc_game_state->setText(tr("小游戏"));
         pbn_lrc_game->setText(tr("歌词"));
         pbn_lrc_game_state->setToolTip(tr("本地小游戏"));
