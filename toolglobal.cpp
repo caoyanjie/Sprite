@@ -148,27 +148,18 @@ ToolGlobal::ToolGlobal(QWidget *parent) :
     timer_target = new QTimer(this);
 
     //按钮 信号/槽关联
-    connect(pbn_magic, SIGNAL(clicked()),           //单击 “魔音” 按钮
-            this, SLOT(pbn_magic_clicked()));
-    connect(pbn_magic_state, SIGNAL(clicked()),     //单击 “魔音开关” 按钮
-            this, SLOT(pbn_magic_clicked()));
-    connect(pbn_clock, SIGNAL(clicked()),           //单击 “定时” 按钮
-            this, SLOT(pbn_clock_clicked()));
-    connect(pbn_clock_state, SIGNAL(clicked()),     //单击 “定时开关” 按钮
-            this, SLOT(pbn_clock_clicked()));
-    connect(pbn_lrc_game, SIGNAL(clicked()),       //单击 “小游戏” 按钮
-            this, SLOT(pbn_lrc_game_clicked()));
-    connect(pbn_lrc_game_state, SIGNAL(clicked()), //单击 “歌词” 按钮
-            this, SLOT(pbn_lrc_game_clicked()));
+    connect(pbn_magic, SIGNAL(clicked()), this, SLOT(pbn_magic_clicked()));             //单击 “魔音状态” 按钮
+    connect(pbn_magic_state, SIGNAL(clicked()), this, SLOT(pbn_magic_clicked()));       //单击 “魔音开关” 按钮
+    connect(pbn_clock, SIGNAL(clicked()), this, SLOT(pbn_clock_clicked()));             //单击 “定时状态” 按钮
+    connect(pbn_clock_state, SIGNAL(clicked()), this, SLOT(pbn_clock_clicked()));       //单击 “定时开关” 按钮
+    connect(pbn_lrc_game, SIGNAL(clicked()), this, SLOT(pbn_lrc_game_clicked()));       //单击 “小游戏” 按钮
+    connect(pbn_lrc_game_state, SIGNAL(clicked()), this, SLOT(pbn_lrc_game_clicked())); //单击 “歌词” 按钮
 
     //定时器 信号/槽关联
-    connect(timer_default, SIGNAL(timeout()),       //1秒倒计时
-            this, SLOT(timer_default_timeout()));
-    connect(timer_target, SIGNAL(timeout()),        //自定义倒计时
-            this, SLOT(timer_target_timeout()));
+    connect(timer_default, SIGNAL(timeout()), this, SLOT(timer_default_timeout()));     //1秒倒计时
+    connect(timer_target, SIGNAL(timeout()), this, SLOT(timer_target_timeout()));       //自定义倒计时
 
     setMouseTracking(true);
-
 }
 
 //单击 “魔音” 处理
@@ -216,12 +207,10 @@ void ToolGlobal::pbn_clock_clicked()
         pbn_clock ->setToolTip(tr("关闭"));                  //...........
         clockState = true;                                  //设置为 “开启” 状态
 //        timing = new Timing(parentWidget());                //创建 “定时器设置” 窗口 并显示
-        timing = new Timing(gbx_clock->x()-42, 113, 225, 135, parentWidget());                //创建 “定时器设置” 窗口 并显示
-        timing ->show();                                    //.........................
-        connect(timing, SIGNAL(timing_pbnOk_click()),       //关联 定时器 “确定” 按钮
-                this, SLOT(startTiming()));
-        connect(timing, SIGNAL(timing_pbnCancle_click()),   //关联 定时器 “取消” 按钮
-                this, SLOT(stopTiming()));
+        timing = new Timing(gbx_clock->x()-42, 113, 225, 135, parentWidget());          //创建 “定时器设置” 窗口 并显示
+        timing ->show();                                                                //.........................
+        connect(timing, SIGNAL(timing_pbnOk_click()), this, SLOT(startTiming()));       //关联 定时器 “确定” 按钮
+        connect(timing, SIGNAL(timing_pbnCancle_click()), this, SLOT(stopTiming()));    //关联 定时器 “取消” 按钮
     }
     else                                                //如果 clockState 是 开启 状态
     {
@@ -288,16 +277,11 @@ void ToolGlobal::startTiming()
     int minite = timing ->get_spbMinite_value();
     int second = timing ->get_spbSecond_value();
     TimingTarget = (whatTimingDo) timing ->get_timingTarget();
-    timer_totalTime = hour * 3600
-            + minite * 60
-            + second;
+    timer_totalTime = hour * 3600 + minite * 60 + second;
 
     //开启定时器
     timer_default ->start(1000);
-    timer_target ->start(
-                hour * 3600 *1000
-                + minite * 60 *1000
-                + second * 1000);
+    timer_target ->start( hour * 3600 *1000 + minite * 60 *1000 + second * 1000);
 
     //创建LCD显示器
     lcdNumber = new QLCDNumber(widget_timingLCD);
@@ -369,7 +353,7 @@ void ToolGlobal::timer_target_timeout()
         emit timeout_playStop();
         break;
     case windowClose:
-        parentWidget() ->close();
+        this->parentWidget()->parentWidget()->close();
         break;
     case shutdown:
         system("shutdown -s -t 0");

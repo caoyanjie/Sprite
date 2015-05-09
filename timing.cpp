@@ -91,10 +91,8 @@ Timing::Timing(int x, int y, int w, int h, QWidget *parent) :
     rbn_windowClose ->setChecked(true);
 
     //信号槽关联
-    connect(pbn_ok, SIGNAL(clicked()),
-            this, SIGNAL(timing_pbnOk_click()));
-    connect(pbn_cancle, SIGNAL(clicked()),
-            this, SIGNAL(timing_pbnCancle_click()));
+    connect(pbn_ok, SIGNAL(clicked()), this, SIGNAL(timing_pbnOk_click()));
+    connect(pbn_cancle, SIGNAL(clicked()), this, SIGNAL(timing_pbnCancle_click()));
 }
 
 //获得spb_hour部件的值
