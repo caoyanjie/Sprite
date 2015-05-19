@@ -54,11 +54,8 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
     //设置样式
     this ->setObjectName(tr("musicList"));
     setStyleSheet(
-                "#musicList{"
-                    "background-color: rgba(0, 0, 0, 30);}"
-                    "#musicList::item{"
-                    "height: 33px;"
-                "}"
+                "#musicList{background-color: rgba(0, 0, 0, 30);}"
+                "#musicList::item{height: 33px;}"
                 );
 
     this ->verticalScrollBar()->setStyleSheet(

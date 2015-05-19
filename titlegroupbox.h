@@ -26,25 +26,19 @@ protected:
     bool eventFilter(QObject *, QEvent *);
 
 private:
-    QLabel *lab_logo;
-    QLabel *lab_logoWords;
-    QLabel *lab_bearHead;
-    QLabel *lab_bearFoot;
-//    QLabel *xiaowanzi;
-//    QToolButton *tbn_globalMusic_icon;
-//    QToolButton *tbn_globalMusic;
-//    QToolButton *tbn_internet_Music_icon;
-//    QToolButton *tbn_internet_Music;
-    QToolButton *tbn_closeWindow;
-    QToolButton *tbn_hideWindow;
-    QToolButton *tbn_miniWindow;
-    QToolButton *tbn_setting;
-    QToolButton *tbn_theme;
-    QToolButton *tbn_simple;
-    QToolButton *tbn_normal;
-    QToolButton *tbn_switch_music;
-    QToolButton *tbn_switch_video;
-//    QToolButton *tbn_switch_music_video;
+    QLabel *lab_logo;				//定义 Logo 图标
+    QLabel *lab_logoWords;			//定义 Logo 文字
+    QLabel *lab_bearHead;			//定义 小熊头 图标
+    QLabel *lab_bearFoot;			//定义 小熊脚 图标
+    QToolButton *tbn_closeWindow;	//定义 退出 按钮
+    QToolButton *tbn_hideWindow;	//定义 关闭 按钮
+    QToolButton *tbn_miniWindow;	//定义 最小化 按钮
+    QToolButton *tbn_setting;		//定义 设置 按钮
+    QToolButton *tbn_theme;         //定义 主题 按钮
+    QToolButton *tbn_simple;		//定义 MiNi窗口 按钮
+    QToolButton *tbn_normal;		//定义 正常窗口 按钮
+    QToolButton *tbn_switch_music;	//定义 切换音乐模式 按钮
+    QToolButton *tbn_switch_video;	//定义 切换视频模式 按钮
 
     Setting *setting;
     Theme *theme;
@@ -61,13 +55,10 @@ private:
 //    QMatrix logoMatrix;
     QTimer *timer_logoRotate;
     QTimer *timer_logoRotatePause;
-    int rotateAngle = 0;
-//    const int angleOffset = 20;
-//    const int timer_rotateStart = 30;
-    const int angleOffset = 30;
-//    const int timer_rotateStart = 60;
-    const int timer_rotateStart = 60;
-    const int timer_rotatePause = 2000;
+    int rotateAngle;
+    const int angleOffset;
+    const int timer_rotateStart;
+    const int timer_rotatePause;
 
 protected slots:
     void settingClicked();

@@ -557,7 +557,10 @@ void DT_Music::addMusic_and_searchMusic()
                     "color: rgb(200, 255, 255);"
                 "}"
                 );
-    tbn_search ->setStyleSheet("QToolButton{border-image: url(:/Images/search.png)}");
+    tbn_search ->setStyleSheet("QToolButton{"
+                                    "border-image: url(:/Images/search.png)"
+                               "}"
+                               );
 
     //信号槽关联
     connect(cob_addMusic, SIGNAL(activated(int)), this, SLOT(addMusicFile(int)));
@@ -573,7 +576,7 @@ void DT_Music::volumn_widget()
     lab_volumnFrame->hide();
     lab_volumnFrame->installEventFilter(this);
     slider_volumn = new QSlider(Qt::Vertical, lab_volumnFrame);     //初始化 音量控件 并隐藏
-    lab_volumnValue = new QLabel(lab_volumnFrame);                  //初始化 音量值 标签 并隐藏
+    lab_volumnValue = new QLabel(lab_volumnFrame);                 //初始化 音量值 标签 并隐藏
     lab_volumnFrame->installEventFilter(this);
     lab_volumnFrame->setToolTip("滚动鼠标滚轮调节音量");
 
@@ -939,6 +942,8 @@ void DT_Music::updateLrc(qint64 time)
         {
             lrcView ->textNext ->setText(currentLrcAdd);
         }
+
+
 //        lrcStringList.append(lrcView ->text());
 /*
         //

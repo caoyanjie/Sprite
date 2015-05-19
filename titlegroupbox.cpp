@@ -22,6 +22,10 @@ const int tbn_switchMusicVideo_height = 38;
 
 TitleGroupBox::TitleGroupBox(QWidget *parent) :
     QGroupBox(parent)
+  ,rotateAngle(0)
+  ,angleOffset(30)
+  ,timer_rotateStart(60)
+  ,timer_rotatePause(2000)
 {
     setTitleUi();   //设计头部
     setting = new Setting(this);                        //创建 “设置” 对话框
@@ -36,25 +40,17 @@ TitleGroupBox::TitleGroupBox(QWidget *parent) :
     tbn_setting ->installEventFilter(this);             //安装事件过滤器
     tbn_theme ->installEventFilter(this);               //安装事件过滤器
 
-    connect(tbn_miniWindow, SIGNAL(clicked()),          //最小化窗口
-            parent, SLOT(showMinimized()));
-    connect(tbn_closeWindow, SIGNAL(clicked()),         //关闭窗口
-            parent, SLOT(close()));
-    connect(tbn_setting, SIGNAL(clicked()),
-            this, SLOT(settingClicked()));
-    connect(tbn_theme, SIGNAL(clicked()),
-            this, SLOT(themeClicked()));
-    connect(tbn_simple, SIGNAL(clicked()),
-            this, SLOT(showMiniWindow()));
+    connect(tbn_miniWindow, SIGNAL(clicked()), parent, SLOT(showMinimized()));  //最小化窗口
+    connect(tbn_closeWindow, SIGNAL(clicked()), parent, SLOT(close()));         //关闭窗口
+    connect(tbn_setting, SIGNAL(clicked()), this, SLOT(settingClicked()));
+    connect(tbn_theme, SIGNAL(clicked()), this, SLOT(themeClicked()));
+    connect(tbn_simple, SIGNAL(clicked()), this, SLOT(showMiniWindow()));
     //Why????
-    connect(theme, SIGNAL(themeClick(int)),
-            this, SIGNAL(themeNumClick(int)));
+    connect(theme, SIGNAL(themeClick(int)), this, SIGNAL(themeNumClick(int)));
 
     //
-    connect(theme, SIGNAL(settingDataChanged(QString,QString)),
-            this, SIGNAL(settingDataChanged(QString,QString)));
-setMouseTracking(true);
-
+    connect(theme, SIGNAL(settingDataChanged(QString,QString)), this, SIGNAL(settingDataChanged(QString,QString)));
+    setMouseTracking(true);
 }
 
 //头部忽略鼠标按下事件
@@ -80,7 +76,6 @@ void TitleGroupBox::paintEvent(QPaintEvent *event)
     painter.rotate(rotateAngle -= angleOffset);
 //    painter.setRenderHint(QPainter::Antialiasing);
     painter.drawPixmap(-lab_logo->width()/2, -lab_logo->width()/2, lab_logo->width(), lab_logo->height(), pix);
-
 }
 
 //事件过滤器
@@ -90,10 +85,6 @@ bool TitleGroupBox::eventFilter(QObject *target, QEvent *event)
             || target == tbn_miniWindow
             || target == tbn_setting
             || target == tbn_theme
-//            || target == tbn_globalMusic_icon
-//            || target == tbn_globalMusic
-//            || target == tbn_internet_Music_icon
-//            || target == tbn_internet_Music
             )
     {
         if (event ->type() == QEvent::MouseMove)
@@ -108,32 +99,26 @@ bool TitleGroupBox::eventFilter(QObject *target, QEvent *event)
 //设计头部
 void TitleGroupBox::setTitleUi()
 {
-/////////////////////////////    setGeometry(0, 0, 1001, 81);                                        //初始化 位置 和 大小
     this ->setObjectName(tr("titleGroupBox"));
 
     //创建按钮
-//    xiaowanzi = new QLabel(this);
-    lab_logo = new QLabel(this);                                        //创建 Logo 图标
-    lab_logoWords = new QLabel(this);                                   //创建 Logo 文字
-//    tbn_globalMusic_icon = new QToolButton(this);                       //创建 本地音乐 图标
-//    tbn_globalMusic = new QToolButton(this);                            //创建 本地音乐 文字
-//    tbn_internet_Music_icon = new QToolButton(this);                    //创建 网路歌曲 图标
-//    tbn_internet_Music = new QToolButton(this);                         //创建 网络歌曲 文字
-    tbn_closeWindow = new QToolButton(this);                            //创建 关闭按钮
-    tbn_hideWindow = new QToolButton(this);
-    tbn_miniWindow = new QToolButton(this);                             //创建 最小化按钮
-    tbn_setting = new QToolButton(this);
-    tbn_theme = new QToolButton(this);
-    tbn_simple = new QToolButton(this);
-    tbn_normal = new QToolButton(this);
-    tbn_switch_music = new QToolButton(this);
-    tbn_switch_music->setText("音 乐");
-    tbn_switch_video = new QToolButton(this);
-    tbn_switch_video->setText("视 频");
-    lab_bearHead = new QLabel(this);
-    lab_bearFoot = new QLabel(this);
-    tbn_simple->setText("精简");
-    tbn_normal->setText("标准");
+    lab_logo = new QLabel(this);                    //创建 Logo 图标
+    lab_logoWords = new QLabel(this);               //创建 Logo 文字
+    tbn_closeWindow = new QToolButton(this);        //创建 退出 按钮
+    tbn_hideWindow = new QToolButton(this);         //创建 关闭 按钮
+    tbn_miniWindow = new QToolButton(this);         //创建 最小化 按钮
+    tbn_setting = new QToolButton(this);            //创建 设置 按钮
+    tbn_theme = new QToolButton(this);              //创建 主题 按钮
+    tbn_simple = new QToolButton(this);             //创建 MiNi窗口 按钮
+    tbn_simple->setText("精简");                     //................
+    tbn_normal = new QToolButton(this);             //创建 正常窗口 按钮
+    tbn_normal->setText("标准");                     //...............
+    tbn_switch_music = new QToolButton(this);       //创建 切换音乐模式 按钮
+    tbn_switch_music->setText("音 乐");              //..................
+    tbn_switch_video = new QToolButton(this);       //创建 切换视频模式 按钮
+    tbn_switch_video->setText("视 频");              //..................
+    lab_bearHead = new QLabel(this);                //创建 小熊头 图标
+    lab_bearFoot = new QLabel(this);                //创建 小熊脚 图标
     lab_logo->setAlignment(Qt::AlignCenter);
 
     //设置按钮固定大小
@@ -176,35 +161,15 @@ void TitleGroupBox::setTitleUi()
     layout_top->addWidget(lab_logo, 8, 10, 50, 45);
     layout_top->addWidget(lab_logoWords, 53, 10, 31, 51);
     layout_top->addWidget(tbn_switch_music, 20, 500, tbn_switchMusicVideo_height, tbn_switchMusicVideo_width);
+    layout_top->addWidget(lab_bearHead, 4, 500+(tbn_switchMusicVideo_height-29)/2, 29, 41);
+    layout_top->addWidget(lab_bearFoot, 20+tbn_switchMusicVideo_height, 400+(tbn_switchMusicVideo_width-18)/2, 6, 18);
     layout_top->addWidget(tbn_switch_video, 20, 600, tbn_switchMusicVideo_height, tbn_switchMusicVideo_width);
-    layout_top->addWidget(lab_bearHead, 4, 400+(tbn_switchMusicVideo_height-29)/2, 29, 41);
-    layout_top->addWidget(lab_bearFoot, 20+tbn_switchMusicVideo_height, 400+(tbn_switchMusicVideo_height-18)/2, 6, 18);
     layout_top->addLayout(layout_H, 6, 650, 15, 50);
     layout_top->setSpacing(0);
     layout_top->setMargin(0);
     layout_top->setContentsMargins(10, 8, 0, 0);
     setLayout(layout_top);
 
-    /*
-    //设置按钮位置、大小
-//    xiaowanzi ->setGeometry(340, 20, 500, 50);
-    lab_logo ->setGeometry(10, 8, 45, 50);                      //设置 Logo 大小位置
-    lab_logoWords ->setGeometry(10, 53, 51, 31);
-//    tbn_globalMusic_icon ->setGeometry(412, 10, 43, 43);        //设置 本地音乐 大小位置
-//    tbn_globalMusic ->setGeometry(402, 48, 69, 26);
-//    tbn_internet_Music_icon ->setGeometry(597, 10, 43, 43);     //设置 网络歌曲 大小位置
-//    tbn_internet_Music ->setGeometry(590, 48, 61, 26);
-    tbn_closeWindow ->setGeometry(980, 8, 11, 11);
-    tbn_miniWindow ->setGeometry(960, 8, 11, 11);               //设置 最小化按钮 和 关闭按钮 大小位置
-    tbn_setting ->setGeometry(937, 7, 13, 13);
-    tbn_theme ->setGeometry(913, 6, 15, 15);
-    tbn_switch_music->setGeometry(400, 20, tbn_switchMusicVideo_width, tbn_switchMusicVideo_height);
-    tbn_switch_video->setGeometry(600, 20, tbn_switchMusicVideo_width, tbn_switchMusicVideo_height);
-    lab_bearHead->setGeometry(tbn_switch_music->x()+(tbn_switch_music->width()-41)/2, tbn_switch_music->y()-16, 41, 29);
-    lab_bearFoot->setGeometry(tbn_switch_music->x()+(tbn_switch_music->width()-18)/2, tbn_switch_video->y()+tbn_switchMusicVideo_height, 18, 6);
-//    tbn_switch_music_video->setGeometry((this->width()-120)/2, 5, 120, 68);
-*/
-//    tbn_switch_video->setToolTip("去看视频");
     tbn_switch_video->setToolTip("切换到视频播放");
 //    lab_bearHead->setGeometry(tbn_switch_music->x()+(tbn_switch_music->width()-41)/2, tbn_switch_music->y()-16, 41, 29);
 //    lab_bearFoot->setGeometry(tbn_switch_music->x()+(tbn_switch_music->width()-18)/2, tbn_switch_video->y()+tbn_switchMusicVideo_height, 18, 6);
@@ -244,21 +209,6 @@ void TitleGroupBox::setTitleUi()
                 "#lab_logoWords{"
                     "border-image: url();"
                 "}"
-//                "#tbn_globalMusic_icon{"                                         //设置 本地音乐 样式表
-//                    "border-image: url(:/Images/globalMusic.png);"
-//                    "border-radius: 3px;"
-//                "}"
-//                tbn_globalMusic ->setStyleSheet("QToolButton{"
-//                      "border-image: url();"
-//                      "border-radius:3px;"
-//                      "color: white;"
-//                "}"
-//    tbn_internet_Music_icon ->setStyleSheet("QToolButton{"                                      //设置 网络歌曲 样式表
-//                                            "border-image: url(:/Images/internetMusic2.png)}");
-//    tbn_internet_Music ->setStyleSheet("QToolButton{"
-//                                       "border-image: url();"
-//                                       "border-radius:3px;"
-//                                       "color:white;}");
                 //设置 关闭窗口 样式表
                 "#tbn_closeWindow{"
                     "border-image: url(:/Images/closeWindow.png);"
@@ -332,17 +282,7 @@ void TitleGroupBox::setTitleUi()
 
 
     lab_logoWords ->setText("<html><body><p><span style='color:#ffffff;'>兔兔音乐</span></p></body></html>");
-//    tbn_globalMusic ->setText(tr("本地音乐"));
-//    tbn_internet_Music ->setText(tr("网络歌曲"));
 
-//    connect(tbn_globalMusic_icon, SIGNAL(clicked()),                //单击 ”本地音乐“ 图标
-//            this, SLOT(clickedGlobalMusic()));
-//    connect(tbn_globalMusic, SIGNAL(clicked()),                     //单击 ”本地音乐“
-//            this, SLOT(clickedGlobalMusic()));
-//    connect(tbn_internet_Music_icon, SIGNAL(clicked()),             //单击 ”网络歌曲“ 图标
-//            this, SLOT(clickedInternetMusic()));
-//    connect(tbn_internet_Music, SIGNAL(clicked()),                  //单击 ”网络歌曲“
-//            this, SLOT(clickedInternetMusic()));
     connect(tbn_switch_video, SIGNAL(clicked()),                      //播放视频
             this, SLOT(ShowVideoPlayerSlot()));
 
