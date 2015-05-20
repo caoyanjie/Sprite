@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <QWidget>
+#include "gamer.h"
 class QLabel;
 class QGridLayout;
 class Game : public QWidget
@@ -14,23 +15,9 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-    QLabel *lab_11;
-    QLabel *lab_12;
-    QLabel *lab_13;
-    QLabel *lab_14;
-    QLabel *lab_21;
-    QLabel *lab_22;
-    QLabel *lab_23;
-    QLabel *lab_24;
-    QLabel *lab_31;
-    QLabel *lab_32;
-    QLabel *lab_33;
-    QLabel *lab_34;
-    QLabel *lab_41;
-    QLabel *lab_42;
-    QLabel *lab_43;
-    QLabel *lab_44;
-    QLabel *lab_new;
+    QLabel *labBg[4][4];
+    QLabel *labGame[4][4];
+    Gamer *newGamer;
 
     QGridLayout *layout;
 

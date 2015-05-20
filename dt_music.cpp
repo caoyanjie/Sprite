@@ -1258,7 +1258,6 @@ void DT_Music::gameStateChange(bool gameState)
         game->show();
         game->setFocus();
 //        lrcView->hide();
-
     }
     else
     {

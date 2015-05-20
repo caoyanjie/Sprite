@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     videocontral.cpp \
     databaseoperation.cpp \
     helpkeepawake.cpp \
-    network.cpp
+    network.cpp \
+    gamer.cpp
 
 HEADERS  += dt_music.h \
     titlegroupbox.h \
@@ -66,7 +67,8 @@ HEADERS  += dt_music.h \
     videocontral.h \
     databaseoperation.h \
     helpkeepawake.h \
-    network.h
+    network.h \
+    gamer.h
 
 FORMS    += dt_music.ui
 
