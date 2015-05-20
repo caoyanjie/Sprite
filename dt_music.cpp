@@ -26,7 +26,6 @@
 #include "videoplayer.h"          //视频播放器
 #include "game.h"
 #include "databaseoperation.h"
-#include "network.h"
 
 //部件类
 #include <QMouseEvent>          //鼠标事件
@@ -99,6 +98,7 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
 
     //初始化 界面 和 变量
     init();
+    network = new NetWork;
 
     //为部件安装事件过滤器
     cob_addMusic ->installEventFilter(this);
@@ -844,8 +844,8 @@ void DT_Music::durationChanged()
     lrcView ->previousLines.clear();        //..............
 
     //定位当前播放歌曲
-    int rootDir = musicList->get_current_rootDir();                //检测 当前播放列表
-    int currentIndex = musicList->playlistVector[rootDir]->currentIndex();    //当前行 索引值
+    int rootDir = musicList->get_current_rootDir();                         //检测 当前播放列表
+    int currentIndex = musicList->playlistVector[rootDir]->currentIndex();  //当前行 索引值
 //    lrcStringList.clear();                                        //
 
     //调用 解析歌词函数
@@ -1430,8 +1430,8 @@ void DT_Music::resolveLrc(const QString &sourceFileName)
     if(!QFileInfo(lrcFilePath).exists())
     {
         lrcView ->currentLrc ->setText(tr("正在下载歌词......"));
-        NetWork downloadLrc;
-        downloadLrc.downLoadLrc(lrcFilePath);
+        network->downLoadLrc(lrcFilePath.remove(lrcFilePath.right(4)));
+        return;
     }
 
     QFile file(lrcFilePath);

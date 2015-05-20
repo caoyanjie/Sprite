@@ -12,14 +12,17 @@ public:
     NetWork();
     ~NetWork();
 
-    void downLoadLrc(QString lrcUrl);
+    void downLoadLrc(QString lrcName);
 
 private:
     QNetworkAccessManager *manager;
+    QNetworkAccessManager *managerDownloadLrc;
     QString lrcFileName;
+    int a;
 
 private slots:
     void replayFinished(QNetworkReply *replay);
+    void replayLrcFile(QNetworkReply *replay);
 };
 
 #endif // NETWORK_H

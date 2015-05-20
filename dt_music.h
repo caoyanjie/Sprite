@@ -12,6 +12,7 @@
 #include <QRect>
 #include <QSqlDatabase>
 #include <QString>
+#include "network.h"
 class TitleGroupBox;
 class ToolGlobal;
 //class ToolInternet;
@@ -28,7 +29,7 @@ class QToolButton;
 class BottomGroupBox;
 class DesktopLrc;
 class QTreeWidgetItem;
-//class InternetWidget;
+//class Interidget;
 class QMediaPlayer;
 class QMediaPlaylist;
 class QSlider;
@@ -175,6 +176,8 @@ private:
     QTimer *timerBear;
     //数据库
     QSqlDatabase db;
+
+    NetWork *network;
     //默认值
     int volumn_defaultValue;
     int theme_defultValue;
