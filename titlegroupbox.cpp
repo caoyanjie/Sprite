@@ -162,7 +162,7 @@ void TitleGroupBox::setTitleUi()
     layout_top->addWidget(lab_logoWords, 53, 10, 31, 51);
     layout_top->addWidget(tbn_switch_music, 20, 500, tbn_switchMusicVideo_height, tbn_switchMusicVideo_width);
     layout_top->addWidget(lab_bearHead, 4, 500+(tbn_switchMusicVideo_height-29)/2, 29, 41);
-    layout_top->addWidget(lab_bearFoot, 20+tbn_switchMusicVideo_height, 400+(tbn_switchMusicVideo_width-18)/2, 6, 18);
+    layout_top->addWidget(lab_bearFoot, 22+tbn_switchMusicVideo_height, 500+(tbn_switchMusicVideo_height-23)/2, 6, 18);
     layout_top->addWidget(tbn_switch_video, 20, 600, tbn_switchMusicVideo_height, tbn_switchMusicVideo_width);
     layout_top->addLayout(layout_H, 6, 650, 15, 50);
     layout_top->setSpacing(0);
@@ -381,15 +381,13 @@ void TitleGroupBox::ShowVideoPlayerSlot()
     lab_bearFoot->move(tbn_switch_video->x()+(tbn_switch_video->width()-18)/2, tbn_switch_video->y()+tbn_switchMusicVideo_height);
     timer = new QTimer(this);
     timer->start(200);
-    connect(timer, SIGNAL(timeout()),
-            this, SLOT(timeout()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(timeout()));
 }
 
 void TitleGroupBox::timeout()
 {
     emit ShowVideoPlayer();
     timer->deleteLater();
-
 }
 
 //小熊移动到音乐按钮上
