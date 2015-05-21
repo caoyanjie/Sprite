@@ -2,6 +2,7 @@
 #define GAMER_H
 
 #include <QLabel>
+#include <QTime>
 
 class Gamer : public QLabel
 {
@@ -10,7 +11,6 @@ public:
     explicit Gamer(QWidget *parent = 0);
     int line;
     int column;
-    int number;
 
 signals:
 

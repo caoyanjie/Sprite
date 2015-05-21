@@ -15,8 +15,12 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
+    enum forward{LEFT, RIGHT, UP, DOWN};
+    void produce();
+    void moveGamer(forward moveForwad);
+
     QLabel *labBg[4][4];
-    QLabel *labGame[4][4];
+    Gamer *flagGamer[4][4];
     Gamer *newGamer;
 
     QGridLayout *layout;
