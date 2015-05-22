@@ -1487,8 +1487,8 @@ void DT_Music::resolveLrc(const QString &sourceFileName)
     }
     if (lrcMap.isEmpty())
     {
-        lrcView ->setText(tr("歌词文件内容错误！"));
-        desktopLrc ->setText(tr("歌词文件内容错误！"));
+//        lrcView ->setText(tr("歌词文件内容错误！"));
+//        desktopLrc ->setText(tr("歌词文件内容错误！"));
         return;
     }
 }

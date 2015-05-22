@@ -51,7 +51,6 @@ void Game::keyPressEvent(QKeyEvent *event)
     switch(event->key())
     {
     case Qt::Key_A:
-        qDebug() << "left";
         moveGamer(LEFT);
         break;
     case Qt::Key_D:
@@ -156,30 +155,28 @@ void Game::moveGamer(forward moveForwad)
         }
         break;
     case RIGHT:
-        qDebug() << "\n\n\n";
         for (int i=0; i<4; ++i)                 //第 i 行
-        {qDebug() << "检测第" << i << "行";
+        {
             QVector<Gamer*> numbers;            //存放一行中的棋子
             QVector<int> columnEmpty;           //存放一行中的空列
             for (int j=3; j>=0; --j)             //第 j 列
-            {qDebug() << "    检测第" << j << "列";
+            {
                 if (flagGamer[i][j] == 0)
-                {qDebug() << "      1个空格,已追加到columnEmpty中";
+                {
                     columnEmpty.append(j);      //把空列追加到向量中
                 }
                 else                            //遇到棋子
-                {qDebug() << "      检测到棋子";
+                {
                     if (!numbers.isEmpty())     //如果前边有棋子
-                    {qDebug() << "            前边有" << numbers.count() << "个棋子";
+                    {
                         int frontNumber = numbers.at(numbers.count()-1)->text().toInt();
                         int currentNumber = flagGamer[i][j]->text().toInt();
                         if (frontNumber == currentNumber)   //数字相等，相加
-                        {qDebug() << "            棋子与前边棋子相等，和为" << frontNumber + currentNumber;
+                        {
                             int numberCount = frontNumber + currentNumber;
                             numbers.at(numbers.count()-1)->setText(tr("%1").arg(numberCount));
                             flagGamer[i][j]->deleteLater();
                             flagGamer[i][j] = 0;
-                         //   numbers.pop_back();++j;++j;
                             numbers.clear();columnEmpty.clear();j=4;
 
 
@@ -196,7 +193,7 @@ void Game::moveGamer(forward moveForwad)
                         columnEmpty.append(j);
                     }
                     else
-                    {qDebug() << "          前边既没棋子又没空格，已追加到numbers";
+                    {
                         numbers.append(flagGamer[i][j]);
                     }
                 }
@@ -204,47 +201,39 @@ void Game::moveGamer(forward moveForwad)
         }
         break;
     case UP:
-        for (int column=0; column<4; ++column)                 //第 j 列
+        for (int column=0; column<4; ++column)
         {
-            QVector<Gamer*> numbers;            //存放一行中的棋子
-            QVector<int> columnEmpty;           //存放一行中的空列
-            for (int line=0; line<4; ++line)             //第 i 行
+            QVector<Gamer*> numbers;
+            QVector<int> columnEmpty;
+            for (int line=0; line<4; ++line)
             {
                 if (flagGamer[line][column] == 0)
                 {
-                 //   columnEmpty.append(j);      //把空列追加到向量中
-                    columnEmpty.append(line);      //把空列追加到向量中
+                    columnEmpty.append(line);
                 }
-                else                            //遇到棋子
+                else
                 {
-                    if (!numbers.isEmpty())     //如果前边有棋子
+                    if (!numbers.isEmpty())
                     {
                         int frontNumber = numbers.at(numbers.count()-1)->text().toInt();
                         int currentNumber = flagGamer[line][column]->text().toInt();
-                        if (frontNumber == currentNumber)   //数字相等，相加
+                        if (frontNumber == currentNumber)
                         {
                             int numberCount = frontNumber + currentNumber;
                             numbers.at(numbers.count()-1)->setText(tr("%1").arg(numberCount));
                             flagGamer[line][column]->deleteLater();
                             flagGamer[line][column] = 0;
-                         //   numbers.pop_back();++j;++j;
                             numbers.clear();columnEmpty.clear();line=-1;
-
-
                             continue;
                         }
                     }
-                    if (!columnEmpty.isEmpty()) //如果前边有空列
+                    if (!columnEmpty.isEmpty())
                     {
-                 //       flagGamer[line][column]->move(labBg[line][columnEmpty.at(0)]->pos());
                         flagGamer[line][column]->move(labBg[columnEmpty.at(0)][column]->pos());
-                 //       flagGamer[line][columnEmpty.at(0)] = flagGamer[line][column];
                         flagGamer[columnEmpty.at(0)][column] = flagGamer[line][column];
                         flagGamer[line][column] = 0;
-                //        numbers.append(flagGamer[line][columnEmpty.at(0)]);
                         numbers.append(flagGamer[columnEmpty.at(0)][column]);
                         columnEmpty.pop_front();
-            //            columnEmpty.append(j);
                         columnEmpty.append(line);
                     }
                     else
@@ -256,47 +245,39 @@ void Game::moveGamer(forward moveForwad)
         }
         break;
     case DOWN:
-        for (int column=0; column<4; ++column)                 //第 j 列
+        for (int column=0; column<4; ++column)
         {
-            QVector<Gamer*> numbers;            //存放一行中的棋子
-            QVector<int> columnEmpty;           //存放一行中的空列
-            for (int line=3; line>=0; --line)             //第 i 行
+            QVector<Gamer*> numbers;
+            QVector<int> columnEmpty;
+            for (int line=3; line>=0; --line)
             {
                 if (flagGamer[line][column] == 0)
                 {
-                 //   columnEmpty.append(j);      //把空列追加到向量中
-                    columnEmpty.append(line);      //把空列追加到向量中
+                    columnEmpty.append(line);
                 }
-                else                            //遇到棋子
+                else
                 {
-                    if (!numbers.isEmpty())     //如果前边有棋子
+                    if (!numbers.isEmpty())
                     {
                         int frontNumber = numbers.at(numbers.count()-1)->text().toInt();
                         int currentNumber = flagGamer[line][column]->text().toInt();
-                        if (frontNumber == currentNumber)   //数字相等，相加
+                        if (frontNumber == currentNumber)
                         {
                             int numberCount = frontNumber + currentNumber;
                             numbers.at(numbers.count()-1)->setText(tr("%1").arg(numberCount));
                             flagGamer[line][column]->deleteLater();
                             flagGamer[line][column] = 0;
-                         //   numbers.pop_back();++j;++j;
                             numbers.clear();columnEmpty.clear();line=4;
-
-
                             continue;
                         }
                     }
-                    if (!columnEmpty.isEmpty()) //如果前边有空列
+                    if (!columnEmpty.isEmpty())
                     {
-                 //       flagGamer[line][column]->move(labBg[line][columnEmpty.at(0)]->pos());
                         flagGamer[line][column]->move(labBg[columnEmpty.at(0)][column]->pos());
-                 //       flagGamer[line][columnEmpty.at(0)] = flagGamer[line][column];
                         flagGamer[columnEmpty.at(0)][column] = flagGamer[line][column];
                         flagGamer[line][column] = 0;
-                //        numbers.append(flagGamer[line][columnEmpty.at(0)]);
                         numbers.append(flagGamer[columnEmpty.at(0)][column]);
                         columnEmpty.pop_front();
-            //            columnEmpty.append(j);
                         columnEmpty.append(line);
                     }
                     else
@@ -310,5 +291,3 @@ void Game::moveGamer(forward moveForwad)
     }
     produce();
 }
-
-//销毁棋子
