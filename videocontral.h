@@ -7,8 +7,10 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QSlider>
-#include <QListWidget>
-#include <QListWidgetItem>
+//#include <QListWidget>
+//#include <QListWidgetItem>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QEvent>
@@ -55,7 +57,8 @@ private:
     QLabel *lab_totalTime;
     QLabel *lab_currentTime;
 
-    QListWidget *list_playlist;
+//    QListWidget *list_playlist;
+    QTreeWidget *list_playlist;
     QComboBox *cob_addFile;
 
     QHBoxLayout *layout_tbnHeader;
@@ -67,7 +70,8 @@ private:
     QVBoxLayout *layout_bottom;
     QVBoxLayout *layout_top;
 
-    QListWidgetItem *newVideoItem;
+//    QListWidgetItem *newVideoItem;
+    QTreeWidgetItem *newVideoItem;
 
     const int tbnHeaderSize;
     const int tbnContralSize;

@@ -55,7 +55,7 @@ VideoPlayer::VideoPlayer(QString programPath, QWidget *parent) :
     videoWidget->installEventFilter(this);
     videoWidget->setMouseTracking(true);
 
-    //
+    //保持视频屏幕常亮
     helpKeepAwake = new HelpKeepAwake;
 
     //布局
@@ -235,7 +235,6 @@ void VideoPlayer::openVideoFile(QString file)       //默认参数 file=""
     for(int indext=0; indext<openVideoFileNames.length(); indext++)
     {
         playlist->addMedia(QUrl::fromLocalFile(tr("%1").arg(openVideoFileNames.at(indext))));
-
     }
     for(int indext=0; indext<openVideoFileNames.length(); indext++)
     {

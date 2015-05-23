@@ -326,7 +326,6 @@ void VideoContral::addVideoList(QStringList videoPaths)
     for(int indext=0; indext<videoPaths.length(); indext++)
     {
         newVideoItem = new QTreeWidgetItem(QStringList(QString(tr("%1").arg(videoPaths.at(indext)))));
-//        list_playlist->addItem(newVideoItem);
         list_playlist->topLevelItem(1)->addChild(newVideoItem);
     }
 }
