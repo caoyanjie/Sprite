@@ -106,6 +106,7 @@ VideoContral::VideoContral(QWidget *parent) : QWidget(parent)
 
 //    list_playlist = new QListWidget;
     list_playlist = new QTreeWidget;
+    list_playlist->setHeaderHidden(true);
     newVideoItem = new QTreeWidgetItem(QStringList(QString("播放历史")));
     list_playlist->addTopLevelItem(newVideoItem);
     newVideoItem = new QTreeWidgetItem(QStringList(QString("当前列表")));
@@ -424,8 +425,8 @@ void VideoContral::addVidwoFile(int index)
         {
             newVideoItem = new QTreeWidgetItem(QStringList(QString(QFileInfo(videoFiles.at(times)).baseName())));
             list_playlist->topLevelItem(1)->addChild(newVideoItem);
-            emit addedVideoFiles(videoFiles);
         }
+        emit addedVideoFiles(videoFiles);
     }
 }
 
