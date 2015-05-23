@@ -2,6 +2,9 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QListView>
+#include <QFileDialog>
+#include <QFileInfo>
+
 VideoContral::VideoContral(QWidget *parent) : QWidget(parent)
   ,tbnHeaderSize(12)
   ,tbnContralSize(22)
@@ -157,6 +160,7 @@ VideoContral::VideoContral(QWidget *parent) : QWidget(parent)
     connect(tbn_playStop, SIGNAL(clicked()), this, SIGNAL(playerStop()));
     connect(tbn_playPause, SIGNAL(clicked()), this, SIGNAL(playPause()));
     connect(tbn_playNext, SIGNAL(clicked()), this, SIGNAL(playNext()));
+    connect(cob_addFile, SIGNAL(activated(int)), this, SLOT(addVidwoFile(int)));
 
     //显式设置对象名
     fram_header->setObjectName("fram_header");
@@ -326,7 +330,6 @@ void VideoContral::addVideoList(QStringList videoPaths)
     for(int indext=0; indext<videoPaths.length(); indext++)
     {
         newVideoItem = new QTreeWidgetItem(QStringList(QString(tr("%1").arg(videoPaths.at(indext)))));
-//        list_playlist->addItem(newVideoItem);
         list_playlist->topLevelItem(1)->addChild(newVideoItem);
     }
 }
@@ -391,6 +394,38 @@ void VideoContral::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Return:
         emit switchFullScreen();
         break;
+    }
+}
+
+//添加视频文件
+void VideoContral::addVidwoFile(int index)
+{
+    QStringList videoFiles;
+    if (index == 0)
+    {
+        videoFiles = QFileDialog::getOpenFileNames(0, tr("打开视频"), tr("D:/"));
+    }
+    else if (index == 1)
+    {
+        QString dirName = QFileDialog::getExistingDirectory(0, tr("选择视频文件夹"), tr("D:/"));
+        QStringList getVideoFiles = QDir(dirName).entryList();
+        for (int i=0; i<getVideoFiles.count(); ++i)
+        {
+            QString fileName = getVideoFiles.at(i);
+            if (fileName != "." && fileName != "..")
+            {
+                videoFiles.append(fileName);
+            }
+        }
+    }
+    if (!videoFiles.isEmpty())
+    {
+        for (int times=0; times<videoFiles.count(); ++times)
+        {
+            newVideoItem = new QTreeWidgetItem(QStringList(QString(QFileInfo(videoFiles.at(times)).baseName())));
+            list_playlist->topLevelItem(1)->addChild(newVideoItem);
+            emit addedVideoFiles(videoFiles);
+        }
     }
 }
 

@@ -91,8 +91,10 @@ signals:
 //    void valueChanged(int);
     void switchFullScreen();
     void isHideWidget(bool);
+    void addedVideoFiles(QStringList);
 
 public slots:
+    void addVidwoFile(int);
     void durationChanged(qint64 totalTime);
     void positionChanged(qint64 currentPosition);
 };
