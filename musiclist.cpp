@@ -418,7 +418,7 @@ void MusicList::removeSelection()
     this->topLevelItem(rootDir)->removeChild(this->currentItem());
 
     //移除播放列表歌曲
-    playlistVector[rootDir]->removeMedia(currentRow, currentRow);
+    playlistVector[rootDir]->removeMedia(currentRow);
 
     //更新数据库
     if (!deleteDatebase(musicListDatabaseName, this->topLevelItem(0)->text(0), currentRow+1))
@@ -522,33 +522,27 @@ void MusicList::clearAll()
 //清空本列表
 void MusicList::clearSelf()
 {
-    //获得当前选中列表
-    int rootDir = get_current_rootDir();int count = this->topLevelItem(rootDir)->childCount();
+    //获得当前选中列表和列表歌曲数
+    int rootDir = get_current_rootDir();
+    int count = this->topLevelItem(rootDir)->childCount();
 
     //遍历删除每一个子项
     while (this->topLevelItem(rootDir)->childCount())
     {
         this->topLevelItem(rootDir)->removeChild(this->topLevelItem(rootDir)->child(0));
     }
-/*
-    //删除 playlist 的内容
-    qDebug() << playlistVector.at(rootDir)->media(0).canonicalUrl();
-    for (int i=0; i<count; i++)
-    {
-        playlistVector.at(rootDir)->removeMedia(1, 1);
-    }
-//    playlistVector.at(rootDir)->clear();
 
-    //修改配置文件
-    if (!openDatebase(musicListDatabaseName))
+    //移除播放列表歌曲
+    playlistVector.at(rootDir)->clear();
+
+    //更新数据库
+    for (int i=0; i<count; ++i)
     {
-        QMessageBox::warning(0, tr("错误！"), tr("错误代码：010110010\n请将错误代码发送作者解决此错误"), QMessageBox::Ok);
+        if (!deleteDatebase(musicListDatabaseName, this->topLevelItem(0)->text(0), 1))
+        {
+            QMessageBox::warning(0, tr("发生意外！"), tr("配置文件更新失败！"), QMessageBox::Ok);
+        }
     }
-    QSqlQuery query(db);
-    if (!query.exec(tr("DELETE FROM %1").arg(this->topLevelItem(rootDir)->text(0))))
-    {
-        QMessageBox::warning(0, tr("错误！"), tr("错误代码：010110011\n请将错误代码发送作者解决此错误"), QMessageBox::Ok);
-    }*/
 }
 
 //添加到列表
