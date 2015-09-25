@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
     //定义 音频/视频 格式
     QStringList audioFormat;
     QStringList videoFormat;
-    audioFormat << "mp3" << "wma" << "wav" << "asf" << "aac" << "mp3pro" << "vqf" << "flac" << "ape" << "mid" << "ogg"
-                << "MP3" << "WMA" << "WAV" << "ASF" << "AAC" << "MP3PRO" << "VQF" << "FLAC" << "APE" << "MID" << "OGG";
+    audioFormat << "mp3" << "wma" << "wav" << "asf" << "aac" << "mp3pro" << "vqf" << "flac" << "ape" << "mid" << "ogg" << "aac"
+                << "MP3" << "WMA" << "WAV" << "ASF" << "AAC" << "MP3PRO" << "VQF" << "FLAC" << "APE" << "MID" << "OGG" << "AAC";
     videoFormat << "rmvb" << "avi" << "mp4" << "rm" << "wmv" << "3gp" << "flv" << "mkv" << "ts" << "mpeg1" << "mpeg2" << "mpeg3" << "mpeg4" << "mov" << "vob" << "mtv" << "dat" << "amv" << "dmv"
                 << "RMVB" << "AVI" << "MP4" << "RM" << "WMV" << "3GP" << "FLV" << "MKV" << "TS" << "MP3G1" << "MP3G2" << "MPEG3" << "MPEG4" << "MOV" << "VOB" << "MTV" << "DAT" << "AMV" << "DMV";
     if (argc == 2)

@@ -710,18 +710,29 @@ void DT_Music::readDatabaseToSetup()
 //添加音乐 槽函数
 void DT_Music::addMusicFile(int selected)
 {
-    QStringList musicNameListAdd;                               //保存音乐文件路径
-    if (selected == 0)                                          //添加音乐文件
+    QStringList file_types;
+    file_types << "*.mp3" << "*.wma" << "*.wav" << "*.asf" << "*.aac" << "*.mp3pro" << "*.vqf" << "*.flac" << "*.ape" << "*.mid" << "*.ogg" << "*.aac"
+               << "*.MP3" << "*.WMA" << "*.WAV" << "*.ASF" << "*.AAC" << "*.MP3PRO" << "*.VQF" << "*.FLAC" << "*.APE" << "*.MID" << "*.OGG" << "*.AAC";
+    QStringList musicNameListAdd;                               //音乐文件路径
+
+    if (selected == 0)          //添加音乐文件
     {
-        musicNameListAdd = QFileDialog::getOpenFileNames(this, tr("添加音乐"), "D:/", tr("音乐文件(*.mp3)"));
+        QString types;
+        for (int i=0; i<file_types.count(); ++i)
+        {
+            types += file_types.at(i) + " ";
+        }
+        musicNameListAdd = QFileDialog::getOpenFileNames(this, tr("添加音乐"), "D:/", tr("音乐文件(%1)").arg(types));
     }
-    else if (selected == 1)                                     //添加音乐目录
+    else if (selected == 1)     //添加音乐目录
     {
         QString dirName;
         QStringList musicNames;
+
+
         dirName = QFileDialog::getExistingDirectory(this, tr("选择文件夹"), "D:/");
         QDir dir(dirName);
-        dir.setNameFilters(QStringList(tr("*.mp3")));
+        dir.setNameFilters(file_types);
         musicNames = dir.entryList();
         for (int i=0; i<musicNames.length(); i++)
         {
@@ -730,7 +741,7 @@ void DT_Music::addMusicFile(int selected)
     }
     else
     {
-        qDebug() << "Error!!! Unknown method";
+        qDebug() << "Error!!! The index of combbox is not found!";
         return;
     }
     for (int i=0; i<musicNameListAdd.length(); i++)
@@ -748,13 +759,13 @@ void DT_Music::addMusicFile(int selected)
     QSqlQuery query(db);
     for (int i=0; i<musicNameListAdd.length(); i++)
     {
-//        if (musicNameListAdd[i].indexOf('\'') != -1)    //如果字符串中有单引号（'），转换成（‘）
-//        {
-//            musicNameListAdd[i].replace("'", "‘");
-//        }
+        if (musicNameListAdd[i].indexOf('\'') != -1)    //如果字符串中有单引号（'），转换成（‘）
+        {
+            musicNameListAdd[i].replace("'", "‘");
+        }
         if (!query.exec(tr("INSERT INTO 默认列表(%1) VALUES('%2')").arg("musicName").arg(musicNameListAdd[i])))
         {
-            QMessageBox::warning(0, tr("错误！"), tr("数据库写入数据失败！本次添加的列表%1将成为临时列表！").arg(musicNameListAdd[i]), QMessageBox::Ok);
+            QMessageBox::warning(0, tr("错误！"), tr("可能文件名中存在特殊字符，数据库写入数据失败！本次添加的列表%1将成为临时列表！").arg(musicNameListAdd[i]), QMessageBox::Ok);
         }
     }
     db.close();
