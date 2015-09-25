@@ -1,5 +1,7 @@
 #include "musiclist.h"
 #include <QDebug>
+#include "subthread.h"
+#include "databaseoperation.h"
 
 #include <QScrollBar>
 #include <QFrame>
@@ -482,6 +484,7 @@ void MusicList::remove_rootDir()
     this->currentItem()->setHidden(true);
 
     //更新数据库
+
     if (!openDatebase(musicListDatabaseName))
     {
         QMessageBox::warning(0, tr("严重错误！"), tr("配置文件保存失败！"), QMessageBox::Ok);
@@ -536,17 +539,19 @@ void MusicList::clearSelf()
     playlistVector.at(rootDir)->clear();
 
     //更新数据库
-    for (int i=0; i<count; ++i)
-    {
-        if (!deleteDatebase(musicListDatabaseName, this->topLevelItem(0)->text(0), 1))
-        {
-            QMessageBox::warning(0, tr("发生意外！"), tr("配置文件更新失败！"), QMessageBox::Ok);
-        }
-    }
+    QString databaseName = this->topLevelItem(rootDir)->text(0);
+    DatabaseOperation db_delete_all(musicListDatabaseName);
+    db_delete_all.deleteAll(databaseName);
 }
 
 //添加到列表
 void MusicList::add_otherMusicList()
 {
     qDebug() << "已添加到";
+}
+
+//释放子线程
+void MusicList::releaseThread()
+{
+    subThread->deleteLater();
 }

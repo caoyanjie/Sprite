@@ -10,6 +10,7 @@
 #include <QCompleter>
 #include <QGridLayout>
 #include <QVBoxLayout>
+class SubThread;
 
 class MusicList : public QTreeWidget
 {
@@ -42,6 +43,7 @@ private:
     QMediaPlaylist *playlist;                       //定义 多媒体播放列表
     QList<QMediaPlaylist*> playlistVector;          //定义 播放列表 容器
     QCompleter *completer;                          //定义 自动补全功能
+    SubThread *subThread;
     int volumn;
     int toStopNum;                                  //自定义播放模式（N首后停止）
     int selectedIndex;                              //播放列表中被选中的歌曲
@@ -91,6 +93,9 @@ private slots:
 
     //添加到列表
     void add_otherMusicList();
+
+    //释放子线程
+    void releaseThread();
 };
 
 #endif // MUSICLIST_H
