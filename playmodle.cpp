@@ -1,5 +1,4 @@
 #include "playmodle.h"
-#include <QDebug>
 
 #include <QFile>
 

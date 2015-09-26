@@ -1,5 +1,4 @@
 #include "videowidget.h"
-#include <QDebug>
 
 #include <QMouseEvent>
 #include <QPushButton>
@@ -86,7 +85,6 @@ void VideoWidget::keyPressEvent(QKeyEvent *event)
 
         break;
     case Qt::Key_Escape:
-        qDebug() << "esc";
         if (this->parentWidget()->isFullScreen())
         {
             this->parentWidget()->showNormal();

@@ -2,7 +2,6 @@
 
 #include "videolist.h"
 #include <QMessageBox>
-#include <QDebug>
 
 #include <QDesktopWidget>
 #include <QToolButton>

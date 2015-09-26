@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     databaseoperation.cpp \
     helpkeepawake.cpp \
     network.cpp \
-    gamer.cpp
+    gamer.cpp \
+    subthread.cpp
 
 HEADERS  += dt_music.h \
     titlegroupbox.h \
@@ -68,7 +69,8 @@ HEADERS  += dt_music.h \
     databaseoperation.h \
     helpkeepawake.h \
     network.h \
-    gamer.h
+    gamer.h \
+    subthread.h
 
 FORMS    += dt_music.ui
 

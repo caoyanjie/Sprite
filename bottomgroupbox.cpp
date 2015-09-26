@@ -1,8 +1,6 @@
 #include "bottomgroupbox.h"
 #include <QMessageBox>
-#include <QDebug>
 
-//#include "dt_music.h"
 #include "databaseoperation.h"
 
 #include <QMouseEvent>
@@ -16,11 +14,6 @@
 //布局
 #include <QHBoxLayout>
 #include <QGridLayout>
-
-//#include <windows.h>
-//#include <QFile>
-//#include <QIODevice>
-//#include <QTextStream>
 
 BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *parent) :
     QGroupBox(parent)
@@ -611,14 +604,16 @@ void BottomGroupBox::play_pause_clicked()
 void BottomGroupBox::play_previous_clicked()
 {
 //    thisMethod = click_next;
-    musicList->playlist->previous();
+//    musicList->playlist->previous();
+    musicList->playlistVector.at(musicList->get_current_rootDir())->previous();
 }
 
 //下一曲 处理
 void BottomGroupBox::play_next_clicked()
 {
 //    thisMethod = click_next;
-    musicList->playlist->next();
+    musicList->playlistVector.at(musicList->get_current_rootDir())->next();
+//    musicList->playlist->next();
 }
 
 //播放状态改变， 设置 “播放/暂停” 按钮图标

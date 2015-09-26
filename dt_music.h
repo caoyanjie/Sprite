@@ -12,6 +12,7 @@
 #include <QRect>
 #include <QSqlDatabase>
 #include <QString>
+#include "subthread.h"
 #include "network.h"
 class TitleGroupBox;
 class ToolGlobal;
@@ -178,6 +179,9 @@ private:
     QSqlDatabase db;
 
     NetWork *network;
+
+    //子线程
+    SubThread subThread;
     //默认值
     int volumn_defaultValue;
     int theme_defultValue;

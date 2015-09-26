@@ -1,5 +1,4 @@
 #include "toolglobal.h"
-#include <QDebug>
 
 #include "timing.h"
 

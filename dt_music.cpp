@@ -23,9 +23,10 @@
 #include "create_musiclist.h"
 #include "timing.h"
 #include "currentlrc.h"
-#include "videoplayer.h"          //视频播放器
+#include "videoplayer.h"        //视频播放器
 #include "game.h"
 #include "databaseoperation.h"
+#include "subthread.h"          //子线程
 
 //部件类
 #include <QMouseEvent>          //鼠标事件
@@ -713,9 +714,9 @@ void DT_Music::addMusicFile(int selected)
     QStringList file_types;
     file_types << "*.mp3" << "*.wma" << "*.wav" << "*.asf" << "*.aac" << "*.mp3pro" << "*.vqf" << "*.flac" << "*.ape" << "*.mid" << "*.ogg" << "*.aac"
                << "*.MP3" << "*.WMA" << "*.WAV" << "*.ASF" << "*.AAC" << "*.MP3PRO" << "*.VQF" << "*.FLAC" << "*.APE" << "*.MID" << "*.OGG" << "*.AAC";
-    QStringList musicNameListAdd;                               //音乐文件路径
+    QStringList musicNameListAdd;   //音乐文件路径
 
-    if (selected == 0)          //添加音乐文件
+    if (selected == 0)              //添加音乐文件
     {
         QString types;
         for (int i=0; i<file_types.count(); ++i)
@@ -724,7 +725,7 @@ void DT_Music::addMusicFile(int selected)
         }
         musicNameListAdd = QFileDialog::getOpenFileNames(this, tr("添加音乐"), "D:/", tr("音乐文件(%1)").arg(types));
     }
-    else if (selected == 1)     //添加音乐目录
+    else if (selected == 1)         //添加音乐目录
     {
         QString dirName;
         QStringList musicNames;
@@ -752,30 +753,20 @@ void DT_Music::addMusicFile(int selected)
     }
 
     //添加到数据库中
-    if (!openDatebase(musicListDatabaseName))
-    {
-        QMessageBox::warning(0, tr("错误！"), tr("数据库打开失败！本次添加的列表将成为临时列表！"), QMessageBox::Ok);
-    }
-    QSqlQuery query(db);
-    for (int i=0; i<musicNameListAdd.length(); i++)
-    {
-        if (musicNameListAdd[i].indexOf('\'') != -1)    //如果字符串中有单引号（'），转换成（‘）
-        {
-            musicNameListAdd[i].replace("'", "‘");
-        }
-        if (!query.exec(tr("INSERT INTO 默认列表(%1) VALUES('%2')").arg("musicName").arg(musicNameListAdd[i])))
-        {
-            QMessageBox::warning(0, tr("错误！"), tr("可能文件名中存在特殊字符，数据库写入数据失败！本次添加的列表%1将成为临时列表！").arg(musicNameListAdd[i]), QMessageBox::Ok);
-        }
-    }
-    db.close();
+    subThread.insertDatabase(musicListDatabaseName, "默认列表", "musicName", musicNameListAdd);
+    subThread.start();
 }
 
 
 //单击 搜索 按钮
 void DT_Music::tbn_search_clicked()
 {
-	//
+    QString search_content = ln_search->text();
+    if (search_content.isEmpty())
+    {
+        return;
+    }
+    musicList->setCurrentRow(search_content);
 }
 
 //歌曲切换 判断播放模式//////////////////////////////////////////////////////////还没处理完

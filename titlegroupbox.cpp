@@ -1,5 +1,4 @@
 #include "titlegroupbox.h"
-#include <QDebug>
 
 #include "setting.h"
 #include "theme.h"
@@ -281,7 +280,7 @@ void TitleGroupBox::setTitleUi()
                 );
 
 
-    lab_logoWords ->setText("<html><body><p><span style='color:#ffffff;'>兔兔音乐</span></p></body></html>");
+    lab_logoWords ->setText("<html><body><p><center><span style='color:#ffffff;'>小妖精</span></center></p></body></html>");
 
     connect(tbn_switch_video, SIGNAL(clicked()),                      //播放视频
             this, SLOT(ShowVideoPlayerSlot()));
@@ -309,38 +308,38 @@ void TitleGroupBox::themeClicked()
     theme ->show();
 
     //获得当前主题， 以便选择“取消”时恢复
-    QStringList getData;
-    QFile iniData(".data.ini");
-    if (iniData.open(QIODevice::ReadWrite))
-    {
-        QTextStream in(&iniData);
-        while (! in.atEnd())
-        {
-            getData.append(in.readLine());
-        }
-        if (! getData.isEmpty())
-        {
-            for (int i=0; i<getData.length(); i++)
-            {
-                QStringList line = getData[i].split(":");
-                if (line[0] == "theme")
-                {
-                    theme ->oldTheme = line[1].toInt();
-                    break;
-                }
-                else if (i == getData.length() - 1)
-                {
-                    if (line[0] != "theme")
-                    {
-                        theme ->oldTheme = 1;
-                    }
-                }
-            }
-        }
+//    QStringList getData;
+//    QFile iniData(".data.ini");
+//    if (iniData.open(QIODevice::ReadWrite))
+//    {
+//        QTextStream in(&iniData);
+//        while (! in.atEnd())
+//        {
+//            getData.append(in.readLine());
+//        }
+//        if (! getData.isEmpty())
+//        {
+//            for (int i=0; i<getData.length(); i++)
+//            {
+//                QStringList line = getData[i].split(":");
+//                if (line[0] == "theme")
+//                {
+//                    theme ->oldTheme = line[1].toInt();
+//                    break;
+//                }
+//                else if (i == getData.length() - 1)
+//                {
+//                    if (line[0] != "theme")
+//                    {
+//                        theme ->oldTheme = 1;
+//                    }
+//                }
+//            }
+//        }
 
-        //关闭文件
-        iniData.close();
-    }
+//        //关闭文件
+//        iniData.close();
+//    }
 }
 
 //切换精简播放窗口

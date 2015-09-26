@@ -1,5 +1,5 @@
 #include "game.h"
-#include <QDebug>
+
 #include <QGridLayout>
 #include <QLabel>
 #include <QKeyEvent>
@@ -109,25 +109,24 @@ void Game::moveGamer(forward moveForwad)
     switch(moveForwad)
     {
     case LEFT:
-        qDebug() << "\n\n\n";
         for (int i=0; i<4; ++i)                 //第 i 行
-        {qDebug() << "检测第" << i << "行";
+        {
             QVector<Gamer*> numbers;            //存放一行中的棋子
             QVector<int> columnEmpty;           //存放一行中的空列
             for (int j=0; j<4; ++j)             //第 j 列
-            {qDebug() << "    检测第" << j << "列";
+            {
                 if (flagGamer[i][j] == 0)
-                {qDebug() << "      1个空格,已追加到columnEmpty中";
+                {
                     columnEmpty.append(j);      //把空列追加到向量中
                 }
                 else                            //遇到棋子
-                {qDebug() << "      检测到棋子";
+                {
                     if (!numbers.isEmpty())     //如果前边有棋子
-                    {qDebug() << "            前边有" << numbers.count() << "个棋子";
+                    {
                         int frontNumber = numbers.at(numbers.count()-1)->text().toInt();
                         int currentNumber = flagGamer[i][j]->text().toInt();
                         if (frontNumber == currentNumber)   //数字相等，相加
-                        {qDebug() << "            棋子与前边棋子相等，和为" << frontNumber + currentNumber;
+                        {
                             int numberCount = frontNumber + currentNumber;
                             numbers.at(numbers.count()-1)->setText(tr("%1").arg(numberCount));
                             flagGamer[i][j]->deleteLater();
@@ -147,7 +146,7 @@ void Game::moveGamer(forward moveForwad)
                         columnEmpty.append(j);
                     }
                     else
-                    {qDebug() << "          前边既没棋子又没空格，已追加到numbers";
+                    {
                         numbers.append(flagGamer[i][j]);
                     }
                 }

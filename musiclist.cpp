@@ -1,5 +1,4 @@
 #include "musiclist.h"
-#include <QDebug>
 #include "subthread.h"
 #include "databaseoperation.h"
 
@@ -50,7 +49,7 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
     for (int i=0; i<playlistVector.length(); i++)
     {
         connect(playlistVector.at(i), SIGNAL(currentIndexChanged(int)),     //歌曲切换时，设置播放列表中当前歌曲被选中
-                this, SLOT(playList_currentIndexChanged(int)));
+                this, SLOT(setCurrentRow(int)));
     }
 
     //设置样式
@@ -159,7 +158,48 @@ void MusicList::openTempFile(QString file)
     this->setCurrentItem(createItem);
     itemPlay();
     //    player->setPlaylist(playlist);
-//    player->play();
+    //    player->play();
+}
+
+//
+void MusicList::setCurrentRow(int currentIndex, int topLevel)
+{
+    //调用函数， 获得当前播放的列表
+    if (topLevel == -1)
+    {
+        topLevel = get_current_rootDir();
+    }
+
+    //如果当前索引有效
+    if ((currentIndex <= (this ->topLevelItem(topLevel) ->childCount() - 1)) && currentIndex > -1)
+    {
+        if (selectedIndex != -1)
+        {
+            this ->topLevelItem(topLevel) ->child(selectedIndex) ->setSelected(false);
+        }
+        this ->topLevelItem(topLevel) ->child(currentIndex) ->setSelected(true);
+        selectedIndex = currentIndex;
+    }
+}
+
+void MusicList::setCurrentRow(QString text)
+{
+    if (text.isEmpty())
+    {
+        return;
+    }
+
+    for (int topLevel=0; topLevel<this->topLevelItemCount(); ++topLevel)
+    {
+        for (int item=0; item<this->topLevelItem(topLevel)->childCount(); ++item)
+        {
+            if (text == this->topLevelItem(topLevel)->child(item)->text(0))
+            {
+                this->topLevelItem(topLevel)->child(item)->setSelected(true);
+                return;
+            }
+        }
+    }
 }
 
 //自定义 右键菜单
@@ -427,48 +467,6 @@ void MusicList::removeSelection()
     {
         QMessageBox::warning(0, tr("发生意外！"), tr("配置文件更新失败！"), QMessageBox::Ok);
     }
-/*
-    //移除配置文件中相应歌曲
-    QString musicListTemp;              //保存提取出来的字符串，以修改后重新写入
-    QString musicListOneLine;           //提取一行
-    int currentLine = 0;               //当前行
-    int i = 0;                          //播放列表节点
-    QFile removeIni(".mData.ini");
-    if (removeIni.open(QIODevice::ReadWrite))
-    {
-        QTextStream in(&removeIni);
-        while(! in.atEnd())
-        {
-            musicListOneLine = in.readLine();
-            if (musicListOneLine == "THISISANEWMUSICLIST")
-            {
-                i++;                //列表索引
-                currentLine = -1;   //重新计算当前row
-            }
-            if (i == rootDir)
-            {
-                if (currentLine == currentRow)
-                {
-                    qDebug() << "i -- rootDir" << i << rootDir;
-                    qDebug() << "currentLine -- currentRow" << currentLine << currentRow << endl;
-                    currentLine ++;
-                    continue;
-                }
-            }
-
-            musicListTemp += musicListOneLine + "\n";
-            currentLine ++;
-            qDebug() << musicListOneLine;
-        }
-
-        //重新写入
-        removeIni.close();
-        if (removeIni.open(QIODevice::WriteOnly))
-        {
-            removeIni.write(musicListTemp.toUtf8());
-            removeIni.close();
-        }
-    }*/
 }
 
 //删除播放列表
@@ -527,7 +525,6 @@ void MusicList::clearSelf()
 {
     //获得当前选中列表和列表歌曲数
     int rootDir = get_current_rootDir();
-    int count = this->topLevelItem(rootDir)->childCount();
 
     //遍历删除每一个子项
     while (this->topLevelItem(rootDir)->childCount())

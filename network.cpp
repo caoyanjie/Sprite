@@ -3,7 +3,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QRegExp>
-#include <QDebug>
 
 NetWork::NetWork()
 {

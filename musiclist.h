@@ -25,6 +25,7 @@ public:
     void create_musicList(QString);                     //创建播放列表
     int get_current_rootDir();                          //检测当前播放列表
     void openTempFile(QString file);
+
     QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器
     int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
     QStringList musicListName;                          //保存播放列表名字
@@ -70,6 +71,10 @@ private:
 signals:
     void itemPlay();                                    //播放歌曲
 
+public slots:
+    void setCurrentRow(int currentIndex=-1, int topLevel=-1);
+    void setCurrentRow(QString text);
+
 private slots:
     //数据库操作
     void createDatebase(QString databaseName, QString tableName);                                                                                              //创建数据库
@@ -96,6 +101,9 @@ private slots:
 
     //释放子线程
     void releaseThread();
+
+    //定义子线程
+//    SubThread subThread;
 };
 
 #endif // MUSICLIST_H

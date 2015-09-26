@@ -1,5 +1,4 @@
 #include "theme.h"
-#include <QDebug>
 
 #include <QToolButton>
 #include <QLabel>

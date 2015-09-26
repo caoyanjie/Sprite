@@ -1,7 +1,5 @@
 #include "gamer.h"
 
-#include <QDebug>
-
 Gamer::Gamer(QWidget *parent) :
     QLabel(parent)
 {

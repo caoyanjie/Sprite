@@ -1,5 +1,4 @@
 #include "timing.h"
-#include <QDebug>
 
 #include <QLabel>
 #include <QSpinBox>

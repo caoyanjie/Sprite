@@ -1,5 +1,4 @@
 #include "desktoplrc.h"
-#include <QDebug>
 
 #include <QPainter>
 #include <QTimer>

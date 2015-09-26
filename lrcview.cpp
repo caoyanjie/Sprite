@@ -1,5 +1,4 @@
 #include "lrcview.h"
-#include <QDebug>
 
 #include "currentlrc.h"
 

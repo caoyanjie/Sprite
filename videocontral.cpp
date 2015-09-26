@@ -1,6 +1,5 @@
 #include "videocontral.h"
 #include <QMessageBox>
-#include <QDebug>
 #include <QListView>
 #include <QFileDialog>
 #include <QFileInfo>
