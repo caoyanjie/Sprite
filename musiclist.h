@@ -11,6 +11,7 @@
 #include <QGridLayout>
 #include <QVBoxLayout>
 class SubThread;
+class QStringListModel;
 
 class MusicList : public QTreeWidget
 {
@@ -25,6 +26,7 @@ public:
     void create_musicList(QString);                     //创建播放列表
     int get_current_rootDir();                          //检测当前播放列表
     void openTempFile(QString file);
+    void addMusicToList(int topLevelIndex, QStringList musicNames);
 
     QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器
     int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
@@ -43,7 +45,12 @@ private:
     QMediaPlayer *player;                           //定义 多媒体播放器
     QMediaPlaylist *playlist;                       //定义 多媒体播放列表
     QList<QMediaPlaylist*> playlistVector;          //定义 播放列表 容器
+
+    //定义自动补全功能
     QCompleter *completer;                          //定义 自动补全功能
+    QStringListModel *stringListModel;
+    QStringList completerList;
+
     SubThread *subThread;
     int volumn;
     int toStopNum;                                  //自定义播放模式（N首后停止）

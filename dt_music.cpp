@@ -716,6 +716,7 @@ void DT_Music::addMusicFile(int selected)
                << "*.MP3" << "*.WMA" << "*.WAV" << "*.ASF" << "*.AAC" << "*.MP3PRO" << "*.VQF" << "*.FLAC" << "*.APE" << "*.MID" << "*.OGG" << "*.AAC";
     QStringList musicNameListAdd;   //音乐文件路径
 
+    //获得要添加的音乐路径
     if (selected == 0)              //添加音乐文件
     {
         QString types;
@@ -730,7 +731,7 @@ void DT_Music::addMusicFile(int selected)
         QString dirName;
         QStringList musicNames;
 
-
+        //
         dirName = QFileDialog::getExistingDirectory(this, tr("选择文件夹"), "D:/");
         QDir dir(dirName);
         dir.setNameFilters(file_types);
@@ -745,14 +746,11 @@ void DT_Music::addMusicFile(int selected)
         qDebug() << "Error!!! The index of combbox is not found!";
         return;
     }
-    for (int i=0; i<musicNameListAdd.length(); i++)
-    {
-        createItem = new QTreeWidgetItem(QStringList(QFileInfo(musicNameListAdd[i]).fileName()));
-        musicList ->topLevelItem(0) ->addChild(createItem);
-        musicList->playlistVector[0]->addMedia(QUrl::fromLocalFile(musicNameListAdd[i]));
-    }
 
-    //添加到数据库中
+    //添加到界面和播放列表中
+    musicList->addMusicToList(0, musicNameListAdd);
+
+    //添加到数据库中（子线程）
     subThread.insertDatabase(musicListDatabaseName, "默认列表", "musicName", musicNameListAdd);
     subThread.start();
 }

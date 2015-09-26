@@ -10,6 +10,7 @@
 #include <QSqlQuery>
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QStringListModel>
 
 MusicList::MusicList(QString programPath, QWidget *parent) :
     QTreeWidget(parent)
@@ -32,6 +33,12 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
     player = new QMediaPlayer(this);		//创建 多媒体播放器
     playlist = new QMediaPlaylist(this);	//创建 多媒体播放列表
     playlistVector.append(playlist);		//把创建的播放列表添加到 playlistVector 容器中（每个列表一个playlist）
+
+    //创建 搜索 自动补全
+    completer = new QCompleter(this);
+    stringListModel = new QStringListModel();
+    completer->setModel(stringListModel);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);    //设置大小写不敏感
 
     initMusicList();                        //初始化一个空的播放列表
     if (QFileInfo(musicListDatabaseName).exists()) //检测数据库是否存在
@@ -161,6 +168,23 @@ void MusicList::openTempFile(QString file)
     //    player->play();
 }
 
+//添加音乐
+void MusicList::addMusicToList(int topLevelIndex, QStringList musicNames)
+{
+    for (int i=0; i<musicNames.length(); ++i)
+    {
+        QString fileName = QFileInfo(musicNames.at(i)).fileName();
+        createItem = new QTreeWidgetItem(QStringList(fileName));
+        this->topLevelItem(topLevelIndex)->addChild(createItem);
+        this->playlistVector[topLevelIndex]->addMedia(QUrl::fromLocalFile(musicNames.at(i)));
+        createItem->setToolTip(topLevelIndex, fileName);
+        completerList.append(QFileInfo(musicNames.at(i)).fileName());	//添加到自动补全列表
+    }
+
+    //设置自动补全
+    stringListModel->setStringList(completerList);
+}
+
 //
 void MusicList::setCurrentRow(int currentIndex, int topLevel)
 {
@@ -273,9 +297,6 @@ void MusicList::initMusicList()
 //从数据库加载用户歌曲到播放器
 void MusicList::loadMusicList()
 {
-    //定义自动补全功能
-    QStringList completerList;
-
     //打开 数据库 加载音乐列表
     if (!openDatebase(musicListDatabaseName))
     {
@@ -306,20 +327,17 @@ void MusicList::loadMusicList()
         {
             continue;                   //如果列表为空，加载下一个列表
         }
+
+        int topLevelIndex = this->topLevelItemCount() - 1;
+        QStringList musicNames;
         while(query_musicName.next())   //加载音乐名到播放列表中
         {
-            createItem = new QTreeWidgetItem(QStringList(QFileInfo(query_musicName.value("musicName").toString()).fileName()));
-            this->topLevelItem(this->topLevelItemCount()-1) ->addChild(createItem);
-            playlist ->addMedia(QUrl::fromLocalFile(query_musicName.value("musicName").toString()));                              ///////////////////////或者这个 musicNameList.at(musicNameList.length - 1).append(read_musicList);
-            completerList.append(QFileInfo(query_musicName.value("musicName").toString()).fileName());	//添加到自动补全列表
+            musicNames.append(QFileInfo(query_musicName.value("musicName").toString()).fileName());
         }
+        addMusicToList(topLevelIndex, musicNames);
     }
     //关闭数据库
     db.close();
-
-    //创建 搜索 自动补全
-    completer = new QCompleter(completerList);
-    completer ->setCaseSensitivity(Qt::CaseInsensitive);    //设置大小写不敏感
 }
 
 //创建数据库
