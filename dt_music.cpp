@@ -68,7 +68,7 @@
 
 //数据库
 #include <QSqlQuery>
-
+#include <QSqlError>
 #include <QPropertyAnimation>
 
 DT_Music::DT_Music(QString programPath, QWidget *parent) :
@@ -347,7 +347,7 @@ bool DT_Music::eventFilter(QObject *target, QEvent *event)
             return QWidget::eventFilter(target, event);
         }
     }
-    else if (target == playModle)
+    else if (target == playModle)                           //播放模式设置区
     {
         if (event->type() == QEvent::Leave)
         {
@@ -358,7 +358,7 @@ bool DT_Music::eventFilter(QObject *target, QEvent *event)
             return QWidget::eventFilter(target, event);
         }
     }
-    else if (target == lab_volumnFrame)
+    else if (target == lab_volumnFrame)                     //音量调节区
     {
         if (event->type() == QEvent::Leave)
         {
@@ -384,10 +384,7 @@ bool DT_Music::eventFilter(QObject *target, QEvent *event)
         {
             if (slider_volumn->value() != oldVolumnValue)
             {
-                QMap<QString, QString> mapVolumn;
-                mapVolumn.insert("volumn", tr("%1").arg(slider_volumn->value()));
-                DatabaseOperation dbUpdateVolumnValue(setUpDatabaseName);
-                dbUpdateVolumnValue.updateDatabase("setUp", mapVolumn);
+                update_volumn_value_of_database();
             }
         }
         else
@@ -618,9 +615,9 @@ void DT_Music::volumn_widget()
 
     //关联音量控件和音量值标签的值同步
     connect(slider_volumn, SIGNAL(valueChanged(int)), this, SLOT(volumValue_changed()));
-    connect(slider_volumn, SIGNAL(valueChanged(int)), musicList->player, SLOT(setVolume(int))); //音量控件值改变，更新多媒体播放音量
-    connect(slider_volumn, SIGNAL(sliderReleased()), lab_volumnFrame, SLOT(hide()));            //释放音量控件，音量控件隐藏
-    connect(slider_volumn, SIGNAL(sliderReleased()), this, SLOT(sliderVolumn_Released()));      //释放音量控件 更新数据库
+    connect(slider_volumn, SIGNAL(valueChanged(int)), musicList->player, SLOT(setVolume(int)));         //音量控件值改变，更新多媒体播放音量
+    connect(slider_volumn, SIGNAL(sliderReleased()), lab_volumnFrame, SLOT(hide()));                    //释放音量控件，音量控件隐藏
+//    connect(slider_volumn, SIGNAL(sliderReleased()), this, SLOT(update_volumn_value_of_database()));  //释放音量控件 更新数据库
     slider_volumn->setValue(volumn_defaultValue);
 }
 
@@ -1107,22 +1104,13 @@ void DT_Music::volumValue_changed()
     lab_volumnValue ->setText(tr("%1%").arg(slider_volumn ->value()));
 }
 
-//释放音量滑竿 更新数据库
-void DT_Music::sliderVolumn_Released()
+//更新数据库中音量值
+void DT_Music::update_volumn_value_of_database()
 {
-    if (!openDatebase("setUp.db"))
-    {
-        QMessageBox::warning(0, tr("错误！"), tr("保存数据失败！"), QMessageBox::Ok);
-        return;
-    }
-    QSqlQuery query(db);
-    if (!query.exec(tr("update setUp set volumn=%1").arg(slider_volumn->value())))
-    {
-        QMessageBox::warning(0, tr("错误！"), tr("保存数据失败！！"), QMessageBox::Ok);
-        db.close();
-        return;
-    }
-    db.close();
+    QMap<QString, QString> new_volumn_value;
+    new_volumn_value.insert("volumn", tr("%1").arg(slider_volumn->value()));
+    DatabaseOperation db_update_volumn(setUpDatabaseName);
+    db_update_volumn.updateDatabase("setUp", new_volumn_value);
 }
 
 //void DT_Music::play_single_clicked()

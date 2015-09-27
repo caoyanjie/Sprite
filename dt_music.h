@@ -205,7 +205,7 @@ private slots:
     void volumeChanged(int);                                //声音改变
     void setTheme(int);
     void volumValue_changed();
-    void sliderVolumn_Released();                           //释放 音量控件 隐藏 音量标签
+    void update_volumn_value_of_database();                 //更新数据库中音量值（供下次启动时加载上次音量，调节音量后调用此函数）
 
     void updateLrc(qint64 time);
     void setLrcShown(bool);
