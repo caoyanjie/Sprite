@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QVariant>
 #include <QMessageBox>
+#include <QSqlError>
 
 DatabaseOperation::DatabaseOperation(QString databasePath) :
     databaseName(databasePath)
@@ -47,6 +48,27 @@ void DatabaseOperation::createDatabase(QString defaultTableName)
         return;
     }
     db.close();
+}
+
+bool DatabaseOperation::createTable(QString tableName, QString columnMessage)
+{
+    //打开数据库
+    if (!openDatabase())
+    {
+        QMessageBox::warning(0, QObject::tr("严重错误！"), QObject::tr("配置文件保存失败！"), QMessageBox::Ok);
+        return false;
+    }
+
+    QSqlQuery query(db);
+    //创建表
+    if (!query.exec(QObject::tr("create table %1(%2)").arg(tableName).arg(columnMessage)))
+    {
+        db.close();
+        QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库创建表失败！%1").arg(query.lastError().text()), QMessageBox::Ok);
+        return false;
+    }
+    db.close();
+    return true;
 }
 
 //查询数据库数据

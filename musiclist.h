@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 class SubThread;
 class QStringListModel;
+class QAction;
 
 class MusicList : public QTreeWidget
 {
@@ -28,7 +29,7 @@ public:
     void openTempFile(QString file);
     void addMusicToList(int topLevelIndex, QStringList musicNames);
 
-    QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器
+    QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器                    ########有什么用#########
     int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
     QStringList musicListName;                          //保存播放列表名字
 
@@ -38,6 +39,7 @@ protected:
 private:
     void initMusicList();                               //初始化播放列表
     void loadMusicList();                               //加载歌曲列表
+    void createMusiclistToplevel(QString toplevelName);         //创建播放列表
 
 //    QString programDir;
     QTreeWidgetItem *createItem;                        //
@@ -50,6 +52,10 @@ private:
     QCompleter *completer;                          //定义 自动补全功能
     QStringListModel *stringListModel;
     QStringList completerList;
+
+    //右键菜单事件
+    QList<QAction*> musicMenuActionList;
+    QAction *musicMenuAction;
 
     SubThread *subThread;
     int volumn;

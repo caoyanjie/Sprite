@@ -110,13 +110,13 @@ void MusicList::create_musicList(QString listName)
         return;
     }
     //创建播放列表
-    createItem = new QTreeWidgetItem(QStringList(QString(listName)));
-    this ->addTopLevelItem(createItem);
-    this ->setCurrentItem(createItem);
+    createMusiclistToplevel(listName);
+    this ->setCurrentItem(this->topLevelItem(this->topLevelItemCount()-1));
 
 //    musicListName.append(listName);
 
     //添加到数据库
+    /*
     if (!openDatebase(musicListDatabaseName))
     {
         QMessageBox::warning(0, tr("意外错误！"), tr("数据库打开失败！\n此列表将成为临时列表！"));
@@ -130,6 +130,10 @@ void MusicList::create_musicList(QString listName)
         return;
     }
     db.close();
+    */
+    DatabaseOperation db(musicListDatabaseName);
+    //db.createTable(table_name, columnMessage);
+    db.createTable(listName, tr("id integer primary key, musicName text"));
 }
 
 //检测当前播放列表
@@ -245,12 +249,11 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
     }
 
     //音乐右键菜单
-    QStringList otherToplevel;
-    QString activedToplevel = this->topLevelItem(get_current_rootDir())->text(0);
-    QString toplevelText;
-    for(int i=0; i<this->topLevelItemCount(); i++)
+    QStringList otherToplevel;                                                      // 选中列表外的其他列表（用于添加到其他列表）
+    QString activedToplevel = this->topLevelItem(get_current_rootDir())->text(0);   // 被右键选中的列表的名字
+    for(int i=0; i<this->topLevelItemCount(); i++)                                  // 遍历选中之外的其他列表的名字
     {
-        toplevelText = this->topLevelItem(i)->text(0);
+        QString toplevelText = this->topLevelItem(i)->text(0);
         if (toplevelText == activedToplevel)
         {
             continue;
@@ -283,9 +286,7 @@ void MusicList::initMusicList()
     itemsRootNames << "默认列表";
     for (int i=0; i<itemsRootNames.length(); i++)
     {
-        createItem = new QTreeWidgetItem(QStringList(QString(itemsRootNames[i])));
-        this->addTopLevelItem(createItem);
-        rootDirVector.append(createItem);
+        createMusiclistToplevel(itemsRootNames[i]);
     }
     this->topLevelItem(0) ->setExpanded(true);          //展开默认列表
 
@@ -338,6 +339,20 @@ void MusicList::loadMusicList()
     }
     //关闭数据库
     db.close();
+}
+
+// 创建播放列表
+void MusicList::createMusiclistToplevel(QString toplevelName)
+{
+    //界面添加 toplevel
+    createItem = new QTreeWidgetItem(QStringList(QString(toplevelName)));
+    this->addTopLevelItem(createItem);
+    rootDirVector.append(createItem);                   //rootDirVector
+
+    //为右键菜单事件绑定 action
+    musicMenuAction = new QAction(toplevelName, this);
+    musicMenuActionList.append(musicMenuAction);
+    connect(musicMenuAction, SIGNAL(triggered()), this, SLOT(add_otherMusicList()));
 }
 
 //创建数据库
@@ -429,17 +444,15 @@ bool MusicList::deleteDatebase(QString datebaseName, QString tableName, int id_d
 void MusicList::playMusic()
 {
 //    thisMethod = click_next;                                    //设置为发行为
-    int currentIndex = this->currentIndex().row();              //取得 当前行 索引值
-    int rootDir = get_current_rootDir();                        //检测当前活动项目所在的播放列表
+    int currentIndex = this->currentIndex().row();              //获取被双击音乐在所在列表中的索引值
+    int rootDir = get_current_rootDir();                        //获取所在列表的索引值
     if (rootDir > playlistVector.length()-1)                  //如果单击的是播放列表而不是歌曲，则不处理（默认展开列表）
     {
         return;
     }
-    player ->setPlaylist(playlistVector.at(rootDir));
-    playlistVector.at(rootDir) ->setCurrentIndex(currentIndex);
-//    player->stop();
-//    player->setVolume(volumn);
-    player ->play();
+    player->setPlaylist(playlistVector.at(rootDir));
+    playlistVector.at(rootDir)->setCurrentIndex(currentIndex);
+    player->play();
 }
 
 //歌曲切换 设置当前歌曲被选中
