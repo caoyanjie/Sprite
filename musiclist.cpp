@@ -116,23 +116,7 @@ void MusicList::create_musicList(QString listName)
 //    musicListName.append(listName);
 
     //添加到数据库
-    /*
-    if (!openDatebase(musicListDatabaseName))
-    {
-        QMessageBox::warning(0, tr("意外错误！"), tr("数据库打开失败！\n此列表将成为临时列表！"));
-        return;
-    }
-    QSqlQuery query(db);
-    if (!query.exec(tr("create table %1(id integer primary key, %2 text)").arg(listName).arg("musicName")))
-    {
-        QMessageBox::warning(0, tr("意外错误！"), tr("数据库更新失败！\n此列表将成为临时列表！"));
-        db.close();
-        return;
-    }
-    db.close();
-    */
     DatabaseOperation db(musicListDatabaseName);
-    //db.createTable(table_name, columnMessage);
     db.createTable(listName, tr("id integer primary key, musicName text"));
 }
 
@@ -333,7 +317,7 @@ void MusicList::loadMusicList()
         QStringList musicNames;
         while(query_musicName.next())   //加载音乐名到播放列表中
         {
-            musicNames.append(QFileInfo(query_musicName.value("musicName").toString()).fileName());
+            musicNames.append(query_musicName.value("musicName").toString());
         }
         addMusicToList(topLevelIndex, musicNames);
     }
