@@ -266,7 +266,8 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
     QMenu menu_item;
     menu_item.addAction(QIcon(":/Images/play_play_hover.png"), tr("立即播放"), this, SIGNAL(itemPlay()));
     menu_item.addMenu(&menu_child);
-    menu_item.addAction(QIcon(":/Images/delete2.png"), tr("删除"), this, SLOT(removeSelection()));
+    menu_item.addAction(QIcon(":/Images/delete2.png"), tr("移出列表"), this, SLOT(removeSelection()));
+    menu_item.addAction(QIcon(":/Images/delete2.png"), tr("删除歌曲及文件"), this, SLOT(deleteSelection()));
     menu_item.addAction(tr("清空本列表"), this, SLOT(clearSelf()));
     menu_item.exec(event ->globalPos());
     return;
@@ -472,13 +473,13 @@ void MusicList::searchedMusic(int rootDir, int index)
     setCurrentItem(topLevelItem(rootDir) ->child(index));
 }
 */
-//移除歌曲
-void MusicList::removeSelection()
+//把歌曲移除列表
+void MusicList::removeSelection(bool delete_file)
 {
     //获得播放列表和索引值
     int rootDir = get_current_rootDir();
     int currentRow = this->currentIndex().row();
-//    QString deleteData = playlistVector[rootDir]->media(currentRow).canonicalUrl().toLocalFile();
+    QString file_path = playlistVector[rootDir]->media(currentRow).canonicalUrl().toLocalFile();
 
     //删除界面中的选中歌曲
     this->topLevelItem(rootDir)->removeChild(this->currentItem());
@@ -491,6 +492,17 @@ void MusicList::removeSelection()
     {
         QMessageBox::warning(0, tr("发生意外！"), tr("配置文件更新失败！"), QMessageBox::Ok);
     }
+
+    if (delete_file)
+    {
+        QFile::remove(file_path);
+    }
+}
+
+//彻底删除
+void MusicList::deleteSelection()
+{
+    removeSelection(true);
 }
 
 //删除播放列表

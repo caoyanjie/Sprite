@@ -101,7 +101,8 @@ private slots:
 
     void playList_currentIndexChanged(int);                         //歌曲切换 处理
 //    void searchedMusic(int, int);                                   //搜索歌曲
-    void removeSelection();                                         //删除所选歌曲
+    void removeSelection(bool delete_file=false);                   //把歌曲移除列表
+    void deleteSelection();                                         //彻底删除
     void remove_rootDir();                                          //删除播放列表
     void closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint);  //重写关闭事件
 
