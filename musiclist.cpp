@@ -244,14 +244,24 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
         }
         otherToplevel.append(toplevelText);
     }
+
     //创建二级菜单
     QMenu menu_child;
     menu_child.setIcon(QIcon(":/Images/add.png"));
     menu_child.setTitle(tr("添加到..."));
-    for (int i=0; i<otherToplevel.count(); i++)
+    for (int i=0; i<this->topLevelItemCount(); ++i)
     {
-        menu_child.addAction(otherToplevel.at(i), this, SLOT(add_otherMusicList()));
+        if (this->topLevelItem(i) != this->topLevelItem(get_current_rootDir()))
+        {
+            menu_child.addAction(musicMenuActionList[i]);
+        }
     }
+    connect(&menu_child, SIGNAL(triggered(QAction*)), this, SLOT(add_otherMusicList(QAction*)));
+//    for (int i=0; i<otherToplevel.count(); i++)
+//    {
+//        menu_child.addAction(otherToplevel.at(i), this, SLOT(add_otherMusicList()));
+//    }
+
     //创建项目菜单
     QMenu menu_item;
     menu_item.addAction(QIcon(":/Images/play_play_hover.png"), tr("立即播放"), this, SIGNAL(itemPlay()));
@@ -300,8 +310,7 @@ void MusicList::loadMusicList()
         if (query_musicListName.value("name").toString() != "默认列表")      //如果不是默认播放列表，就创建这个播放列表
         {
             //创建用户自定义的播放列表
-            createItem = new QTreeWidgetItem(QStringList(QString(query_musicListName.value("name").toString())));
-            this->addTopLevelItem(createItem);
+            createMusiclistToplevel(query_musicListName.value("name").toString());
             playlist = new QMediaPlaylist(this);
             playlistVector.append(playlist);
             this->rootDirVector.append(createItem);
@@ -557,9 +566,40 @@ void MusicList::clearSelf()
 }
 
 //添加到列表
-void MusicList::add_otherMusicList()
+void MusicList::add_otherMusicList(QAction *action)
 {
-    qDebug() << "已添加到";
+    for (int i=0,act=0; i<musicMenuActionList.length(); ++i)
+    {
+        if (this->topLevelItem(i) == this->topLevelItem(get_current_rootDir()))
+        {
+//            continue;
+        }
+        if (action == musicMenuActionList[act])
+        {
+            int other_toplevel_index = act;                                                 // 点击菜单的索引
+            int current_toplevel = get_current_rootDir();                                   // 当前列表索引
+            int item_index = this->currentIndex().row();                                    // 当前歌曲索引
+            QTreeWidgetItem *activedToplevel = this->topLevelItem(get_current_rootDir());   // 当前列表的指针
+            for(int index=0, other=0; index<this->topLevelItemCount(); index++)             // 找出点击列表的索引
+            {
+                if (this->topLevelItem(index) == activedToplevel)
+                {
+                    //continue;
+                }
+                if (other == other_toplevel_index)
+                {
+                    QString musicName = playlistVector[current_toplevel]->media(item_index).canonicalUrl().toLocalFile();
+                    addMusicToList(index, QStringList(musicName));
+                    DatabaseOperation db(musicListDatabaseName);
+                    db.insertDatabase(this->topLevelItem(index)->text(0), "musicName", QStringList(musicName));
+                    return;
+                }
+                other++;
+            }
+        }
+        act++;
+    }
+
 }
 
 //释放子线程

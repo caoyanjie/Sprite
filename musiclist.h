@@ -110,7 +110,7 @@ private slots:
     void clearSelf();   //清空本列表
 
     //添加到列表
-    void add_otherMusicList();
+    void add_otherMusicList(QAction *);
 
     //释放子线程
     void releaseThread();
