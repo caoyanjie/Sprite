@@ -30,8 +30,8 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     lab_musicMsg = new QLabel(lab_bg);
     lab_logo->setFixedSize(66, 66);
     lab_logo->move(10, 14);
-    lab_musicName->move(85, 16);
-    lab_musicMsg->move(85, 36);
+    lab_musicName->move(90, 20);
+    lab_musicMsg->move(90, 40);
     lab_musicName->setText("歌曲：");
     lab_musicMsg->setText("歌手：");
     lab_logo->setAlignment(Qt::AlignCenter);
@@ -49,9 +49,9 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     tbn_closeWindow = new QToolButton(lab_buttonsParent);
     tbn_hideWindow = new QToolButton(lab_buttonsParent);
     tbn_miniWindow = new QToolButton(lab_buttonsParent);
-    tbn_simple = new QToolButton(lab_buttonsParent);
+//    tbn_simple = new QToolButton(lab_buttonsParent);
     tbn_normal = new QToolButton(lab_buttonsParent);
-    tbn_simple->setText("精简");
+//    tbn_simple->setText("精简");
     tbn_normal->setText("标准");
 
     //为按钮安装事件过滤器
@@ -63,7 +63,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     tbn_closeWindow->installEventFilter(this);
     tbn_hideWindow->installEventFilter(this);
     tbn_miniWindow->installEventFilter(this);
-    tbn_simple->installEventFilter(this);
+//    tbn_simple->installEventFilter(this);
     tbn_normal->installEventFilter(this);
 
     connect(tbn_closeWindow, SIGNAL(clicked()),
@@ -85,7 +85,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     tbn_volumn_less->setFixedSize(20, 20);
     tbn_closeWindow->setFixedSize(11, 11);
     tbn_hideWindow->setFixedSize(11, 11);
-    tbn_simple->setFixedSize(25, 14);
+//    tbn_simple->setFixedSize(25, 14);
     tbn_normal->setFixedSize(25, 14);
     tbn_miniWindow->setFixedSize(11, 11);
 
@@ -93,7 +93,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     layout_topright = new QHBoxLayout;
 //    layout_topright->addStretch();
     layout_topright->addWidget(tbn_normal);
-    layout_topright->addWidget(tbn_simple);
+//    layout_topright->addWidget(tbn_simple);
     layout_topright->addWidget(tbn_miniWindow);
     layout_topright->addWidget(tbn_hideWindow);
     layout_topright->addWidget(tbn_closeWindow);
@@ -166,7 +166,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     tbn_closeWindow->setObjectName("tbn_closeWindow");
     tbn_hideWindow->setObjectName("tbn_hideWindow");
     tbn_miniWindow->setObjectName("tbn_miniWindow");
-    tbn_simple->setObjectName("tbn_simple");
+//    tbn_simple->setObjectName("tbn_simple");
     tbn_normal->setObjectName("tbn_normal");
     lab_logo->setObjectName("lab_miniLogo");
     lab_musicName->setObjectName("lab_musicName");
@@ -243,15 +243,16 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
                 "#tbn_miniWindow:hover{"
                     "border-image: url(:/Images/miniWindow_hover.png);"
                 "}"
-                "#tbn_simple{"
-                    "background: rgba(0, 0, 0, 0);"
+//                "#tbn_simple{"
+//                    "background: rgba(0, 0, 0, 0);"
 //                    "color: rgba(230, 230, 230, 255);"
 //                    "color: gray;"
-                    "color: rgba(200, 200, 200, 255);"
-                "}"
+//                    "color: rgba(200, 200, 200, 255);"
+//                "}"
                 "#tbn_normal{"
                     "background: rgba(0, 0, 0, 0);"
-                    "color: rgb(23, 215, 255);"
+//                    "color: rgb(23, 215, 255);"
+                    "color: rgba(230, 230, 230, 255);"
                 "}"
                 );
 //    QMovie *movie = new QMovie(":/Images/playing.gif", QByteArray(), lab_logo);
@@ -314,7 +315,7 @@ bool MusicMiniPlayer::eventFilter(QObject *target, QEvent *event)
              || target == tbn_play
              || target == tbn_play_next
              || target == tbn_play_previous
-             || target == tbn_simple
+//             || target == tbn_simple
              || target == tbn_volumn_less
              || target == tbn_volumn_plus
              )

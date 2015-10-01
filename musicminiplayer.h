@@ -31,7 +31,7 @@ private:
     QToolButton *tbn_closeWindow;
     QToolButton *tbn_hideWindow;
     QToolButton *tbn_miniWindow;
-    QToolButton *tbn_simple;
+//    QToolButton *tbn_simple;
     QToolButton *tbn_normal;
     QHBoxLayout *layout_topright;
     QGridLayout *layout_middle_left;
