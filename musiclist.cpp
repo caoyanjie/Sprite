@@ -319,8 +319,6 @@ void MusicList::loadMusicList()
         {
             //创建用户自定义的播放列表
             createMusiclistToplevel(query_musicListName.value("name").toString());
-            playlist = new QMediaPlaylist(this);
-            playlistVector.append(playlist);
             this->rootDirVector.append(createItem);
 //            this->musicListName.append(query_musicListName.value(0).toString());
         }
@@ -354,6 +352,10 @@ void MusicList::createMusiclistToplevel(QString toplevelName)
     musicMenuAction = new QAction(toplevelName, this);
     musicMenuActionList.append(musicMenuAction);
     connect(musicMenuAction, SIGNAL(triggered()), this, SLOT(add_otherMusicList()));
+
+    //创建对应的播放列表
+    playlist = new QMediaPlaylist(this);
+    playlistVector.append(playlist);
 }
 
 //创建数据库
