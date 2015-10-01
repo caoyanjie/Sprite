@@ -218,6 +218,13 @@ void MusicList::setCurrentRow(QString text)
 void MusicList::contextMenuEvent(QContextMenuEvent *event)
 {
     //播放列表右键菜单
+    if (this->currentItem() == this->topLevelItem(0))
+    {
+        QMenu menu_rootDir;
+        menu_rootDir.addAction(tr("清空所有列表"), this, SLOT(clearAll()));
+        menu_rootDir.exec(event ->globalPos());
+        return;
+    }
     for (int i=0; i<this->topLevelItemCount(); i++)
     {
         if (this->currentItem() == this->topLevelItem(i))
@@ -505,6 +512,10 @@ void MusicList::remove_rootDir()
     // 获得选中的列表索引
     //int currentToplevel = get_current_rootDir();
     int currentToplevel = this->currentIndex().row();
+    if (currentToplevel == 0)   // 不能删除默认列表
+    {
+        return;
+    }
 
     // 获取选中列表名字
     QString deleteName = this->currentItem()->text(0);

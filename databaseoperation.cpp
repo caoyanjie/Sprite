@@ -50,6 +50,7 @@ void DatabaseOperation::createDatabase(QString defaultTableName)
     db.close();
 }
 
+//创建表
 bool DatabaseOperation::createTable(QString tableName, QString columnMessage)
 {
     //打开数据库
