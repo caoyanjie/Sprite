@@ -254,6 +254,10 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
 //                    "color: rgb(23, 215, 255);"
                     "color: rgba(230, 230, 230, 255);"
                 "}"
+                "#tbn_normal:hover{"
+                    "background: rgba(0, 0, 0, 0);"
+                    "color: rgb(23, 215, 255);"
+                "}"
                 );
 //    QMovie *movie = new QMovie(":/Images/playing.gif", QByteArray(), lab_logo);
 //    lab_logo->setMovie(movie);

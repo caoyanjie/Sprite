@@ -110,8 +110,8 @@ void TitleGroupBox::setTitleUi()
     tbn_theme = new QToolButton(this);              //创建 主题 按钮
     tbn_simple = new QToolButton(this);             //创建 MiNi窗口 按钮
     tbn_simple->setText("精简");                     //................
-    tbn_normal = new QToolButton(this);             //创建 正常窗口 按钮
-    tbn_normal->setText("标准");                     //...............
+//    tbn_normal = new QToolButton(this);             //创建 正常窗口 按钮
+//    tbn_normal->setText("标准");                     //...............
     tbn_switch_music = new QToolButton(this);       //创建 切换音乐模式 按钮
     tbn_switch_music->setText("音 乐");              //..................
     tbn_switch_video = new QToolButton(this);       //创建 切换视频模式 按钮
@@ -127,7 +127,7 @@ void TitleGroupBox::setTitleUi()
     tbn_setting->setFixedSize(13, 13);
     tbn_theme->setFixedSize(15, 15);
     tbn_simple->setFixedSize(30, 14);
-    tbn_normal->setFixedSize(30, 14);
+//    tbn_normal->setFixedSize(30, 14);
     tbn_switch_music->setFixedSize(tbn_switchMusicVideo_width, tbn_switchMusicVideo_height);
     tbn_switch_video->setFixedSize(tbn_switchMusicVideo_width, tbn_switchMusicVideo_height);
     lab_logo->setFixedSize(50, 50);
@@ -146,7 +146,7 @@ void TitleGroupBox::setTitleUi()
     layout_H = new QHBoxLayout;
     layout_H->addStretch();
     layout_H->addWidget(tbn_simple);
-    layout_H->addWidget(tbn_normal);
+//    layout_H->addWidget(tbn_normal);
     layout_H->addWidget(tbn_theme);
     layout_H->addWidget(tbn_setting);
     layout_H->addWidget(tbn_miniWindow);
@@ -182,7 +182,7 @@ void TitleGroupBox::setTitleUi()
     tbn_setting->setObjectName("tbn_setting");
     tbn_theme->setObjectName("tbn_theme");
     tbn_simple->setObjectName("tbn_simple_head");
-    tbn_normal->setObjectName("tbn_normal_head");
+//    tbn_normal->setObjectName("tbn_normal_head");
     tbn_switch_music->setObjectName("tbn_switch_music");
     tbn_switch_video->setObjectName("tbn_switch_video");
     lab_bearHead->setObjectName("lab_bearHead");
@@ -246,13 +246,18 @@ void TitleGroupBox::setTitleUi()
 
                 "#tbn_simple_head{"
                     "background: rgba(0, 0, 0, 0);"
+//                    "color: rgb(23, 215, 255);"
+                    "color: rgb(230, 230, 230);"
+                "}"
+                "#tbn_simple_head::hover{"
+                    "background: rgba(0, 0, 0, 0);"
                     "color: rgb(23, 215, 255);"
                 "}"
 
-                "#tbn_normal_head{"
-                    "background: rgba(0, 0, 0, 0);"
-                    "color: gray;"
-                "}"
+//                "#tbn_normal_head{"
+//                    "background: rgba(0, 0, 0, 0);"
+//                    "color: gray;"
+//                "}"
 
                 "#tbn_switch_music, #tbn_switch_video{"
 //                    "background: rgba(0, 0, 0, 100);"

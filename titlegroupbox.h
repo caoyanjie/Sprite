@@ -36,7 +36,7 @@ private:
     QToolButton *tbn_setting;		//定义 设置 按钮
     QToolButton *tbn_theme;         //定义 主题 按钮
     QToolButton *tbn_simple;		//定义 MiNi窗口 按钮
-    QToolButton *tbn_normal;		//定义 正常窗口 按钮
+//    QToolButton *tbn_normal;		//定义 正常窗口 按钮
     QToolButton *tbn_switch_music;	//定义 切换音乐模式 按钮
     QToolButton *tbn_switch_video;	//定义 切换视频模式 按钮
 
