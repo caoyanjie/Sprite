@@ -49,7 +49,7 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
     {
         createDatebase(musicListDatabaseName, "默认列表");                   //如果数据库不存在，创建数据库
     }
-    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(playMusic()));    //双击 播放歌曲
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));    //双击 播放歌曲
     connect(this, SIGNAL(itemPlay()), this, SLOT(playMusic()));
 
     //遍历播放列表， 为每个播放列表关联信号槽
@@ -450,6 +450,19 @@ void MusicList::playMusic()
     player->setPlaylist(playlistVector.at(rootDir));
     playlistVector.at(rootDir)->setCurrentIndex(currentIndex);
     player->play();
+}
+
+//双击处理
+void MusicList::itemDoubleClicked(QTreeWidgetItem *item, int index)
+{
+    for (int i=0; i<this->topLevelItemCount(); ++i)
+    {
+        if (item == this->topLevelItem(i))
+        {
+            return;
+        }
+    }
+    playMusic();
 }
 
 //歌曲切换 设置当前歌曲被选中

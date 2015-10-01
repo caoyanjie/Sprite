@@ -97,6 +97,7 @@ private slots:
 
     //
     void playMusic();
+    void itemDoubleClicked(QTreeWidgetItem *item, int index);
 
     void playList_currentIndexChanged(int);                         //歌曲切换 处理
 //    void searchedMusic(int, int);                                   //搜索歌曲
