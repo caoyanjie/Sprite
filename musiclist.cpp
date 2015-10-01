@@ -111,7 +111,7 @@ void MusicList::create_musicList(QString listName)
     }
     //创建播放列表
     createMusiclistToplevel(listName);
-    this ->setCurrentItem(this->topLevelItem(this->topLevelItemCount()-1));
+    this->setCurrentItem(this->topLevelItem(this->topLevelItemCount()-1));
 
 //    musicListName.append(listName);
 
@@ -120,7 +120,7 @@ void MusicList::create_musicList(QString listName)
     db.createTable(listName, tr("id integer primary key, musicName text"));
 }
 
-//检测当前播放列表
+//检测当前播放列表(有孩子的情况下，判断孩子所在的toplevel，如果没子孩子，会得-1）
 int MusicList::get_current_rootDir()
 {
     QTreeWidgetItem *item = this ->currentItem() ->parent();    //当前行所在 父节点的指针
@@ -405,12 +405,6 @@ bool MusicList::insertDatebase(QString datebaseName, QString tableName, QString 
     return true;
 }
 
-//数据库修改数据
-bool MusicList::alterDatebase(QString datebaseName, QString tableName, QString oldDate, QString newDate)
-{
-
-}
-
 //数据库删除数据
 bool MusicList::deleteDatebase(QString datebaseName, QString tableName, int id_deleteDate)
 {
@@ -508,6 +502,13 @@ void MusicList::deleteSelection()
 //删除播放列表
 void MusicList::remove_rootDir()
 {
+    // 获得选中的列表索引
+    //int currentToplevel = get_current_rootDir();
+    int currentToplevel = this->currentIndex().row();
+
+    // 获取选中列表名字
+    QString deleteName = this->currentItem()->text(0);
+
     //删除此列表中的歌曲
     while (this->currentItem()->childCount())
     {
@@ -515,23 +516,15 @@ void MusicList::remove_rootDir()
     }
 
     //最后删除播放列表
-    this->currentItem()->setHidden(true);
+    //this->removeItemWidget(rootDirVector[currentToplevel], 0);
+    this->takeTopLevelItem(currentToplevel);
 
     //更新数据库
+    DatabaseOperation db(musicListDatabaseName);
+    db.deleteTable(deleteName);
 
-    if (!openDatebase(musicListDatabaseName))
-    {
-        QMessageBox::warning(0, tr("严重错误！"), tr("配置文件保存失败！"), QMessageBox::Ok);
-        return;
-    }
-    QSqlQuery query(db);
-    if (!query.exec(tr("DROP TABLE %1").arg(this->currentItem()->text(0))))
-    {
-        QMessageBox::warning(0, tr("严重错误！"), tr("配置文件保存失败！"), QMessageBox::Ok);
-        db.close();
-        return;
-    }
-    db.close();
+    //删除绑定的 action
+    musicMenuActionList.removeAt(currentToplevel);
 }
 
 //重命名
@@ -574,10 +567,10 @@ void MusicList::clearSelf()
     //更新数据库
     QString databaseName = this->topLevelItem(rootDir)->text(0);
     DatabaseOperation db_delete_all(musicListDatabaseName);
-    db_delete_all.deleteAll(databaseName);
+    db_delete_all.deleteAllOfTable(databaseName);
 }
 
-//添加到列表
+//添加歌曲到其他列表
 void MusicList::add_otherMusicList(QAction *action)
 {
     for (int i=0,act=0; i<musicMenuActionList.length(); ++i)

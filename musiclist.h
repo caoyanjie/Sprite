@@ -93,7 +93,6 @@ private slots:
     void createDatebase(QString databaseName, QString tableName);                                                                                              //创建数据库
     bool openDatebase(QString datebaseName, QString hostName="localhost", QString userName="", QString password="");    //打开数据库
     bool insertDatebase(QString datebaseName, QString tableName, QString columnName, QStringList content, int indext=-1);                   //数据库插入数据
-    bool alterDatebase(QString datebaseName, QString tableName, QString oldDate, QString newDate);                      //数据库修改数据
     bool deleteDatebase(QString datebaseName, QString tableName, int id_deleteDate);                                   //数据库删除数据
 
     //

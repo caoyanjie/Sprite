@@ -20,7 +20,8 @@ public:
     bool updateDatabase(QString tableName, QMap<QString, QString> columnContent);                   //数据库更新数据
     bool alterDatabase(QString tableName, QString oldDate, QString newDate);                        //数据库修改数据
     bool deleteDatabase(QString tableName, int id_deleteDate);
-    bool deleteAll(QString tableName);
+    bool deleteAllOfTable(QString tableName);
+    bool deleteTable(QString tableName);
 
 private:
     QString databaseName;

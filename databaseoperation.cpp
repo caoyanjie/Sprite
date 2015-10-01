@@ -180,7 +180,7 @@ bool DatabaseOperation::deleteDatabase(QString tableName, int id_deleteDate)
 }
 
 //删除表中全部数据
-bool DatabaseOperation::deleteAll(QString tableName)
+bool DatabaseOperation::deleteAllOfTable(QString tableName)
 {
     if (!openDatabase())
     {
@@ -190,6 +190,24 @@ bool DatabaseOperation::deleteAll(QString tableName)
     if (!query.exec(QObject::tr("DELETE FROM %1").arg(tableName)))
     {
         db.close();
+        return false;
+    }
+    db.close();
+    return true;
+}
+
+//删除表
+bool DatabaseOperation::deleteTable(QString tableName)
+{
+    if (!openDatabase())
+    {
+        return false;
+    }
+    QSqlQuery query(db);
+    if (!query.exec(QObject::tr("DROP TABLE %1").arg(tableName)))
+    {
+        db.close();
+        QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库删除表失败！"), QMessageBox::Ok);
         return false;
     }
     db.close();
