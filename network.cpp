@@ -15,7 +15,7 @@ NetWork::~NetWork()
 }
 
 void NetWork::downLoadLrc(QString musicName)
-{qDebug() << "musicName" << musicName;
+{
     QString lrcName = QFileInfo(musicName).baseName();
     QString lrcUrl = "http://music.baidu.com/search/lrc?key=" + lrcName;
     manager->get(QNetworkRequest(QUrl(lrcUrl)));

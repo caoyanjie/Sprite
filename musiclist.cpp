@@ -399,7 +399,6 @@ void MusicList::createMusiclistToplevel(QString toplevelName)
     //为右键菜单事件绑定 action
     musicMenuAction = new QAction(toplevelName, this);
     musicMenuActionList.append(musicMenuAction);
-    connect(musicMenuAction, SIGNAL(triggered()), this, SLOT(add_otherMusicList()));
 
     //创建对应的播放列表
     playlist = new QMediaPlaylist(this);

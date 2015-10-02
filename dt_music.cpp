@@ -592,9 +592,9 @@ void DT_Music::create_trayIcon()
 
     menu->addSeparator();
     menu ->addAction(QIcon(":/Images/logo.png"), tr("显示主界面"), this, SLOT(showWindow()));
-    menu ->addAction(QIcon(":/Images/play_play_hover.png"), tr("播放/暂停"), this, SLOT(play_pause_clicked()));
-    menu ->addAction(QIcon(":/Images/play_previous_hover.png"), tr("上一曲"), this, SLOT(play_previous_clicked()));
-    menu ->addAction(QIcon(":/Images/play_next_hover.png"), tr("下一曲"), this, SLOT(play_next_clicked()));
+    menu ->addAction(QIcon(":/Images/play_play_hover.png"), tr("播放/暂停"), bottomGroupbox, SLOT(play_pause_clicked()));
+    menu ->addAction(QIcon(":/Images/play_previous_hover.png"), tr("上一曲"), bottomGroupbox, SLOT(play_previous_clicked()));
+    menu ->addAction(QIcon(":/Images/play_next_hover.png"), tr("下一曲"), bottomGroupbox, SLOT(play_next_clicked()));
     menu ->addAction(tr("桌面歌词"), this, SLOT(lrc_clicked()));
     menu->addAction(tr("退出"), qApp, SLOT(quit()));
 
