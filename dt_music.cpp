@@ -601,12 +601,9 @@ void DT_Music::create_trayIcon()
     trayIcon->setContextMenu(menu);
     // 托盘图标被激活后进行处理
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+            this, SLOT(trayIcon_clicked(QSystemTrayIcon::ActivationReason)));
     // 显示托盘图标
     trayIcon->show();
-
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(trayIcon_clicked(QSystemTrayIcon::ActivationReason)));
 }
 
 //读取数据库，加载用户设置，如果数据库不存在，创建数据库，设置默认值
@@ -996,8 +993,7 @@ void DT_Music::switchMusicPlayer()
     videoPlayer->deleteLater();
     timerBear = new QTimer(this);
     timerBear->start(300);
-    connect(timerBear, SIGNAL(timeout()),
-    this, SLOT(timeoutBear()));
+    connect(timerBear, SIGNAL(timeout()), this, SLOT(timeoutBear()));
 }
 
 //声音改变

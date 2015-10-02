@@ -59,7 +59,6 @@ private:
     QHBoxLayout *layout_top;
 
 signals:
-    void gotPlayModelFromIni(playModelValue);
     void lrc_click(bool);                           //单击 “桌面歌词”  按钮
     void showVolumn(QPoint);                        //单击 “音量”     按钮
     void showPlayModle(QPoint);                     //播放模式 改变
@@ -81,7 +80,7 @@ private slots:
     void play_previous_clicked();                       //上一曲 处理
     void play_next_clicked();                           //下一曲 处理
     void playStatusChanged(QMediaPlayer::State state);  //播放状态 改变
-    void seek(qint64 current);                          //定位播放进度
+    void seek(int current);                          //定位播放进度
 
 };
 

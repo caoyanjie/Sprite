@@ -29,8 +29,6 @@ BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *
                   "}");
 
     //初始化 附属 部件
-    connect(this, SIGNAL(gotPlayModelFromIni(playModelValue)),
-            parent, SLOT(playModelState_changed(playModelValue)));
     setChildrenWidgets();
 
     //为部件安装 事件过滤器
@@ -64,7 +62,7 @@ BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *
     connect(musicList->player, SIGNAL(positionChanged(qint64)),             //更新进度条
             this, SLOT(positionChanged(qint64)));
     connect(slider_progress, SIGNAL(sliderMoved(int)),                      //定位播放进度
-            this, SLOT(seek(qint64)));
+            this, SLOT(seek(int)));
 }
 
 //忽略 鼠标按下 事件
@@ -520,7 +518,7 @@ void BottomGroupBox::playStatusChanged(QMediaPlayer::State state)
 }
 
 //定位播放进度
-void BottomGroupBox::seek(qint64 current)
+void BottomGroupBox::seek(int current)
 {
     musicList->player->setPosition(current);
 }
