@@ -172,6 +172,7 @@ bool DatabaseOperation::deleteDatabase(QString tableName, int id_deleteDate)
     if (!query.exec(QObject::tr("DELETE FROM %1 WHERE id=%2").arg(tableName).arg(id_deleteDate)))
     {
         db.close();
+        QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库删除数据失败！"), QMessageBox::Ok);
         return false;
     }
     if (!query.exec(QObject::tr("UPDATE %1 SET id=id-1 WHERE id>%2").arg(tableName).arg(id_deleteDate)))

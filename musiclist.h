@@ -70,7 +70,7 @@ private:
 
     int volumn;
     int toStopNum;                                  //自定义播放模式（N首后停止）
-    int selectedIndex;                              //播放列表中被选中的歌曲
+    int selectedIndex[2];                              //播放列表中被选中的歌曲
 
     method thisMethod;
     const QString musicListDatabaseName;
@@ -87,14 +87,11 @@ private slots:
     //数据库操作
     void createDatebase(QString databaseName, QString tableName);                                                                                              //创建数据库
     bool openDatebase(QString datebaseName, QString hostName="localhost", QString userName="", QString password="");    //打开数据库
-    bool insertDatebase(QString datebaseName, QString tableName, QString columnName, QStringList content, int indext=-1);                   //数据库插入数据
-    bool deleteDatebase(QString datebaseName, QString tableName, int id_deleteDate);                                   //数据库删除数据
 
     //
     void playMusic();
     void itemDoubleClicked(QTreeWidgetItem *item, int index);
 
-    void playList_currentIndexChanged(int);                         //歌曲切换 处理
 //    void searchedMusic(int, int);                                   //搜索歌曲
     void removeSelection(bool delete_file=false);                   //把歌曲移除列表
     void deleteSelection();                                         //彻底删除

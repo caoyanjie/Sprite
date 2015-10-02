@@ -17,7 +17,7 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
 //  ,programDir(programPath)
 //  ,volumn(40)
   ,toStopNum(-1)
-  ,selectedIndex(-1)
+  ,selectedIndex({-1, -1})
   ,musicListDatabaseName(programPath + "musicList.db")
   ,setupDatabaseName(programPath + "setUp.db")
 {
@@ -32,25 +32,26 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
 
     //初始化 多媒体播放器
     player = new QMediaPlayer(this);		//创建 多媒体播放器
-    playlist = new QMediaPlaylist(this);	//创建 多媒体播放列表
-    playlistVector.append(playlist);		//把创建的播放列表添加到 playlistVector 容器中（每个列表一个playlist）
+//    playlist = new QMediaPlaylist(this);	//创建 多媒体播放列表
+//    playlistVector.append(playlist);		//把创建的播放列表添加到 playlistVector 容器中（每个列表一个playlist）
 
     //创建 搜索 自动补全
     completer = new QCompleter(this);
     stringListModel = new QStringListModel();
     completer->setModel(stringListModel);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);    //设置大小写不敏感
+    completer->setCaseSensitivity(Qt::CaseInsensitive);     //设置大小写不敏感
 
-    initMusicList();                        //初始化一个空的播放列表
-    if (QFileInfo(musicListDatabaseName).exists()) //检测数据库是否存在
+    initMusicList();                                        //初始化一个空的播放列表
+    if (QFileInfo(musicListDatabaseName).exists())          //检测数据库是否存在
     {
-        loadMusicList();                    //如果数据库存在，加载歌曲列表
+        loadMusicList();                                    //如果数据库存在，加载歌曲列表
     }
     else
     {
         createDatebase(musicListDatabaseName, "默认列表");                   //如果数据库不存在，创建数据库
     }
-    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));    //双击 播放歌曲
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+            this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));          //双击 播放歌曲
     connect(this, SIGNAL(itemPlay()), this, SLOT(playMusic()));
 
     //遍历播放列表， 为每个播放列表关联信号槽
@@ -225,6 +226,12 @@ void MusicList::setPlayMode(PlayModle::PlayMode playModeValue)
 //
 void MusicList::setCurrentRow(int currentIndex, int topLevel)
 {
+    //检查参数
+    if (currentIndex < 0)
+    {
+        return;
+    }
+
     //调用函数， 获得当前播放的列表
     if (topLevel == -1)
     {
@@ -232,14 +239,20 @@ void MusicList::setCurrentRow(int currentIndex, int topLevel)
     }
 
     //如果当前索引有效
-    if ((currentIndex <= (this ->topLevelItem(topLevel) ->childCount() - 1)) && currentIndex > -1)
+    if (currentIndex < this->topLevelItem(topLevel)->childCount())
     {
-        if (selectedIndex != -1)
+        //取消上次的高亮行
+        if (selectedIndex[1] != -1)
         {
-            this ->topLevelItem(topLevel) ->child(selectedIndex) ->setSelected(false);
+            this->topLevelItem(selectedIndex[0])->child(selectedIndex[1])->setSelected(false);
         }
-        this ->topLevelItem(topLevel) ->child(currentIndex) ->setSelected(true);
-        selectedIndex = currentIndex;
+
+        //设置当前行
+        this->topLevelItem(topLevel)->child(currentIndex)->setSelected(true);
+
+        //标记本次选择的行
+        selectedIndex[0] = topLevel;
+        selectedIndex[1] = currentIndex;
     }
 }
 
@@ -442,59 +455,17 @@ bool MusicList::openDatebase(QString datebaseName, QString hostName, QString use
     }
 }
 
-//数据库插入数据
-bool MusicList::insertDatebase(QString datebaseName, QString tableName, QString columnName, QStringList content, int indext)
-{
-    if (!openDatebase(datebaseName))
-    {
-        return false;
-    }
-
-    QSqlQuery query(db);
-    for(int i=0; i<content.length(); i++)
-    {
-        if (!query.exec(tr("INSERT INTO %1(%2) VALUES('%3')").arg(tableName).arg(columnName).arg(content.at(i))))
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-//数据库删除数据
-bool MusicList::deleteDatebase(QString datebaseName, QString tableName, int id_deleteDate)
-{
-    if (!openDatebase(datebaseName))
-    {
-        return false;
-    }
-    QSqlQuery query(db);
-    if (!query.exec(tr("delete from %1 where id=%2").arg(tableName).arg(id_deleteDate)))
-    {
-        db.close();
-        return false;
-    }
-    if (!query.exec(tr("update %1 set id=id-1 where id>%2").arg(tableName).arg(id_deleteDate)))
-    {
-        QMessageBox::warning(0, tr("错误！"), tr("数据库id排序失败！"), QMessageBox::Ok);
-        db.close();
-        return false;
-    }
-    db.close();
-    return true;
-}
-
 //播放歌曲
 void MusicList::playMusic()
 {
-    int currentIndex = this->currentIndex().row();              //获取被双击音乐在所在列表中的索引值
     int rootDir = get_current_rootDir();                        //获取所在列表的索引值
+    int currentIndex = this->currentIndex().row();              //获取被双击音乐在所在列表中的索引值
     if (rootDir > playlistVector.length()-1)                  //如果单击的是播放列表而不是歌曲，则不处理（默认展开列表）
     {
         return;
     }
-    player->setPlaylist(playlistVector.at(rootDir));
-    playlistVector.at(rootDir)->setCurrentIndex(currentIndex);
+    player->setPlaylist(playlistVector[rootDir]);
+    playlistVector[rootDir]->setCurrentIndex(currentIndex);
     player->play();
 }
 
@@ -511,23 +482,6 @@ void MusicList::itemDoubleClicked(QTreeWidgetItem *item, int index)
     playMusic();
 }
 
-//歌曲切换 设置当前歌曲被选中
-void MusicList::playList_currentIndexChanged(int currentIndex)
-{
-    //调用函数， 获得当前播放的列表
-    int rootDir = get_current_rootDir();
-
-    //如果当前索引有效
-    if ((currentIndex <= (this ->topLevelItem(rootDir) ->childCount() - 1)) && currentIndex > -1)
-    {
-        if (selectedIndex != -1)
-        {
-            this ->topLevelItem(rootDir) ->child(selectedIndex) ->setSelected(false);
-        }
-        this ->topLevelItem(rootDir) ->child(currentIndex) ->setSelected(true);
-        selectedIndex = currentIndex;
-    }
-}
 /*
 //搜索到歌曲后 处理
 void MusicList::searchedMusic(int rootDir, int index)
@@ -549,11 +503,14 @@ void MusicList::removeSelection(bool delete_file)
     //移除播放列表歌曲
     playlistVector[rootDir]->removeMedia(currentRow);
 
-    //更新数据库
-    if (!deleteDatebase(musicListDatabaseName, this->topLevelItem(0)->text(0), currentRow+1))
+    for (int i=0; i<playlistVector[rootDir]->mediaCount(); i++)
     {
-        QMessageBox::warning(0, tr("发生意外！"), tr("配置文件更新失败！"), QMessageBox::Ok);
+        qDebug() << tr("%1: %2").arg(i).arg(playlistVector[rootDir]->media(i).canonicalUrl().fileName());
     }
+
+    //更新数据库
+    DatabaseOperation db(musicListDatabaseName);
+    db.deleteDatabase(this->topLevelItem(rootDir)->text(0), currentRow+1);
 
     if (delete_file)
     {
