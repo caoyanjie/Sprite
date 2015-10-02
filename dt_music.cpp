@@ -26,7 +26,6 @@
 #include "videoplayer.h"        //视频播放器
 #include "game.h"
 #include "databaseoperation.h"
-#include "subthread.h"          //子线程
 
 //部件类
 #include <QMouseEvent>          //鼠标事件
@@ -125,10 +124,10 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     connect(bottomGroupbox, SIGNAL(showPlayModle(QPoint)), this, SLOT(showPlayModle(QPoint)));  //单击 “播放模式”， 显示/隐藏 “播放模式”窗口
 
     //播放模式控件窗口操作
-    connect(playModle, SIGNAL(playModel_choose(playModelValue)),            //选择播放模式，为bottom设置相应图标
-            bottomGroupbox, SLOT(playModle_choosed(playModelValue)));
-    connect(playModle, SIGNAL(playModel_choose(playModelValue)),            //选择播放模式，设置当前播放模式值
-            this, SLOT(playModelState_changed(playModelValue)));
+    connect(playModle, SIGNAL(playModel_choose(PlayModle::PlayMode)),                     //选择播放模式，为bottom设置相应图标
+            bottomGroupbox, SLOT(playModle_choosed(PlayModle::PlayMode)));
+//    connect(playModle, SIGNAL(playModel_choose(PlayModle::playModelValue)),                     //选择播放模式，设置当前播放模式值
+//            this, SLOT(playModelState_changed(PlayModle::playModelValue)));
 
     //搜索按钮
     connect(tbn_search, SIGNAL(clicked()),                                  //单击 搜索按钮
@@ -748,10 +747,9 @@ void DT_Music::addMusicFile(int selected)
     musicList->addMusicToList(0, musicNameListAdd);
 
     //添加到数据库中（子线程）
-    subThread.insertDatabase(musicListDatabaseName, "默认列表", "musicName", musicNameListAdd);
+    subThread.insertDatabase(SubThread::InsertDataBase, musicListDatabaseName, "默认列表", "musicName", musicNameListAdd);
     subThread.start();
 }
-
 
 //单击 搜索 按钮
 void DT_Music::tbn_search_clicked()
@@ -1191,9 +1189,34 @@ void DT_Music::showPlayModle(QPoint point)
 }
 
 //播放模式改变 处理
-void DT_Music::playModelState_changed(playModelValue currentModel)
+void DT_Music::playModelState_changed(PlayModle::PlayMode currentModel)
 {
-    playModel_currentValue = currentModel;
+    /*
+//    playModel_currentValue = currentModel;
+    switch(currentModel)
+    {
+    case PlayModle::PlayRandom:
+        musicList->setPlayMode(MusicList::PlayRandom);
+        break;
+    case PlayModle::PlayOnce:
+        musicList->setPlayMode(MusicList::PlayOnce);
+        break;
+    case PlayModle::PlaySingle:
+        musicList->setPlayMode(MusicList::PlaySingle);
+        break;
+    case PlayModle::PlaySequence:
+        musicList->setPlayMode(MusicList::PlaySequence);
+        break;
+    case PlayModle::PlayLoop:
+        musicList->setPlayMode(MusicList::PlayLoop);
+        break;
+    case PlayModle::PlayCustom:
+        musicList->setPlayMode(MusicList::PlayCustom);
+        break;
+    default:
+        break;
+    }
+    */
 }
 
 //显示主界面

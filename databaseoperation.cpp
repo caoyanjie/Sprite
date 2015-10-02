@@ -13,6 +13,10 @@ DatabaseOperation::DatabaseOperation(QString databasePath) :
 
 DatabaseOperation::~DatabaseOperation()
 {
+    if (db.isOpen())
+    {
+        db.close();
+    }
 }
 
 //打开数据库

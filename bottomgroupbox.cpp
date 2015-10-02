@@ -57,7 +57,7 @@ BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *
             this, SLOT(playStatusChanged(QMediaPlayer::State)));
     connect(cbx_lrc, SIGNAL(clicked(bool)),                                 //单击 桌面歌词 　按钮
             this, SIGNAL(lrc_click(bool)));
-    connect(slider_progress, SIGNAL(sliderMoved(int)),                    //拖动 播放 进度条
+    connect(slider_progress, SIGNAL(sliderMoved(int)),                      //拖动 播放 进度条
             this, SLOT(slider_progress_moved(int)));
 //    connect(bottomGroupbox, SIGNAL(slider_progress_valueChange(qint64)),  //更新 进度条
 //            this, SLOT(seek(qint64)));
@@ -443,15 +443,11 @@ void BottomGroupBox::play_next_clicked()
 //}
 
 //播放模式改变 处理
-void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
+void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
 {
     switch(currentPlayModel)
     {
-    case play_random:
-        for (int i=0; i<musicList->playlistVector.length(); ++i)
-        {
-            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Random);
-        }
+    case PlayModle::PlayRandom:
         tbn_playModle ->setStyleSheet(
                     "QToolButton{"
                         "border-image: url(:/Images/playModel_random.png);"
@@ -460,13 +456,10 @@ void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
                         "border-image: url(:/Images/playModel_random_hover.png);"
                     "}"
                     );
-        playModel_currentValue = currentPlayModel;
+//        playModel_currentValue = currentPlayModel;
+        musicList->setPlayMode(PlayModle::PlayRandom);
         break;
-    case play_once:
-        for (int i=0; i<musicList->playlistVector.length(); ++i)
-        {
-            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemOnce);
-        }
+    case PlayModle::PlayOnce:
         tbn_playModle ->setStyleSheet(
                     "QToolButton{"
                         "border-image: url(:/Images/playModel_once.png);"
@@ -475,13 +468,10 @@ void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
                         "border-image: url(:/Images/playModel_once_hover.png);"
                     "}"
                     );
-        playModel_currentValue = currentPlayModel;
+//        playModel_currentValue = currentPlayModel;
+        musicList->setPlayMode(PlayModle::PlayOnce);
         break;
-    case play_single:
-        for (int i=0; i<musicList->playlistVector.length(); ++i)
-        {
-            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
-        }
+    case PlayModle::PlaySingle:
         tbn_playModle ->setStyleSheet(
                     "QToolButton{"
                         "border-image: url(:/Images/playModel_single.png);"
@@ -490,13 +480,10 @@ void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
                         "border-image: url(:/Images/playModel_single_hover.png);"
                     "}"
                     );
-        playModel_currentValue = currentPlayModel;
+//        playModel_currentValue = currentPlayModel;
+        musicList->setPlayMode(PlayModle::PlaySingle);
         break;
-    case play_sequence:
-        for (int i=0; i<musicList->playlistVector.length(); ++i)
-        {
-            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Sequential);
-        }
+    case PlayModle::PlaySequence:
         tbn_playModle ->setStyleSheet(
                     "QToolButton{"
                         "border-image: url(:/Images/playModel_sequence.png);"
@@ -505,13 +492,10 @@ void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
                         "border-image: url(:/Images/playModel_sequence_hover.png);"
                     "}"
                     );
-        playModel_currentValue = currentPlayModel;
+//        playModel_currentValue = currentPlayModel;
+        musicList->setPlayMode(PlayModle::PlaySequence);
         break;
-    case play_loop:
-        for (int i=0; i<musicList->playlistVector.length(); ++i)
-        {
-            musicList->playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Loop);
-        }
+    case PlayModle::PlayLoop:
         tbn_playModle ->setStyleSheet(
                     "QToolButton{"
                         "border-image: url(:/Images/playModel_loop.png);"
@@ -520,9 +504,10 @@ void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
                         "border-image: url(:/Images/playModel_loop_hover.png);"
                     "}"
                     );
-        playModel_currentValue = currentPlayModel;
+//        playModel_currentValue = currentPlayModel;
+        musicList->setPlayMode(PlayModle::PlayLoop);
         break;
-    case play_custom:
+    case PlayModle::PlayCustom:
         tbn_playModle ->setStyleSheet(
                     "QToolButton{"
                         "border-image: url(:/Images/playModel_custom.png);"
@@ -531,7 +516,8 @@ void BottomGroupBox::playModle_choosed(playModelValue currentPlayModel)
                         "border-image: url(:/Images/playModel_custom_hover.png);"
                     "}"
                     );
-        playModel_currentValue = currentPlayModel;
+//        playModel_currentValue = currentPlayModel;
+        musicList->setPlayMode(PlayModle::PlayCustom);
         break;
     }
 }

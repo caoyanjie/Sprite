@@ -1,5 +1,5 @@
 #include "musiclist.h"
-#include "subthread.h"
+//#include "subthread.h"
 #include "databaseoperation.h"
 
 #include <QScrollBar>
@@ -19,6 +19,7 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
   ,toStopNum(-1)
   ,selectedIndex(-1)
   ,musicListDatabaseName(programPath + "musicList.db")
+  ,setupDatabaseName(programPath + "setUp.db")
 {
     this->setHeaderHidden(true);            //隐藏表头
     this->setFrameStyle(QFrame::NoFrame);   //设置无边框线
@@ -171,6 +172,58 @@ void MusicList::addMusicToList(int topLevelIndex, QStringList musicNames)
 
     //设置自动补全
     stringListModel->setStringList(completerList);
+}
+
+//设置播放模式
+void MusicList::setPlayMode(PlayModle::PlayMode playModeValue)
+{
+    switch(playModeValue)
+    {
+    case PlayModle::PlayRandom:
+        for (int i=0; i<playlistVector.length(); ++i)
+        {
+            playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Random);
+        }
+        break;
+    case PlayModle::PlayOnce:
+        for (int i=0; i<playlistVector.length(); ++i)
+        {
+            playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemOnce);
+        }
+        break;
+    case PlayModle::PlaySingle:
+        for (int i=0; i<playlistVector.length(); ++i)
+        {
+            playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+        }
+        break;
+    case PlayModle::PlaySequence:
+        for (int i=0; i<playlistVector.length(); ++i)
+        {
+            playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Sequential);
+        }
+        break;
+    case PlayModle::PlayLoop:
+        for (int i=0; i<playlistVector.length(); ++i)
+        {
+            playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Loop);
+        }
+        break;
+    case PlayModle::PlayCustom:
+        break;
+    default:
+        break;
+    }
+
+    //保存到数据库（子线程）
+    QMap<QString, QString> playMode;
+    playMode.insert("playMode", tr("%1").arg(playModeValue));
+
+    subThread.updateDatabase(SubThread::UpdateDatabase, setupDatabaseName, "setUp", playMode);
+    subThread.start();
+//    DatabaseOperation db(setupDatabaseName);
+//    db.updateDatabase("setUp", playMode);
+//    qDebug() << "music over";
 }
 
 //
@@ -636,5 +689,5 @@ void MusicList::add_otherMusicList(QAction *action)
 //释放子线程
 void MusicList::releaseThread()
 {
-    subThread->deleteLater();
+//    subThread->deleteLater();
 }

@@ -2,6 +2,7 @@
 #define BOTTOMGROUPBOX_H
 
 #include "musiclist.h"
+#include "playmodle.h"
 #include <QGroupBox>
 class QToolButton;
 class QSlider;
@@ -82,7 +83,7 @@ private slots:
     void play_next_clicked();                           //下一曲 处理
     void playStatusChanged(QMediaPlayer::State state);  //播放状态 改变
     void seek(qint64 current);                          //定位播放进度
-    void playModle_choosed(playModelValue);             //播放模式改变 处理     [需要判断情况]
+    void playModle_choosed(PlayModle::PlayMode);             //播放模式改变 处理     [需要判断情况]
 };
 
 #endif // BOTTOMGROUPBOX_H

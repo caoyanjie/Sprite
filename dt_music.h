@@ -1,6 +1,7 @@
 #ifndef DT_MUSIC_H
 #define DT_MUSIC_H
 
+#include "playmodle.h"
 #include <QMainWindow>
 
 #include <QMediaPlayer>
@@ -12,7 +13,7 @@
 #include <QRect>
 #include <QSqlDatabase>
 #include <QString>
-#include "subthread.h"
+#include "subthread.h"          //子线程
 #include "network.h"
 class TitleGroupBox;
 class ToolGlobal;
@@ -22,7 +23,7 @@ class Game;
 class QLabel;
 class MusicList;
 class LrcView;
-class PlayModle;
+//class PlayModle;
 class Create_MusicList;
 class QComboBox;
 class QLineEdit;
@@ -35,7 +36,7 @@ class QMediaPlayer;
 class QMediaPlaylist;
 class QSlider;
 class QCompleter;
-class VideoPlayer;                    //视频播放器
+class VideoPlayer;              //视频播放器
 //class QGridLayout;
 class QGridLayout;
 class QHBoxLayout;
@@ -48,7 +49,7 @@ class DT_Music;
 
 enum Direction{
     UP = 0,
-    DOWN=1,
+    DOWN,
     LEFT,
     RIGHT,
     LEFTTOP,
@@ -67,7 +68,7 @@ public:
 
     void openTempMusicFile(QString file);
     void openTempVideoFile(QString file);
-
+/*
     //枚举播放状态
     enum playModelValue{
         play_random,            //随机播放
@@ -77,6 +78,7 @@ public:
         play_loop,              //列表循环
         play_custom             //自定义
     };
+*/
 /*
     //枚举切换方式
     enum method{
@@ -91,7 +93,7 @@ public:
 //    QList<QStringList> musicNameList;       //定义 全局播放列表
 
 //    method thisMethod;
-    playModelValue playModel_currentValue;
+//    playModelValue playModel_currentValue;
 
 //    QStringList lrcStringList;              //歌词行
 
@@ -239,7 +241,7 @@ private slots:
     void lrc_clicked();
     void showVolumn(QPoint);
     void showPlayModle(QPoint);
-    void playModelState_changed(playModelValue);
+    void playModelState_changed(PlayModle::PlayMode);
     void showWindow();
     void trayIcon_clicked(QSystemTrayIcon::ActivationReason);
     void maigcStateChanged(bool);

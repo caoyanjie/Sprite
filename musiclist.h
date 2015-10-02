@@ -1,6 +1,8 @@
 #ifndef MUSICLIST_H
 #define MUSICLIST_H
 
+#include "playmodle.h"
+#include "subthread.h"
 #include <QTreeWidget>
 
 #include <QSqlDatabase>
@@ -10,7 +12,7 @@
 #include <QCompleter>
 #include <QGridLayout>
 #include <QVBoxLayout>
-class SubThread;
+//class SubThread;
 class QStringListModel;
 class QAction;
 
@@ -19,6 +21,22 @@ class MusicList : public QTreeWidget
     Q_OBJECT
 public:
     explicit MusicList(QString programPath, QWidget *parent = 0);
+/*
+    //枚举播放状态
+    enum PlayMode{
+        PlayRandom,            //随机播放
+        PlayOnce,              //单首播放
+        PlaySingle,            //单曲循环
+        PlaySequence,          //单次列表
+        PlayLoop,              //泪飙循环
+        PlayCustom             //自定义
+    };
+*/
+    //枚举切换方式
+    enum method{
+        auto_next,              //自动切换
+        click_next              //手动切换
+    };
 
     friend class DT_Music;          //设置友元类
     friend class BottomGroupBox;    //设置友元类
@@ -28,6 +46,7 @@ public:
     int get_current_rootDir();                          //检测当前播放列表
     void openTempFile(QString file);
     void addMusicToList(int topLevelIndex, QStringList musicNames);
+    void setPlayMode(PlayModle::PlayMode playModeValue);
 
     QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器                    ########有什么用#########
     int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
@@ -57,29 +76,16 @@ private:
     QList<QAction*> musicMenuActionList;
     QAction *musicMenuAction;
 
-    SubThread *subThread;
+//    SubThread *subThread;
+    SubThread subThread;
     int volumn;
     int toStopNum;                                  //自定义播放模式（N首后停止）
     int selectedIndex;                              //播放列表中被选中的歌曲
 
-    //枚举播放状态
-    enum playModelValue{
-        play_random,            //随机播放
-        play_once,              //单首播放
-        play_single,            //单曲循环
-        play_sequence,          //单次列表
-        play_loop,              //泪飙循环
-        play_custom             //自定义
-    };
-    //枚举切换方式
-    enum method{
-        auto_next,              //自动切换
-        click_next              //手动切换
-    };
-
-    playModelValue playModel_currentValue;
+//    PlayMode playModel_currentValue;
     method thisMethod;
     const QString musicListDatabaseName;
+    const QString setupDatabaseName;
 
 signals:
     void itemPlay();                                    //播放歌曲

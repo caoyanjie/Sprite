@@ -90,23 +90,18 @@ PlayModle::PlayModle(QWidget *parent) :
     tbn_play_custom ->setToolTip(tr("N首后停止"));
 
     //6种按钮被单击， 信号/槽 关联
-    connect(tbn_play_random, SIGNAL(clicked()),
-            this, SLOT(play_random_clicked()));
-    connect(tbn_play_once, SIGNAL(clicked()),
-            this, SLOT(play_once_clicked()));
-    connect(tbn_play_single, SIGNAL(clicked()),
-            this, SLOT(play_single_clicked()));
-    connect(tbn_play_sequence, SIGNAL(clicked()),
-            this, SLOT(play_sequence_clicked()));
-    connect(tbn_play_loop, SIGNAL(clicked()),
-            this, SLOT(play_loop_clicked()));
-    connect(tbn_play_custom, SIGNAL(clicked()),
-            this, SLOT(play_custom_clicked()));
+    connect(tbn_play_random,   SIGNAL(clicked()), this, SLOT(play_random_clicked()));
+    connect(tbn_play_once,     SIGNAL(clicked()), this, SLOT(play_once_clicked()));
+    connect(tbn_play_single,   SIGNAL(clicked()), this, SLOT(play_single_clicked()));
+    connect(tbn_play_sequence, SIGNAL(clicked()), this, SLOT(play_sequence_clicked()));
+    connect(tbn_play_loop,     SIGNAL(clicked()), this, SLOT(play_loop_clicked()));
+    connect(tbn_play_custom,   SIGNAL(clicked()), this, SLOT(play_custom_clicked()));
 }
 
 //把当前播放模式值写入配置文件
-void PlayModle::write_currentPlayModelValue_toIni(playModelValue playModel_currentValue)
+void PlayModle::write_currentPlayModelValue_toIni(PlayMode playModel_currentValue)
 {
+    /*
     //将枚举变量转换成字符串
     QString playModel_currentValue_name;
     switch(playModel_currentValue)
@@ -130,7 +125,7 @@ void PlayModle::write_currentPlayModelValue_toIni(playModelValue playModel_curre
         playModel_currentValue_name = tr("playModel_custom");
         break;
     }
-
+*/
     //打开配置文件 写入数据
 /*    QFile write_toIni(".data.ini");
     if (write_toIni.open(QIODevice::ReadWrite))
@@ -141,7 +136,7 @@ void PlayModle::write_currentPlayModelValue_toIni(playModelValue playModel_curre
                           .toUtf8());
         write_toIni.close();
     }*/
-    emit settingDataChanged("playModel", tr("%1").arg(playModel_currentValue_name));
+//    emit settingDataChanged("playModel", tr("%1").arg(playModel_currentValue_name));
 }
 /*
 //接收当前音量值
@@ -155,46 +150,46 @@ void PlayModle::receiveCurrentVolumeValue(int currentVolume)
 void PlayModle::play_random_clicked()
 {
     hide();
-    emit playModel_choose(play_random);
-    write_currentPlayModelValue_toIni(play_random);
+    emit playModel_choose(PlayRandom);
+//    write_currentPlayModelValue_toIni(play_random);
 }
 
 //选中 单首播放
 void PlayModle::play_once_clicked()
 {
     hide();
-    emit playModel_choose(play_once);
-    write_currentPlayModelValue_toIni(play_once);
+    emit playModel_choose(PlayOnce);
+//    write_currentPlayModelValue_toIni(play_once);
 }
 
 //选中 单机循环
 void PlayModle::play_single_clicked()
 {
     hide();
-    emit playModel_choose(play_single);
-    write_currentPlayModelValue_toIni(play_single);
+    emit playModel_choose(PlaySingle);
+//    write_currentPlayModelValue_toIni(play_single);
 }
 
 //选中 单次列表
 void PlayModle::play_sequence_clicked()
 {
     hide();
-    emit playModel_choose(play_sequence);
-    write_currentPlayModelValue_toIni(play_sequence);
+    emit playModel_choose(PlaySequence);
+//    write_currentPlayModelValue_toIni(play_sequence);
 }
 
 //选中 列表循环
 void PlayModle::play_loop_clicked()
 {
     hide();
-    emit playModel_choose(play_loop);
-    write_currentPlayModelValue_toIni(play_loop);
+    emit playModel_choose(PlayLoop);
+//    write_currentPlayModelValue_toIni(play_loop);
 }
 
 //选中 自定义播放
 void PlayModle::play_custom_clicked()
 {
     hide();
-    emit playModel_choose(play_custom);
-    write_currentPlayModelValue_toIni(play_custom);
+    emit playModel_choose(PlayCustom);
+//    write_currentPlayModelValue_toIni(play_custom);
 }

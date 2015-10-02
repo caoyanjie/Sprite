@@ -11,13 +11,14 @@ class PlayModle : public QGroupBox
 public:
     explicit PlayModle(QWidget *parent = 0);
 
-    enum playModelValue{
-        play_random,
-        play_once,
-        play_single,
-        play_sequence,
-        play_loop,
-        play_custom
+    //枚举播放状态
+    enum PlayMode{
+        PlayRandom,            //随机播放
+        PlayOnce,              //单首播放
+        PlaySingle,            //单曲循环
+        PlaySequence,          //单次列表
+        PlayLoop,              //泪飙循环
+        PlayCustom             //自定义
     };
 
     //当前音量值
@@ -33,13 +34,11 @@ private:
     QToolButton *tbn_play_loop;
     QToolButton *tbn_play_custom;
 
-
-
     //将当前播放模式写人配置文件
-    void write_currentPlayModelValue_toIni(playModelValue);
+    void write_currentPlayModelValue_toIni(PlayMode);
 
 signals:
-    void playModel_choose(playModelValue);       //改变播放模式
+    void playModel_choose(PlayModle::PlayMode);       //改变播放模式
     void settingDataChanged(QString, QString);   //设置信息改变，写入配置文件
 
 public slots:
