@@ -37,7 +37,6 @@
 #include <QLineEdit>
 #include <QFont>                //定义字体
 #include <QToolButton>
-//#include <QString>
 #include <QStringList>
 
 //文件操作
@@ -111,63 +110,30 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     connect(musicList->player, SIGNAL(durationChanged(qint64)), this, SLOT(durationChanged()));//多媒体时长信息出现，处理歌词
     connect(musicList->player, SIGNAL(positionChanged(qint64)), this, SLOT(updateLrc(qint64)));//播放进度 改变 更新歌词
 
-    //遍历播放列表， 为每个播放列表关联信号槽
-//    for (int i=0; i<playlistVector.length(); i++)
-//    {
-//        connect(playlistVector.at(i), SIGNAL(currentIndexChanged(int)),     //歌曲切换 判断播放模式
-//                this, SLOT(playList_currentIndexChanged(int)));
-//    }
-
     //播放控制按钮操作(bottomGroupbox)
     connect(bottomGroupbox, SIGNAL(lrc_click(bool)), this, SLOT(setLrcShown(bool)));            //显示/隐藏 桌面歌词
     connect(bottomGroupbox, SIGNAL(showVolumn(QPoint)), this, SLOT(showVolumn(QPoint)));        //音量     处理
-    connect(bottomGroupbox, SIGNAL(showPlayModle(QPoint)), this, SLOT(showPlayModle(QPoint)));  //单击 “播放模式”， 显示/隐藏 “播放模式”窗口
+    connect(bottomGroupbox, SIGNAL(showPlayModle(QPoint)), this, SLOT(showPlayModle(QPoint)));  //显示/隐藏 “播放模式”窗口
 
     //播放模式控件窗口操作
-    connect(playModle, SIGNAL(playModel_choose(PlayModle::PlayMode)),                     //选择播放模式，为bottom设置相应图标
+    connect(playModle, SIGNAL(playModel_choose(PlayModle::PlayMode)),                           //选择播放模式，为bottom设置相应图标
             bottomGroupbox, SLOT(playModle_choosed(PlayModle::PlayMode)));
-//    connect(playModle, SIGNAL(playModel_choose(PlayModle::playModelValue)),                     //选择播放模式，设置当前播放模式值
-//            this, SLOT(playModelState_changed(PlayModle::playModelValue)));
 
     //搜索按钮
-    connect(tbn_search, SIGNAL(clicked()),                                  //单击 搜索按钮
-            this, SLOT(searchMusic()));
-//    connect(this, SIGNAL(searchedMusicIndex(int, int)),
-//            musicList, SLOT(searchedMusic(int, int)));
+    connect(tbn_search, SIGNAL(clicked()), this, SLOT(searchMusic()));                          //单击 搜索按钮
 
-    connect(toolGlobal, SIGNAL(magicStateChange(bool)),                     //魔音状态改变
-            this, SLOT(maigcStateChanged(bool)));
-    connect(toolGlobal,SIGNAL(gameStateChange(bool)),
-            this, SLOT(gameStateChange(bool)));
-    connect(titleGroupBox, SIGNAL(themeNumClick(int)),                      //设定主题
-            this, SLOT(setTheme(int)));
+    connect(toolGlobal, SIGNAL(magicStateChange(bool)), this, SLOT(maigcStateChanged(bool)));   //魔音状态改变
+    connect(toolGlobal,SIGNAL(gameStateChange(bool)), this, SLOT(gameStateChange(bool)));
+    connect(titleGroupBox, SIGNAL(themeNumClick(int)), this, SLOT(setTheme(int)));              //设定主题
 
     //倒计时 处理
-    connect(toolGlobal, SIGNAL(timeout_playStop()),
-            this, SLOT(play_stop()));
+    connect(toolGlobal, SIGNAL(timeout_playStop()), this, SLOT(play_stop()));
 
     //设置改变，设置信息写入配置文件
-    connect(playModle, SIGNAL(settingDataChanged(QString, QString)),        //设置播放模式，信息写入配置文件
-            this, SLOT(writeSettingdateToIni(QString,QString)));
-    connect(titleGroupBox, SIGNAL(settingDataChanged(QString,QString)),     //设置皮肤，信息写入配置文件
-            this, SLOT(writeSettingdateToIni(QString,QString)));
+//    connect(titleGroupBox, SIGNAL(settingDataChanged(QString,QString)),                       //设置皮肤，信息写入配置文件
+//            this, SLOT(writeSettingdateToIni(QString,QString)));
 			
-//    connect(player, SIGNAL(metaDataChanged()),                            //多媒体 数据信息     改变
-//            this, SLOT(getMetaData()));
-
-//    connect(player, SIGNAL(seekableChanged(bool)),                      //播放进度改变
-//            this, SLOT(seekableChanged(bool)));
-//    connect(player, SIGNAL(mediaChanged(QMediaContent)),                //多媒体 改变
-//            this, SLOT(mediaChanged(QMediaContent)));
-//    connect(player, SIGNAL(objectNameChanged(QString)),                 //对象名改变
-//            this, SLOT(objectNameChanged(QString)));
-//    connect(player, SIGNAL(playbackRateChanged(qreal)),                 //播放频率 改变
-//            this, SLOT(playbackRateChanged(qreal)));
-//    connect(player, SIGNAL(volumeChanged(int)),                         //声音改变
-//            this, SLOT(volumeChanged(int)));
-
-    connect(titleGroupBox, SIGNAL(ShowVideoPlayer()),
-            this, SLOT(ShowVideoPlayer()));
+    connect(titleGroupBox, SIGNAL(ShowVideoPlayer()), this, SLOT(ShowVideoPlayer()));
 
     //边缘缩放
     isLeftPressDown = false;
@@ -200,11 +166,8 @@ DT_Music::~DT_Music()
 
 //重写 鼠标按下事件
 void DT_Music::mousePressEvent(QMouseEvent *event)
-{/*
-    if (event ->button() == Qt::LeftButton)
-    {
-        offset = event ->globalPos() - pos();
-    }*/
+{
+//    if (event ->button() == Qt::LeftButton) offset = event->globalPos() - pos();
 
     if (event->button() == Qt::LeftButton)
     {
@@ -226,13 +189,8 @@ void DT_Music::mousePressEvent(QMouseEvent *event)
 
 //重写 鼠标移动事件
 void DT_Music::mouseMoveEvent(QMouseEvent *event)
-{/*
-    if (event ->buttons() & Qt::LeftButton)
-    {
-        QPoint temp;
-        temp = event ->globalPos() - offset;
-        move(temp);
-    }*/
+{
+//    if (event ->buttons() & Qt::LeftButton) QPoint temp; temp = event ->globalPos() - offset; move(temp);
 
     QPoint gloPoint = event->globalPos();           //鼠标在桌面的坐标
     QRect rect = this->rect();                      //窗口尺寸
@@ -441,10 +399,6 @@ void DT_Music::init()
 
     //读取数据库，初始化设置
     readDatabaseToSetup();
-
-    //初始化变量
-//    playModel_CurrentValue = -1;         //初始化 当前播放模式值
-//    thisMethod = auto_next;
 
     ln_search->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
     ui->line_right->setFixedWidth(1);
@@ -675,9 +629,38 @@ void DT_Music::readDatabaseToSetup()
         }
         while(query.next())
         {
+            //初始化主题
 //            setTheme();
+
+            //初始化音量值
             slider_volumn->setValue(query.value("volumn").toInt());
-//            setPlaymode();
+
+            //初始化播放模式
+            int playMode = query.value("playMode").toInt();
+            switch(playMode)
+            {
+            case PlayModle::PlayRandom:
+                bottomGroupbox->playModle_choosed(PlayModle::PlayRandom);
+                break;
+            case PlayModle::PlayOnce:
+                bottomGroupbox->playModle_choosed(PlayModle::PlayOnce);
+                break;
+            case PlayModle::PlaySingle:
+                bottomGroupbox->playModle_choosed(PlayModle::PlaySingle);
+                break;
+            case PlayModle::PlaySequence:
+                bottomGroupbox->playModle_choosed(PlayModle::PlaySequence);
+                break;
+            case PlayModle::PlayLoop:
+                bottomGroupbox->playModle_choosed(PlayModle::PlayLoop);
+                break;
+            case PlayModle::PlayCustom:
+                bottomGroupbox->playModle_choosed(PlayModle::PlayCustom);
+                break;
+            default:
+                QMessageBox::warning(0, "错误！", "初始化读取音量值错误！", QMessageBox::Ok);
+                break;
+            }
         }
     }
     else
@@ -760,73 +743,6 @@ void DT_Music::tbn_search_clicked()
         return;
     }
     musicList->setCurrentRow(search_content);
-}
-
-//歌曲切换 判断播放模式//////////////////////////////////////////////////////////还没处理完
-void DT_Music::playList_currentIndexChanged(int currentIndex)
-{/*
-    if(thisMethod == click_next)
-    {
-//        thisMethod = auto_next;
-        qDebug() << "触发playList_currentIndexChanged信号时的player播放状态：";
-        return;
-    }
-
-    int rootDir = musicList ->get_current_rootDir();                //检测当前播放列表
-
-//    switch(playModel_currentValue)
-    qDebug() << "step switch begin" << playModel_currentValue << bottomGroupbox ->playModel_currentValue;
-    switch(bottomGroupbox ->playModel_currentValue)
-    {
-    case play_random:                                               //随机播放 模式
-        playlistVector.at(rootDir) ->setCurrentIndex(
-                    qrand() % (musicNameList.at(rootDir).length() + 1)
-                    );
-        break;
-    case play_once:                                                 //单首播放 模式
-        if (thisMethod == auto_next)
-        {
-            player ->stop();
-        }
-        break;
-    case play_single:                                               //单曲循环 模式
-        if (thisMethod == auto_next)
-        {qDebug() << "step case single" << "thisMethod" << thisMethod;;
-            playlistVector.at(rootDir) ->setCurrentIndex(
-//                        playlistVector.at(rootDir) ->previousIndex()
-                        musicList ->currentPlayingIndex[1]
-                        );
-        }
-        break;
-    case play_sequence:                                             //单次列表 模式 ///////////////////////////是不是直接用currentIndex就行了
-        if (playlistVector.at(rootDir) ->currentIndex() == -1)
-        {
-            player ->stop();
-        }
-        break;
-    case play_loop:                                                 //列表循环 模式
-        if (playlistVector.at(rootDir) ->currentIndex() == -1)
-        {
-            playlistVector.at(rootDir) ->setCurrentIndex(0);////////////////////////////////用不用 player ->play(); ？
-            player ->play();
-        }
-        break;
-    case play_custom:                                               //自定义 模式
-        if (toStopNum == 0)
-        {
-            player ->stop();
-        }
-        else
-        {
-            toStopNum --;
-        }
-        break;
-    default:                                                        //未知错误 提示
-        qDebug() << "Unknown playModel!!";
-        break;
-    }
-    thisMethod = auto_next;
-    qDebug() << "step switch end" << "thisMethod" << thisMethod;*/
 }
 
 //歌曲时长信息出现时，调用 解析歌词 函数
@@ -1111,28 +1027,6 @@ void DT_Music::update_volumn_value_of_database()
     db_update_volumn.updateDatabase("setUp", new_volumn_value);
 }
 
-//void DT_Music::play_single_clicked()
-//{
-//    gbx_playModle ->hide();
-//}
-
-//双击歌曲 处理
-void DT_Music::itemPlay()
-{/*
-    thisMethod = click_next;                                    //设置为双击行为
-    int currentIndex = musicList ->currentIndex().row();        //取得 当前行 索引值
-    int rootDir = musicList ->get_current_rootDir();            //检测当前活动项目所在的播放列表
-    if (rootDir > playlistVector.length() - 1)                  //如果单击的是播放列表而不是歌曲，则不处理（默认展开列表）
-    {
-        return;
-    }
-    player ->setPlaylist(playlistVector.at(rootDir));
-    playlistVector.at(rootDir) ->setCurrentIndex(currentIndex);
-    player->stop();
-    player ->play();
-    qDebug() << "step player ->play(); end";*/
-}
-
 //倒计时处理，停止播放
 void DT_Music::play_stop()
 {
@@ -1158,65 +1052,26 @@ void DT_Music::showVolumn(QPoint point)
     if (lab_volumnFrame->isHidden())
     {
         lab_volumnFrame->move(point.x(), bottomGroupbox->y()-84);
-/*        lab_volumnValue->move(point.x()+5, bottomGroupbox->y()-82);
-//        slider_volumn->move(point.x()+9, lab_volumnValue->y()+15);
-        slider_volumn->move(5, 10);*/
         lab_volumnFrame->setVisible(true);
-/*        slider_volumn->setVisible(true);
-        lab_volumnValue->setVisible(true);*/
     }
     else
     {
         lab_volumnFrame->hide();
-/*        slider_volumn->hide();
-        lab_volumnValue->hide();*/
     }
 }
 
-//单击 播放模式 按钮 处理
+//显示/隐藏 ”播放模式“ 面板
 void DT_Music::showPlayModle(QPoint point)
 {
     if (playModle ->isHidden())
     {
         playModle->move(point.x()-8, bottomGroupbox->y()-playModle->height()+45);
         playModle->setVisible(true);
-//        playModle ->currentVolumeValue = slider_volumn ->value();   //设置playModel的当前音量值，以写入配置文件
     }
     else
     {
         playModle ->hide();
     }
-}
-
-//播放模式改变 处理
-void DT_Music::playModelState_changed(PlayModle::PlayMode currentModel)
-{
-    /*
-//    playModel_currentValue = currentModel;
-    switch(currentModel)
-    {
-    case PlayModle::PlayRandom:
-        musicList->setPlayMode(MusicList::PlayRandom);
-        break;
-    case PlayModle::PlayOnce:
-        musicList->setPlayMode(MusicList::PlayOnce);
-        break;
-    case PlayModle::PlaySingle:
-        musicList->setPlayMode(MusicList::PlaySingle);
-        break;
-    case PlayModle::PlaySequence:
-        musicList->setPlayMode(MusicList::PlaySequence);
-        break;
-    case PlayModle::PlayLoop:
-        musicList->setPlayMode(MusicList::PlayLoop);
-        break;
-    case PlayModle::PlayCustom:
-        musicList->setPlayMode(MusicList::PlayCustom);
-        break;
-    default:
-        break;
-    }
-    */
 }
 
 //显示主界面
@@ -1298,67 +1153,6 @@ void DT_Music::create_musicList_ok(QString name)
 void DT_Music::update_createMusiclist_name(QString name)
 {
     createMusiclist_name = name;
-}
-
-//设置改变，设置信息写入配置文件
-void DT_Music::writeSettingdateToIni(QString settingTitle, QString settingData)
-{
-    //读取配置文件原信息
-    QStringList oldDataes;
-    bool data_exist;
-    QFile writeTheme(".data.ini");
-    if (writeTheme.open(QIODevice::ReadWrite))
-    {
-        QTextStream in(&writeTheme);
-        while (! in.atEnd())
-        {
-            oldDataes.append(in.readLine());
-        }
-
-        //拆分配置文件字符串
-        for (int i=0; i<oldDataes.length(); i++)
-        {
-            QStringList line = oldDataes[i].split(":");
-            if (line[0] == settingTitle)
-            {
-                data_exist = true;
-                oldDataes[i] = tr("%1:%2").arg(settingTitle).arg(settingData);
-                break;
-            }
-            if (i == oldDataes.length() - 1)
-            {
-//                if (line[0] != tr("theme"))
-                if (line[0] != settingTitle)
-                {
-                    data_exist = false;             //theme数据不存在
-                }
-            }
-        }
-
-        //重新写入数据
-        writeTheme.close();
-        if (data_exist)                             //如果theme项存在，修改theme值
-        {
-            if (writeTheme.open(QIODevice::WriteOnly))
-            {
-                for (int i=0; i<oldDataes.length(); i++)
-                {
-                    writeTheme.write(oldDataes[i].toUtf8() + "\n");
-                }
-            }
-        }
-        else                                        //如果theme项不存在，添加
-        {
-            if (writeTheme.open(QIODevice::Append))
-            {
-//                writeTheme.write(tr("theme:%1\n").arg(newTheme).toUtf8());
-                writeTheme.write(tr("%1:%2\n").arg(settingTitle).arg(settingData).toUtf8());
-            }
-        }
-
-        //关闭文件
-        writeTheme.close();
-    }
 }
 
 //

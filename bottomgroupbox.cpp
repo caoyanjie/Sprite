@@ -177,31 +177,12 @@ void BottomGroupBox::setChildrenWidgets()
     lab_currentTime->setAlignment(Qt::AlignRight | Qt::AlignBottom);
     lab_totalTime->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
-/*
-    //设置 部件 大小位置
-    tbn_play_previous ->setGeometry(10, 20, 25, 25);    //上一曲    按钮
-    tbn_play_pause ->setGeometry(60, 20, 25, 25);       //播放/暂停　按钮
-    tbn_play_next ->setGeometry(105 , 20, 25, 25);      //下一曲    按钮
-
-    lab_fram ->setGeometry(170, 10, 605, 50);           //背景框
-    lab_playLogo ->setGeometry(175, 15, 40, 40);        //音乐logo
-    lab_musicMessage ->setGeometry(222, 10, 300, 31);   //歌曲信息 标签
-    lab_currentTime ->setGeometry(692, 19, 34, 31);     //当前时间 标签
-    lab_totalTime ->setGeometry(727, 19, 41, 31);       //总时间   标签775-768 8
-    slider_progress ->setGeometry(210, 40, 570, 19);    //进度条   滑竿
-
-    cbx_lrc ->setGeometry(820, 21, 80, 26);             //桌面歌词 按钮
-    tbn_volumn ->setGeometry(910, 21, 26, 26);          //音量     按钮
-    tbn_playModle ->setGeometry(959, 21, 24, 24);       //播放模式  按钮
-
-*/
     //布局
     layout_H = new QHBoxLayout;
     layout_H->addWidget(lab_musicMessage);
     layout_H->addWidget(lab_currentTime);
     layout_H->addWidget(lab_totalTime);
     layout_H->setSpacing(0);
-//    layout_H->setMargin(0);
     layout_H->setContentsMargins(0, 0, 3, 0);
 
     layout_G = new QGridLayout;
@@ -223,41 +204,6 @@ void BottomGroupBox::setChildrenWidgets()
     layout_top->setSpacing(25);
     layout_top->setContentsMargins(10, 10, 18, 20);
     setLayout(layout_top);
-
-
-    //将从配置文件获取的结果转化为对应的 播放模式 值
-    QString playModel_value = read_ini_toSet();         //配置文件读取结果
-    if (playModel_value == "playModel_random")
-    {
-        playModel_currentValue = play_random;
-    }
-    else if (playModel_value == "playModel_once")
-    {
-        playModel_currentValue = play_once;
-    }
-    else if (playModel_value == "playModel_single")
-    {
-        playModel_currentValue = play_single;
-    }
-    else if (playModel_value == "playModel_sequence")
-    {
-        playModel_currentValue = play_sequence;
-    }
-    else if (playModel_value == "playModel_loop")
-    {
-        playModel_currentValue = play_loop;
-    }
-    else if (playModel_value == "playModel_custom")
-    {
-        playModel_currentValue = play_custom;
-    }
-    else
-    {
-        playModel_value = "playModel_loop";
-        playModel_currentValue = play_loop;
-        qDebug() << "ERROR: BottomGroupbox::playModel_value::0000";
-    }
-    emit gotPlayModelFromIni(playModel_currentValue);
 
     //初始化 样式
     tbn_play_previous ->setStyleSheet(
@@ -344,7 +290,7 @@ void BottomGroupBox::setChildrenWidgets()
                                   "QToolButton::hover{"
                                         "border-image: url(:/Images/%2_hover.png);"
                                    "}"
-                                  ).arg(playModel_value).arg(playModel_value));
+                                  ).arg(4).arg(4));
     cbx_lrc ->setStyleSheet(
                            "QCheckBox{"
                                 "border: 0;"
@@ -366,57 +312,6 @@ void BottomGroupBox::setChildrenWidgets()
     tbn_play_next ->setToolTip(tr("下一曲"));
 }
 
-//打开配置文件 设置初值
-QString BottomGroupBox::read_ini_toSet()
-{
-    //用来保存 读取配置文件 字符串
-    QString playModel_Value;
-/*
-    //打开配置文件 设置初值
-    QFile read_ini_toSet_PlayModel(".data.ini");
-    if (read_ini_toSet_PlayModel.open(QIODevice::ReadWrite))
-    {
-        QMap<QString, QString> map_ini;
-        QStringList iniList;
-        QTextStream in(&read_ini_toSet_PlayModel);
-        while (! in.atEnd())
-        {
-            iniList.append(in.readLine());
-        }
-        if (! iniList.isEmpty())
-        {
-            QString name;
-            QString value;
-            for (int i=0; i<iniList.length(); i++)
-            {
-                QStringList line = iniList[i].split(":");
-                name = line[0];
-                value = line[1];
-                map_ini.insert(name, value);
-            }
-            foreach(QString key, map_ini.keys())
-            {
-                if (key == "playModel")
-                {
-                    playModel_Value = map_ini.value(key);
-                    break;
-                }
-            }
-        }
-        else                                                //如果配置文件为空，
-        {
-            playModel_Value = "playModel_loop";             //默认设为 列表循环
-        }
-    }
-    else                                                    //如果文件打开失败，
-    {
-        playModel_Value = "playModel_loop";                 //默认设为 列表循环
-    }
-    read_ini_toSet_PlayModel.close();                       //关闭文件
-*/
-    return playModel_Value;
-}
-
 /*
 //单击 播放/暂停 按钮
 void BottomGroupBox::play_pause_clicked()
@@ -434,13 +329,14 @@ void BottomGroupBox::play_previous_clicked()
 void BottomGroupBox::play_next_clicked()
 {
     emit play_next_click();
-}*/
+}
 
 //单击 桌面歌词 按钮
-//void BottomGroupBox::lrc_clicked(bool checked)
-//{
-//        emit lrc_click(checked, cbx_lrc->pos());
-//}
+void BottomGroupBox::lrc_clicked(bool checked)
+{
+        emit lrc_click(checked, cbx_lrc->pos());
+}
+*/
 
 //播放模式改变 处理
 void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
@@ -456,7 +352,6 @@ void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
                         "border-image: url(:/Images/playModel_random_hover.png);"
                     "}"
                     );
-//        playModel_currentValue = currentPlayModel;
         musicList->setPlayMode(PlayModle::PlayRandom);
         break;
     case PlayModle::PlayOnce:
@@ -468,7 +363,6 @@ void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
                         "border-image: url(:/Images/playModel_once_hover.png);"
                     "}"
                     );
-//        playModel_currentValue = currentPlayModel;
         musicList->setPlayMode(PlayModle::PlayOnce);
         break;
     case PlayModle::PlaySingle:
@@ -480,7 +374,6 @@ void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
                         "border-image: url(:/Images/playModel_single_hover.png);"
                     "}"
                     );
-//        playModel_currentValue = currentPlayModel;
         musicList->setPlayMode(PlayModle::PlaySingle);
         break;
     case PlayModle::PlaySequence:
@@ -492,7 +385,6 @@ void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
                         "border-image: url(:/Images/playModel_sequence_hover.png);"
                     "}"
                     );
-//        playModel_currentValue = currentPlayModel;
         musicList->setPlayMode(PlayModle::PlaySequence);
         break;
     case PlayModle::PlayLoop:
@@ -504,7 +396,6 @@ void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
                         "border-image: url(:/Images/playModel_loop_hover.png);"
                     "}"
                     );
-//        playModel_currentValue = currentPlayModel;
         musicList->setPlayMode(PlayModle::PlayLoop);
         break;
     case PlayModle::PlayCustom:
@@ -516,7 +407,6 @@ void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
                         "border-image: url(:/Images/playModel_custom_hover.png);"
                     "}"
                     );
-//        playModel_currentValue = currentPlayModel;
         musicList->setPlayMode(PlayModle::PlayCustom);
         break;
     }
@@ -589,17 +479,13 @@ void BottomGroupBox::play_pause_clicked()
 //上一曲 处理
 void BottomGroupBox::play_previous_clicked()
 {
-//    thisMethod = click_next;
-//    musicList->playlist->previous();
     musicList->playlistVector.at(musicList->get_current_rootDir())->previous();
 }
 
 //下一曲 处理
 void BottomGroupBox::play_next_clicked()
 {
-//    thisMethod = click_next;
     musicList->playlistVector.at(musicList->get_current_rootDir())->next();
-//    musicList->playlist->next();
 }
 
 //播放状态改变， 设置 “播放/暂停” 按钮图标

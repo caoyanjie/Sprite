@@ -110,11 +110,10 @@ void MusicList::create_musicList(QString listName)
     {
         return;
     }
+
     //创建播放列表
     createMusiclistToplevel(listName);
     this->setCurrentItem(this->topLevelItem(this->topLevelItemCount()-1));
-
-//    musicListName.append(listName);
 
     //添加到数据库
     DatabaseOperation db(musicListDatabaseName);
@@ -221,9 +220,6 @@ void MusicList::setPlayMode(PlayModle::PlayMode playModeValue)
 
     subThread.updateDatabase(SubThread::UpdateDatabase, setupDatabaseName, "setUp", playMode);
     subThread.start();
-//    DatabaseOperation db(setupDatabaseName);
-//    db.updateDatabase("setUp", playMode);
-//    qDebug() << "music over";
 }
 
 //
@@ -373,7 +369,6 @@ void MusicList::loadMusicList()
             //创建用户自定义的播放列表
             createMusiclistToplevel(query_musicListName.value("name").toString());
             this->rootDirVector.append(createItem);
-//            this->musicListName.append(query_musicListName.value(0).toString());
         }
         //查询歌曲路径
         if(!query_musicName.exec(tr("SELECT * FROM %1").arg(query_musicListName.value("name").toString())))
@@ -493,7 +488,6 @@ bool MusicList::deleteDatebase(QString datebaseName, QString tableName, int id_d
 //播放歌曲
 void MusicList::playMusic()
 {
-//    thisMethod = click_next;                                    //设置为发行为
     int currentIndex = this->currentIndex().row();              //获取被双击音乐在所在列表中的索引值
     int rootDir = get_current_rootDir();                        //获取所在列表的索引值
     if (rootDir > playlistVector.length()-1)                  //如果单击的是播放列表而不是歌曲，则不处理（默认展开列表）
@@ -578,7 +572,7 @@ void MusicList::deleteSelection()
 void MusicList::remove_rootDir()
 {
     // 获得选中的列表索引
-    //int currentToplevel = get_current_rootDir();
+    //int currentToplevel = get_current_rootDir();          //获得
     int currentToplevel = this->currentIndex().row();
     if (currentToplevel == 0)   // 不能删除默认列表
     {
@@ -683,7 +677,6 @@ void MusicList::add_otherMusicList(QAction *action)
         }
         act++;
     }
-
 }
 
 //释放子线程

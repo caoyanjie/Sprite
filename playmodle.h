@@ -39,7 +39,7 @@ private:
 
 signals:
     void playModel_choose(PlayModle::PlayMode);       //改变播放模式
-    void settingDataChanged(QString, QString);   //设置信息改变，写入配置文件
+//    void settingDataChanged(QString, QString);   //设置信息改变，写入配置文件
 
 public slots:
 //    void receiveCurrentVolumeValue(int);        //接收当前音量，以更新配置文件

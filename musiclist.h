@@ -12,7 +12,6 @@
 #include <QCompleter>
 #include <QGridLayout>
 #include <QVBoxLayout>
-//class SubThread;
 class QStringListModel;
 class QAction;
 
@@ -21,17 +20,7 @@ class MusicList : public QTreeWidget
     Q_OBJECT
 public:
     explicit MusicList(QString programPath, QWidget *parent = 0);
-/*
-    //枚举播放状态
-    enum PlayMode{
-        PlayRandom,            //随机播放
-        PlayOnce,              //单首播放
-        PlaySingle,            //单曲循环
-        PlaySequence,          //单次列表
-        PlayLoop,              //泪飙循环
-        PlayCustom             //自定义
-    };
-*/
+
     //枚举切换方式
     enum method{
         auto_next,              //自动切换
@@ -50,7 +39,6 @@ public:
 
     QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器                    ########有什么用#########
     int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
-    QStringList musicListName;                          //保存播放列表名字
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);    //上下文菜单事件
@@ -76,13 +64,14 @@ private:
     QList<QAction*> musicMenuActionList;
     QAction *musicMenuAction;
 
+    //定义子线程
 //    SubThread *subThread;
     SubThread subThread;
+
     int volumn;
     int toStopNum;                                  //自定义播放模式（N首后停止）
     int selectedIndex;                              //播放列表中被选中的歌曲
 
-//    PlayMode playModel_currentValue;
     method thisMethod;
     const QString musicListDatabaseName;
     const QString setupDatabaseName;
@@ -121,9 +110,6 @@ private slots:
 
     //释放子线程
     void releaseThread();
-
-    //定义子线程
-//    SubThread subThread;
 };
 
 #endif // MUSICLIST_H
