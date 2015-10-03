@@ -98,6 +98,7 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     //初始化 界面 和 变量
     init();
     network = new NetWork;
+    connect(network, SIGNAL(lrcDownloadFinished()), this, SLOT(durationChanged()));
 
     //为部件安装事件过滤器
     cob_addMusic ->installEventFilter(this);

@@ -56,6 +56,7 @@ void NetWork::replayLrcFile(QNetworkReply *replay)
     out << replay->readAll();
     file.close();
     replay->deleteLater();
+    emit lrcDownloadFinished();
 }
 
 

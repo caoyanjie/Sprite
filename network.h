@@ -4,7 +4,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-class NetWork : QObject
+class NetWork : public QObject
 {
     Q_OBJECT
 
@@ -19,6 +19,9 @@ private:
     QNetworkAccessManager *managerDownloadLrc;
     QString lrcFileName;
     int a;
+
+signals:
+    void lrcDownloadFinished();
 
 private slots:
     void replayFinished(QNetworkReply *replay);

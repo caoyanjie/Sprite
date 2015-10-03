@@ -133,11 +133,10 @@ private:
     QString createMusiclist_name;
 
     //歌词
+    void resolveLrc(const QString &sourceFileName);     //解析歌词
     QString previousLrcString;                          //之前一行    //没用了 找到他解决掉
 //    QString initLrc;                                  //初始化5行歌词
-
     QMap<qint64, QString> lrcMap;
-    void resolveLrc(const QString &sourceFileName);     //解析歌词
 
     QTreeWidgetItem *createItem;
     QPoint offset;                                      //定义窗口拖动相对坐标差
