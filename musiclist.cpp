@@ -136,6 +136,17 @@ int MusicList::get_current_rootDir()
     return -1;
 }
 
+//获得播放列表名列表
+QStringList MusicList::getToplevelNames()
+{
+    QStringList names;
+    for (int i=0; i<this->topLevelItemCount(); ++i)
+    {
+        names.append(this->topLevelItem(i)->text(0));
+    }
+    return names;
+}
+
 //打开播放临时文件
 void MusicList::openTempFile(QString file)
 {

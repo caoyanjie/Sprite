@@ -1133,17 +1133,26 @@ void DT_Music::gameStateChange(bool gameState)
 void DT_Music::create_MusicList()
 {
     createMusicList = new Create_MusicList(this);
-    createMusicList ->show();
+    createMusicList->show();
 
-    connect(createMusicList, SIGNAL(pbn_ok_click(QString)),
-            this, SLOT(create_musicList_ok(QString)));
+    connect(createMusicList, SIGNAL(pbn_ok_click(QString)), this, SLOT(create_musicList_ok(QString)));
 }
 
-/////////////////////////////////////////////确认 创建播放列表
+//确认 创建播放列表
 void DT_Music::create_musicList_ok(QString name)
 {
-    musicList ->create_musicList(name); //调用 musicList 类 创建列表
-    createMusicList ->close();
+    QStringList toplevelNames = musicList->getToplevelNames();
+    for (int i=0; i<toplevelNames.length(); ++i)
+    {
+        if (name == toplevelNames.at(i))
+        {
+            createMusicList->setNameError();
+            return;
+        }
+    }
+
+    musicList ->create_musicList(name);         //调用 musicList 类 创建列表
+    createMusicList->deleteLater();
 }
 
 /////////////////////////////////////////////更新 要创建列表的名字

@@ -33,6 +33,7 @@ public:
 
     void create_musicList(QString);                     //创建播放列表
     int get_current_rootDir();                          //检测当前播放列表
+    QStringList getToplevelNames();
     void openTempFile(QString file);
     void addMusicToList(int topLevelIndex, QStringList musicNames);
     void setPlayMode(PlayModle::PlayMode playModeValue);

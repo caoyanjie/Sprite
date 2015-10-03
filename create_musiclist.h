@@ -11,7 +11,10 @@ class Create_MusicList : public QLabel
 public:
     explicit Create_MusicList(QWidget *parent = 0);
 
+    void setNameError();
+
 protected:
+    QLabel *lab_title;
     QLineEdit *ln_name;
     QPushButton *pbn_ok;
     QPushButton *pbn_cancle;
@@ -21,6 +24,9 @@ signals:
 
 public slots:
     void pbn_ok_clicked();
+
+private slots:
+    void textChanged();
 
 };
 
