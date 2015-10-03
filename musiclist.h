@@ -37,8 +37,8 @@ public:
     void addMusicToList(int topLevelIndex, QStringList musicNames);
     void setPlayMode(PlayModle::PlayMode playModeValue);
 
-    QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器                    ########有什么用#########
-    int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
+//    QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器                    ########有什么用#########
+//    int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);    //上下文菜单事件
@@ -61,8 +61,8 @@ private:
     QStringList completerList;
 
     //右键菜单事件
-    QList<QAction*> musicMenuActionList;
     QAction *musicMenuAction;
+    QList<QAction*> musicMenuActionList;
 
     //定义子线程
 //    SubThread *subThread;

@@ -121,7 +121,7 @@ void MusicList::create_musicList(QString listName)
     db.createTable(listName, tr("id integer primary key, musicName text"));
 }
 
-//检测当前播放列表(有孩子的情况下，判断孩子所在的toplevel，如果没子孩子，会得-1）
+//检测当前播放列表(有孩子的情况下，判断孩子所在的toplevel，如果没子孩子，返回-1）
 int MusicList::get_current_rootDir()
 {
     QTreeWidgetItem *item = this ->currentItem() ->parent();    //当前行所在 父节点的指针
@@ -143,7 +143,7 @@ void MusicList::openTempFile(QString file)
     this->addTopLevelItem(createItem);
     playlist = new QMediaPlaylist(this);
     playlistVector.append(playlist);
-    this->rootDirVector.append(createItem);
+//    rootDirVector.append(createItem);
 
     createItem = new QTreeWidgetItem(QStringList(QFileInfo(file).fileName()));
     this->topLevelItem(this->topLevelItemCount()-1) ->addChild(createItem);
@@ -242,9 +242,12 @@ void MusicList::setCurrentRow(int currentIndex, int topLevel)
     if (currentIndex < this->topLevelItem(topLevel)->childCount())
     {
         //取消上次的高亮行
-        if (selectedIndex[1] != -1)
+        if (selectedIndex[0]>=0 && selectedIndex[1]>=0)
         {
-            this->topLevelItem(selectedIndex[0])->child(selectedIndex[1])->setSelected(false);
+            if (this->topLevelItem(selectedIndex[0])->childCount() > 0)
+            {
+                this->topLevelItem(selectedIndex[0])->child(selectedIndex[1])->setSelected(false);
+            }
         }
 
         //设置当前行
@@ -381,7 +384,7 @@ void MusicList::loadMusicList()
         {
             //创建用户自定义的播放列表
             createMusiclistToplevel(query_musicListName.value("name").toString());
-            this->rootDirVector.append(createItem);
+//            this->rootDirVector.append(createItem);
         }
         //查询歌曲路径
         if(!query_musicName.exec(tr("SELECT * FROM %1").arg(query_musicListName.value("name").toString())))
@@ -407,7 +410,7 @@ void MusicList::createMusiclistToplevel(QString toplevelName)
     //界面添加 toplevel
     createItem = new QTreeWidgetItem(QStringList(QString(toplevelName)));
     this->addTopLevelItem(createItem);
-    rootDirVector.append(createItem);                   //rootDirVector
+//    rootDirVector.append(createItem);                   //rootDirVector
 
     //为右键菜单事件绑定 action
     musicMenuAction = new QAction(toplevelName, this);
@@ -464,8 +467,8 @@ void MusicList::playMusic()
     {
         return;
     }
-    player->setPlaylist(playlistVector[rootDir]);
-    playlistVector[rootDir]->setCurrentIndex(currentIndex);
+    player->setPlaylist(playlistVector.at(rootDir));
+    playlistVector.at(rootDir)->setCurrentIndex(currentIndex);
     player->play();
 }
 
@@ -495,18 +498,13 @@ void MusicList::removeSelection(bool delete_file)
     //获得播放列表和索引值
     int rootDir = get_current_rootDir();
     int currentRow = this->currentIndex().row();
-    QString file_path = playlistVector[rootDir]->media(currentRow).canonicalUrl().toLocalFile();
+    QString file_path = playlistVector.at(rootDir)->media(currentRow).canonicalUrl().toLocalFile();
 
     //删除界面中的选中歌曲
     this->topLevelItem(rootDir)->removeChild(this->currentItem());
 
     //移除播放列表歌曲
-    playlistVector[rootDir]->removeMedia(currentRow);
-
-    for (int i=0; i<playlistVector[rootDir]->mediaCount(); i++)
-    {
-        qDebug() << tr("%1: %2").arg(i).arg(playlistVector[rootDir]->media(i).canonicalUrl().fileName());
-    }
+    playlistVector.at(rootDir)->removeMedia(currentRow);
 
     //更新数据库
     DatabaseOperation db(musicListDatabaseName);
@@ -624,6 +622,10 @@ void MusicList::add_otherMusicList(QAction *action)
                 {
                     QString musicName = playlistVector[current_toplevel]->media(item_index).canonicalUrl().toLocalFile();
                     addMusicToList(index, QStringList(musicName));
+                    if (!this->topLevelItem(index)->isExpanded())       //展开
+                    {
+                        this->topLevelItem(index)->setExpanded(true);
+                    }
                     DatabaseOperation db(musicListDatabaseName);
                     db.insertDatabase(this->topLevelItem(index)->text(0), "musicName", QStringList(musicName));
                     return;

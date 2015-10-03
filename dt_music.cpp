@@ -752,16 +752,16 @@ void DT_Music::durationChanged()
     lrcView ->previousLines.clear();        //..............
 
     //定位当前播放歌曲
-    int rootDir = musicList->get_current_rootDir();                         //检测 当前播放列表
-    int currentIndex = musicList->playlistVector[rootDir]->currentIndex();  //当前行 索引值
+//    int rootDir = musicList->get_current_rootDir();                         //检测 当前播放列表
+//    int currentIndex = musicList->playlistVector.at(rootDir)->currentIndex();  //当前行 索引值
 //    lrcStringList.clear();                                        //
 
     //调用 解析歌词函数
     resolveLrc(musicList->player->currentMedia().canonicalUrl().toLocalFile());
 
     //标记当前播放歌曲的二维索引
-    musicList ->currentPlayingIndex[0] = rootDir;
-    musicList ->currentPlayingIndex[1] = currentIndex;
+//    musicList ->currentPlayingIndex[0] = rootDir;
+//    musicList ->currentPlayingIndex[1] = currentIndex;
 }
 /////////////////////////////////////////////////////////////////
 //查找歌曲
