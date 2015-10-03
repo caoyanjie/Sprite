@@ -40,7 +40,7 @@ void NetWork::replayFinished(QNetworkReply *replay)
     }
     if (!list.isEmpty())
     {
-        QString urlDownLrc = "http://music.baidu.com" + list[0];
+        QString urlDownLrc = "http://music.baidu.com" + list[0];        //下载百度歌词的第一个
 
         managerDownloadLrc->get(QNetworkRequest(QUrl(urlDownLrc)));
         connect(managerDownloadLrc, SIGNAL(finished(QNetworkReply*)), this, SLOT(replayLrcFile(QNetworkReply*)));
@@ -50,13 +50,19 @@ void NetWork::replayFinished(QNetworkReply *replay)
 //下载 lrc 文件
 void NetWork::replayLrcFile(QNetworkReply *replay)
 {
+    QString lrcLines = replay->readAll();
+    if (lrcLines.isEmpty())
+        return;
+
     QFile file(tr("%1").arg(lrcFileName));
     file.open(QIODevice::WriteOnly | QIODevice::Text);
-    QTextStream out(&file);
-    out << replay->readAll();
+//    QTextStream out(&file);
+//    out << lrcLines.toUtf8();
+    file.write(lrcLines.toUtf8());
     file.close();
-    replay->deleteLater();
     emit lrcDownloadFinished();
+
+    replay->deleteLater();
 }
 
 
