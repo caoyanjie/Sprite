@@ -11,29 +11,8 @@ Timing::Timing(int x, int y, int w, int h, QWidget *parent) :
     QGroupBox(parent)
 {
     //设置窗口样式
-    setObjectName(tr("timing"));
-    setGeometry(x, y, w, h);
-    setStyleSheet(
-            "#timing {"
-//                "background: rgb(43, 45, 163);"
-//                "background: rgb(60, 21, 124);"
-                "background: rgba(0, 0, 0, 100);"
-                "border: 0;"
-            "}"
-            "QPushButton{"
-                "background: rgb(246, 237, 144);"
-                "border-radius: 10px;"
-            "}"
-            "QRadioButton{"
-                "color: white;"
-            "}"
-            "QLabel{"
-                "color: white;"
-            "}"
-            "#lab_bg1, #lab_bg2, #lab_bg3{"
-                "background: rgba(0, 0, 0, 50);"
-            "}"
-            );
+    this->setGeometry(x, y, w, h);
+    this->setObjectName(tr("timing"));
 
     //初始化小部件
     lab_bg1 = new QLabel(this);
@@ -89,6 +68,28 @@ Timing::Timing(int x, int y, int w, int h, QWidget *parent) :
     rbn_countDown ->setChecked(true);
     rbn_windowClose ->setChecked(true);
 
+    this->setStyleSheet(
+        "#timing {"
+//                "background: rgb(43, 45, 163);"
+//                "background: rgb(60, 21, 124);"
+            "background: rgba(0, 0, 0, 100);"
+            "border: 0;"
+        "}"
+        "QPushButton{"
+            "background: rgb(246, 237, 144);"
+            "border-radius: 10px;"
+        "}"
+        "QRadioButton{"
+            "color: white;"
+        "}"
+        "QLabel{"
+            "color: white;"
+        "}"
+        "#lab_bg1, #lab_bg2, #lab_bg3{"
+            "background: rgba(0, 0, 0, 50);"
+        "}"
+        );
+
     //信号槽关联
     connect(pbn_ok, SIGNAL(clicked()), this, SIGNAL(timing_pbnOk_click()));
     connect(pbn_cancle, SIGNAL(clicked()), this, SIGNAL(timing_pbnCancle_click()));
@@ -112,8 +113,14 @@ int Timing::get_spbSecond_value()
     return spb_second ->value();
 }
 
+//获得定时模式
+int Timing::get_timingMode()
+{
+    return groupButton1->checkedId();
+}
+
 //获得处理方式
 int Timing::get_timingTarget()
 {
-    return groupButton2 ->checkedId();
+    return groupButton2->checkedId();
 }

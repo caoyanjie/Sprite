@@ -27,6 +27,7 @@ public:
     int get_spbHour_value();
     int get_spbMinite_value();
     int get_spbSecond_value();
+    int get_timingMode();
     int get_timingTarget();
 
 protected:

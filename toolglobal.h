@@ -15,7 +15,7 @@ public:
     explicit ToolGlobal(QWidget *parent = 0);
 
     //枚举 定时器处理方式
-    enum whatTimingDo{
+    enum WhatTimingDo{
         playStop = -2,
         windowClose = -3,
         shutdown = -4

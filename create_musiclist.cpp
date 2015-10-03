@@ -71,7 +71,7 @@ void Create_MusicList::pbn_ok_clicked()
     emit pbn_ok_click(ln_name ->text());
 }
 
-//
+//文本改变，恢复标题
 void Create_MusicList::textChanged()
 {
     lab_title->setText("输入列表名");
