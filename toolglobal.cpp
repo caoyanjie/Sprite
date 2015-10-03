@@ -18,7 +18,6 @@ ToolGlobal::ToolGlobal(QWidget *parent) :
 {
 //////////////////////    setGeometry(0, 81, 1001, 32);
 
-
     //创建 魔音按钮
     gbx_magic = new QGroupBox(this);                            //背景阴影
     pbn_magic_state = new QPushButton("ON", this);              //状态标签

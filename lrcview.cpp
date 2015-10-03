@@ -26,8 +26,7 @@ LrcView::LrcView(QWidget *parent) :
     lab_left_bottom  ->setGeometry(20, 100, 240, 320);
 
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()),
-            this, SLOT(updateGif()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateGif()));
     timer ->start(100);
 
     //创建 后续歌词
@@ -61,7 +60,7 @@ LrcView::LrcView(QWidget *parent) :
                     "font-size: 20px;"
                 "}"
                 );
-    setMouseTracking(true);
+    this->setMouseTracking(true);
     textNext->setMouseTracking(true);
     currentLrc->setMouseTracking(true);
     textPrevious->setMouseTracking(true);
@@ -96,6 +95,23 @@ LrcView::LrcView(QWidget *parent) :
     animation->setDuration(20000);
     animation->setLoopCount(-1);
     animation->start();
+}
+
+//是否显示歌词文本
+void LrcView::setLrcTextView(bool show)
+{
+    if (show)
+    {
+        textPrevious->show();
+        currentLrc->show();
+        textNext->show();
+    }
+    else
+    {
+        textPrevious->hide();
+        currentLrc->hide();
+        textNext->hide();
+    }
 }
 
 //更新 Gif 动画

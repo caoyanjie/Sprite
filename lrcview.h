@@ -12,6 +12,7 @@ class LrcView : public QLabel
 public:
     explicit LrcView(QWidget *parent = 0);
 
+    void setLrcTextView(bool show);
     QLabel *textNext;                           //后续歌词
     CurrentLrc *currentLrc;                     //当前播放歌词
     QLabel *textPrevious;                       //播放过的歌词

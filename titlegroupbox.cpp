@@ -287,15 +287,12 @@ void TitleGroupBox::setTitleUi()
 
     lab_logoWords ->setText("<html><body><p><center><span style='color:#ffffff;'>小妖精</span></center></p></body></html>");
 
-    connect(tbn_switch_video, SIGNAL(clicked()),                      //播放视频
-            this, SLOT(ShowVideoPlayerSlot()));
+    connect(tbn_switch_video, SIGNAL(clicked()), this, SLOT(ShowVideoPlayerSlot()));            //播放视频
 
     timer_logoRotate = new QTimer(this);
     timer_logoRotatePause = new QTimer(this);
-    connect(timer_logoRotate, SIGNAL(timeout()),
-            this, SLOT(timeout_logoRotate()));
-    connect(timer_logoRotatePause, SIGNAL(timeout()),
-            this, SLOT(timeout_logoRotetaRedo()));
+    connect(timer_logoRotate, SIGNAL(timeout()), this, SLOT(timeout_logoRotate()));
+    connect(timer_logoRotatePause, SIGNAL(timeout()), this, SLOT(timeout_logoRotetaRedo()));
     timer_logoRotate->start(timer_rotateStart);
 
 }

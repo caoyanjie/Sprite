@@ -1118,14 +1118,14 @@ void DT_Music::gameStateChange(bool gameState)
     {
         game = new Game(this);
         game->move(lrcView->pos().x()+250, lrcView->pos().y()+50);
+        lrcView->setLrcTextView(false);
         game->show();
         game->setFocus();
-//        lrcView->hide();
     }
     else
     {
         game->deleteLater();
-        lrcView->setVisible(true);
+        lrcView->setLrcTextView(true);
     }
 }
 
