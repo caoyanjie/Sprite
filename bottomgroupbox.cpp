@@ -411,6 +411,12 @@ void BottomGroupBox::playModle_choosed(PlayModle::PlayMode currentPlayModel)
     }
 }
 
+//发送音乐标题和作者信息
+void BottomGroupBox::sendMusicTitleAndAuthor()
+{
+    emit musicTitleAndAuthor(lab_musicMessage->text());
+}
+
 //播放 时长信息 出现
 void BottomGroupBox::durationChanged(qint64 totalTime)
 {
@@ -427,8 +433,8 @@ void BottomGroupBox::durationChanged(qint64 totalTime)
     musicMessage = metrics.elidedText(musicMessage, Qt::ElideRight, 300);
 
     lab_musicMessage->setText(musicMessage);
-//    lab_musicMessage->setToolTip(filename);
-    emit musicTitleAndAuthor(musicMessage);
+    lab_musicMessage->setToolTip(filename);
+    emit musicTitleAndAuthor(tr("歌曲：%1").arg(filename));
 }
 
 //提取 歌曲信息
@@ -441,7 +447,7 @@ void BottomGroupBox::getMetaData(bool)
         return;
     }
     title_author.append(musicList->player->metaData(QMediaMetaData::Author).toString());
-    QString musicMessage = tr("歌曲： %1\n歌手： %2").arg(title_author.at(0)).arg(title_author.at(1));
+    QString musicMessage = tr("歌曲：%1\n歌手：%2").arg(title_author.at(0)).arg(title_author.at(1));
     lab_musicMessage->setText(musicMessage);
     emit musicTitleAndAuthor(musicMessage);
 

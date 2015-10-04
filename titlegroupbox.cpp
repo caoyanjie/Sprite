@@ -349,6 +349,8 @@ void TitleGroupBox::showMiniWindow()
 {
     QDesktopWidget desktop;
     MusicMiniPlayer *miniWindow = new MusicMiniPlayer(this);
+    connect(this, SIGNAL(musicTitleAndAuthor(QString)), miniWindow, SLOT(setMusicMessage(QString)));
+    emit calldMusicTitleAndAuthor();
     miniWindow->move(desktop.width()-miniWindow->width()-40, 40);
     miniWindow->show();
     parentWidget()->parentWidget()->hide();

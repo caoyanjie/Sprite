@@ -70,6 +70,8 @@ signals:
     void themeNumClick(int);
     void settingDataChanged(QString, QString);   //设置信息改变，写入配置文件
     void ShowVideoPlayer();
+    void musicTitleAndAuthor(QString);
+    void calldMusicTitleAndAuthor();
 
 public slots:
     void showMiniWindow();

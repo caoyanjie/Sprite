@@ -20,7 +20,6 @@ public:
 private:
     QLabel *lab_bg;
     QLabel *lab_logo;
-    QLabel *lab_musicName;
     QLabel *lab_musicMsg;
     QLabel *lab_buttonsParent;
     QToolButton *tbn_play_previous;
@@ -68,6 +67,7 @@ public slots:
     void showNormalWindow();
     //logo 旋转
     void timeout_logoRotate();
+    void setMusicMessage(QString musicMsg);
 };
 
 #endif // MUSICMINIPLAYER_H

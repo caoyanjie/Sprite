@@ -57,6 +57,7 @@ signals:
 
 public slots:
     void playModle_choosed(PlayModle::PlayMode);        //播放模式改变 处理     [需要判断情况]
+    void sendMusicTitleAndAuthor();
 
 protected slots:
 //    void slider_progress_moved(int);                  //拖动 ”播放进度“  滑竿 [需要数据转换]

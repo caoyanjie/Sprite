@@ -115,6 +115,8 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     connect(bottomGroupbox, SIGNAL(lrc_click(bool)), this, SLOT(setLrcShown(bool)));            //显示/隐藏 桌面歌词
     connect(bottomGroupbox, SIGNAL(showVolumn(QPoint)), this, SLOT(showVolumn(QPoint)));        //音量     处理
     connect(bottomGroupbox, SIGNAL(showPlayModle(QPoint)), this, SLOT(showPlayModle(QPoint)));  //显示/隐藏 “播放模式”窗口
+    connect(bottomGroupbox, SIGNAL(musicTitleAndAuthor(QString)),
+            titleGroupBox, SIGNAL(musicTitleAndAuthor(QString)));
 
     //播放模式控件窗口操作
     connect(playModle, SIGNAL(playModel_choose(PlayModle::PlayMode)),                           //选择播放模式，为bottom设置相应图标
@@ -135,6 +137,8 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
 //            this, SLOT(writeSettingdateToIni(QString,QString)));
 			
     connect(titleGroupBox, SIGNAL(ShowVideoPlayer()), this, SLOT(ShowVideoPlayer()));
+    connect(titleGroupBox, SIGNAL(calldMusicTitleAndAuthor()),                                  //MiNiPlayer 请求发送歌曲信息
+            bottomGroupbox, SLOT(sendMusicTitleAndAuthor()));
 
     //边缘缩放
     isLeftPressDown = false;

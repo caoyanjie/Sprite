@@ -26,14 +26,12 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     lab_bg->installEventFilter(this);
 
     lab_logo = new QLabel(lab_bg);
-    lab_musicName = new QLabel(lab_bg);
     lab_musicMsg = new QLabel(lab_bg);
     lab_logo->setFixedSize(66, 66);
     lab_logo->move(10, 14);
-    lab_musicName->move(90, 20);
-    lab_musicMsg->move(90, 40);
-    lab_musicName->setText("歌曲：");
-    lab_musicMsg->setText("歌手：");
+    lab_musicMsg->setGeometry(90, 20, 130, 40);
+    lab_musicMsg->setText("<p style=margin:3px>歌曲：</p><p style=margin:3px>歌手：</p>");
+//    lab_musicMsg->setLineWidth(5);
     lab_logo->setAlignment(Qt::AlignCenter);
     
     lab_buttonsParent = new QLabel(lab_bg);
@@ -131,8 +129,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     animation_previous = new QPropertyAnimation(lab_buttonsParent, "pos");
     animation_previous->setStartValue(QPoint(0, -lab_buttonsParent->height()));
     animation_previous->setEndValue(QPoint(0, 0));
-//    connect(animation_previous, SIGNAL(finished()),
-//            this, SLOT(TEST()));
+//    connect(animation_previous, SIGNAL(finished()), this, SLOT(TEST()));
 /*
     animation_play = new QPropertyAnimation(tbn_play, "pos");
     animation_play->setStartValue(QPoint(tbn_play_previous->x()+tbn_play_previous->width()+5, -tbn_play->height()));
@@ -161,7 +158,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
 //    tbn_simple->setObjectName("tbn_simple");
     tbn_normal->setObjectName("tbn_normal");
     lab_logo->setObjectName("lab_miniLogo");
-    lab_musicName->setObjectName("lab_musicName");
+//    lab_musicName->setObjectName("lab_musicName");
     lab_musicMsg->setObjectName("lab_musicMsg");
 
 /*
@@ -186,7 +183,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
                     "border-radius: 8px;"
                     "background: rgba(0, 0, 0, 80);"
                 "}"
-                "#lab_musicName, #lab_musicMsg{"
+                "#lab_musicMsg{"
 //                    "font-weight: bold;"
                     "color: rgb(23, 215, 255);"
                 "}"
@@ -371,4 +368,25 @@ void MusicMiniPlayer::timeout_logoRotate()
     QMatrix logoMatrix;
     logoMatrix.rotate(rotateAngle += angleOffset);
     lab_logo->setPixmap(QPixmap(":/Images/miniLogo_rotate.png").transformed(logoMatrix,Qt::SmoothTransformation));
+}
+
+//设置音乐标题和作者
+void MusicMiniPlayer::setMusicMessage(QString musicMsg)
+{
+    QStringList titleAuthor = musicMsg.split("\n");
+    QFontMetrics metrics(this->font());
+    QString labText;
+    if (titleAuthor.length() == 1)
+    {
+        QString title = titleAuthor[0].remove(titleAuthor.at(0).left(3));
+        title = metrics.elidedText(title, Qt::ElideRight, 130);
+        labText = tr("<p style=margin:3px>歌曲：</p><p style=margin:3px>%1</p>").arg(title);
+    }
+    else
+    {
+        QString title = metrics.elidedText(titleAuthor.at(0), Qt::ElideRight, 130);
+        QString author = metrics.elidedText(titleAuthor.at(1), Qt::ElideRight, 130);
+        labText = tr("<p style=margin:3px>%1</p><p style=margin:3px>%2</p>").arg(title).arg(author);
+    }
+    lab_musicMsg->setText(labText);
 }
