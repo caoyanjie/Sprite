@@ -8,6 +8,7 @@
 #include <QSlider>
 #include <QLabel>
 #include <QCheckBox>
+#include <QFontMetrics>
 
 #include <QMediaMetaData>   //多媒体数据
 
@@ -420,8 +421,13 @@ void BottomGroupBox::durationChanged(qint64 totalTime)
 
     QString filename = musicList->player->playlist()->currentMedia().canonicalUrl().fileName();
     filename = filename.remove(filename.right(4));
+
     QString musicMessage = tr("歌曲：%1").arg(filename);
+    QFontMetrics metrics(this->font());
+    musicMessage = metrics.elidedText(musicMessage, Qt::ElideRight, 300);
+
     lab_musicMessage->setText(musicMessage);
+//    lab_musicMessage->setToolTip(filename);
     emit musicTitleAndAuthor(musicMessage);
 }
 
