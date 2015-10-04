@@ -62,6 +62,11 @@ private:
     void paintOnWidget();
 
 signals:
+    void callPlayPause();
+    void callPlayPrevious();
+    void callPlayNext();
+    void callVolumnPlus();
+    void callVolumnLess();
 
 public slots:
     void showNormalWindow();

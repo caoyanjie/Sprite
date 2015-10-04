@@ -73,7 +73,6 @@ private slots:
     void play_next_clicked();                           //下一曲 处理
     void playStatusChanged(QMediaPlayer::State state);  //播放状态 改变
     void seek(int current);                             //定位播放进度
-
 };
 
 #endif // BOTTOMGROUPBOX_H

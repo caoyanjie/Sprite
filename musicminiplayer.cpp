@@ -64,6 +64,11 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     connect(tbn_closeWindow, SIGNAL(clicked()), this, SLOT(close()));
     connect(tbn_miniWindow, SIGNAL(clicked()), this, SLOT(showMinimized()));
     connect(tbn_normal, SIGNAL(clicked()), this, SLOT(showNormalWindow()));
+    connect(tbn_play, SIGNAL(clicked()), this, SIGNAL(callPlayPause()));
+    connect(tbn_play_previous, SIGNAL(clicked()), this, SIGNAL(callPlayPrevious()));
+    connect(tbn_play_next, SIGNAL(clicked()), this, SIGNAL(callPlayNext()));
+    connect(tbn_volumn_plus, SIGNAL(clicked()), this, SIGNAL(callVolumnPlus()));
+    connect(tbn_volumn_less, SIGNAL(clicked()), this, SIGNAL(callVolumnLess()));
 
 /*
     tbn_play_previous->setGeometry(20, (tbn_play_previous->parentWidget()->height()-tbn_play_previous->height())/2, 20, 20);

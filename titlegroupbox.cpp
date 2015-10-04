@@ -354,6 +354,11 @@ void TitleGroupBox::showMiniWindow()
     miniWindow->move(desktop.width()-miniWindow->width()-40, 40);
     miniWindow->show();
     parentWidget()->parentWidget()->hide();
+    connect(miniWindow, SIGNAL(callPlayPause()),    this, SIGNAL(callPlayPause()));
+    connect(miniWindow, SIGNAL(callPlayPrevious()), this, SIGNAL(callPlayPrevious()));
+    connect(miniWindow, SIGNAL(callPlayNext()),     this, SIGNAL(callPlayNext()));
+    connect(miniWindow, SIGNAL(callVolumnPlus()),   this, SIGNAL(callVolumnPlus()));
+    connect(miniWindow, SIGNAL(callVolumnLess()),   this, SIGNAL(callVolumnLess()));
 }
 
 //单击 ”本地音乐“ 槽函数

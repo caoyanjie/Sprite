@@ -42,28 +42,18 @@ BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *
 //    slider_progress->installEventFilter(this);
 
     //信号/槽 关联
-    connect(musicList->player, SIGNAL(metaDataAvailableChanged(bool)),      //多媒体 可用数据信息 改变
-            this, SLOT(getMetaData(bool)));
-    connect(musicList->player, SIGNAL(durationChanged(qint64)),             //多媒体 时长信息 出现
-            this, SLOT(durationChanged(qint64)));
-    connect(tbn_play_pause, SIGNAL(clicked()),                              //单击 播放/暂停 按钮
-            this, SLOT(play_pause_clicked()));
-    connect(tbn_play_previous, SIGNAL(clicked()),                           //单击 上一曲    按钮
-            this, SLOT(play_previous_clicked()));
-    connect(tbn_play_next, SIGNAL(clicked()),                               //单击 下一曲    按钮
-            this, SLOT(play_next_clicked()));
-    connect(musicList->player, SIGNAL(stateChanged(QMediaPlayer::State)),   //播放状态 改变
+    connect(musicList->player, SIGNAL(metaDataAvailableChanged(bool)), this, SLOT(getMetaData(bool)));  //多媒体 可用数据信息 改变
+    connect(musicList->player, SIGNAL(durationChanged(qint64)), this, SLOT(durationChanged(qint64)));   //多媒体 时长信息 出现
+    connect(tbn_play_pause, SIGNAL(clicked()), this, SLOT(play_pause_clicked()));                       //单击 播放/暂停 按钮
+    connect(tbn_play_previous, SIGNAL(clicked()), this, SLOT(play_previous_clicked()));                 //单击 上一曲    按钮
+    connect(tbn_play_next, SIGNAL(clicked()), this, SLOT(play_next_clicked()));                         //单击 下一曲    按钮
+    connect(musicList->player, SIGNAL(stateChanged(QMediaPlayer::State)),                               //播放状态 改变
             this, SLOT(playStatusChanged(QMediaPlayer::State)));
-    connect(cbx_lrc, SIGNAL(clicked(bool)),                                 //单击 桌面歌词 　按钮
-            this, SIGNAL(lrc_click(bool)));
-    connect(slider_progress, SIGNAL(sliderMoved(int)),                      //拖动 播放 进度条
-            this, SLOT(slider_progress_moved(int)));
-//    connect(bottomGroupbox, SIGNAL(slider_progress_valueChange(qint64)),  //更新 进度条
-//            this, SLOT(seek(qint64)));
-    connect(musicList->player, SIGNAL(positionChanged(qint64)),             //更新进度条
-            this, SLOT(positionChanged(qint64)));
-    connect(slider_progress, SIGNAL(sliderMoved(int)),                      //定位播放进度
-            this, SLOT(seek(int)));
+    connect(cbx_lrc, SIGNAL(clicked(bool)), this, SIGNAL(lrc_click(bool)));                             //单击 桌面歌词 　按钮
+    connect(slider_progress, SIGNAL(sliderMoved(int)), this, SLOT(slider_progress_moved(int)));         //拖动 播放 进度条
+//    connect(bottomGroupbox, SIGNAL(slider_progress_valueChange(qint64)), this, SLOT(seek(qint64)));   //更新 进度条
+    connect(musicList->player, SIGNAL(positionChanged(qint64)), this, SLOT(positionChanged(qint64)));   //更新进度条
+    connect(slider_progress, SIGNAL(sliderMoved(int)), this, SLOT(seek(int)));                          //定位播放进度
 }
 
 //忽略 鼠标按下 事件

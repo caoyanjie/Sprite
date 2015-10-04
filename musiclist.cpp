@@ -648,6 +648,18 @@ void MusicList::add_otherMusicList(QAction *action)
     }
 }
 
+//设置音量增加
+void MusicList::setVolumnPlus()
+{
+    player->setVolume(player->volume() + 5);
+}
+
+//设置音量减小
+void MusicList::setVolumnLess()
+{
+    player->setVolume(player->volume() - 5);
+}
+
 //释放子线程
 void MusicList::releaseThread()
 {

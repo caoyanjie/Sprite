@@ -136,9 +136,14 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
 //    connect(titleGroupBox, SIGNAL(settingDataChanged(QString,QString)),                       //设置皮肤，信息写入配置文件
 //            this, SLOT(writeSettingdateToIni(QString,QString)));
 			
-    connect(titleGroupBox, SIGNAL(ShowVideoPlayer()), this, SLOT(ShowVideoPlayer()));
-    connect(titleGroupBox, SIGNAL(calldMusicTitleAndAuthor()),                                  //MiNiPlayer 请求发送歌曲信息
-            bottomGroupbox, SLOT(sendMusicTitleAndAuthor()));
+    connect(titleGroupBox, SIGNAL(ShowVideoPlayer()), this, SLOT(ShowVideoPlayer()));                   //切换为 视频播放 模式
+    connect(titleGroupBox, SIGNAL(calldMusicTitleAndAuthor()),
+            bottomGroupbox, SLOT(sendMusicTitleAndAuthor()));                                           //MiNiPlayer 请求发送歌曲信息
+    connect(titleGroupBox, SIGNAL(callPlayPause()),    bottomGroupbox, SLOT(play_pause_clicked()));     //MiNiPlayer 播放/暂停
+    connect(titleGroupBox, SIGNAL(callPlayPrevious()), bottomGroupbox, SLOT(play_previous_clicked()));  //MiNiPlayer 上一曲
+    connect(titleGroupBox, SIGNAL(callPlayNext()),     bottomGroupbox, SLOT(play_next_clicked()));      //MiNiPlayer 下一曲
+    connect(titleGroupBox, SIGNAL(callVolumnPlus()),   musicList,      SLOT(setVolumnPlus()));          //MiNiPlayer 增加音量
+    connect(titleGroupBox, SIGNAL(callVolumnLess()),   musicList,      SLOT(setVolumnLess()));          //MiNiPlayer 减小音量
 
     //边缘缩放
     isLeftPressDown = false;

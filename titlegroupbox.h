@@ -72,6 +72,11 @@ signals:
     void ShowVideoPlayer();
     void musicTitleAndAuthor(QString);
     void calldMusicTitleAndAuthor();
+    void callPlayPause();
+    void callPlayPrevious();
+    void callPlayNext();
+    void callVolumnPlus();
+    void callVolumnLess();
 
 public slots:
     void showMiniWindow();

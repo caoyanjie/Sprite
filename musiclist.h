@@ -106,6 +106,10 @@ private slots:
     //添加到列表
     void add_otherMusicList(QAction *);
 
+    //调节音量
+    void setVolumnPlus();
+    void setVolumnLess();
+
     //释放子线程
     void releaseThread();
 };
