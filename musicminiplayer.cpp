@@ -49,9 +49,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     tbn_closeWindow = new QToolButton(lab_buttonsParent);
     tbn_hideWindow = new QToolButton(lab_buttonsParent);
     tbn_miniWindow = new QToolButton(lab_buttonsParent);
-//    tbn_simple = new QToolButton(lab_buttonsParent);
     tbn_normal = new QToolButton(lab_buttonsParent);
-//    tbn_simple->setText("精简");
     tbn_normal->setText("标准");
 
     //为按钮安装事件过滤器
@@ -63,15 +61,11 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     tbn_closeWindow->installEventFilter(this);
     tbn_hideWindow->installEventFilter(this);
     tbn_miniWindow->installEventFilter(this);
-//    tbn_simple->installEventFilter(this);
     tbn_normal->installEventFilter(this);
 
-    connect(tbn_closeWindow, SIGNAL(clicked()),
-            this, SLOT(close()));
-    connect(tbn_miniWindow, SIGNAL(clicked()),
-            this, SLOT(showMinimized()));
-    connect(tbn_normal, SIGNAL(clicked()),
-            this, SLOT(showNormalWindow()));
+    connect(tbn_closeWindow, SIGNAL(clicked()), this, SLOT(close()));
+    connect(tbn_miniWindow, SIGNAL(clicked()), this, SLOT(showMinimized()));
+    connect(tbn_normal, SIGNAL(clicked()), this, SLOT(showNormalWindow()));
 
 /*
     tbn_play_previous->setGeometry(20, (tbn_play_previous->parentWidget()->height()-tbn_play_previous->height())/2, 20, 20);
@@ -85,7 +79,6 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     tbn_volumn_less->setFixedSize(20, 20);
     tbn_closeWindow->setFixedSize(11, 11);
     tbn_hideWindow->setFixedSize(11, 11);
-//    tbn_simple->setFixedSize(25, 14);
     tbn_normal->setFixedSize(25, 14);
     tbn_miniWindow->setFixedSize(11, 11);
 
@@ -93,7 +86,6 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
     layout_topright = new QHBoxLayout;
 //    layout_topright->addStretch();
     layout_topright->addWidget(tbn_normal);
-//    layout_topright->addWidget(tbn_simple);
     layout_topright->addWidget(tbn_miniWindow);
     layout_topright->addWidget(tbn_hideWindow);
     layout_topright->addWidget(tbn_closeWindow);
@@ -264,8 +256,7 @@ MusicMiniPlayer::MusicMiniPlayer(QWidget *parent) :
 //    movie->start();
 
     timer_logoRotate = new QTimer(this);
-    connect(timer_logoRotate, SIGNAL(timeout()),
-            this, SLOT(timeout_logoRotate()));
+    connect(timer_logoRotate, SIGNAL(timeout()), this, SLOT(timeout_logoRotate()));
     timer_logoRotate->start(timer_rotateStart);
 }
 //鼠标按下事件
@@ -340,27 +331,18 @@ bool MusicMiniPlayer::eventFilter(QObject *target, QEvent *event)
             QPainter painter(lab_buttonsParent);
             painter.setPen(QPen(QColor(52, 148, 42), 2));
 
+            //绘制菱形
             painter.setRenderHint(QPainter::Antialiasing);
             painter.drawLine(0, lab_buttonsParent->height()/2, 44, 0);
             painter.drawLine(44, 0, 88, lab_buttonsParent->height()/2);
             painter.drawLine(0, lab_buttonsParent->height()/2, 44, lab_buttonsParent->height());
             painter.drawLine(44, lab_buttonsParent->height(), 88, lab_buttonsParent->height()/2);
 
-            //绘制十字线
-//            painter.drawLine(44, 0, 44, 100);
-//            painter.drawLine(0, lab_buttonsParent->height()/2, 88, lab_buttonsParent->height()/2);
-
             //绘制小圆
             painter.translate(30, lab_buttonsParent->height()/2-15);
             painter.drawEllipse(0, 0, 30, 30);
-
-            //绘制菱形
-//            painter.rotate(45);
-//            painter.drawRect(0, 0, 60, 60);
         }
     }
-
-
     return QWidget::eventFilter(target, event);
 }
 

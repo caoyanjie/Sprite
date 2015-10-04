@@ -417,6 +417,12 @@ void BottomGroupBox::durationChanged(qint64 totalTime)
                                              (int)totalTime / 1000 / 60,
                                              (int)totalTime / 1000 % 60));
     slider_progress ->setMaximum(totalTime);
+
+    QString filename = musicList->player->playlist()->currentMedia().canonicalUrl().fileName();
+    filename = filename.remove(filename.right(4));
+    QString musicMessage = tr("歌曲：%1").arg(filename);
+    lab_musicMessage->setText(musicMessage);
+    emit musicTitleAndAuthor(musicMessage);
 }
 
 //提取 歌曲信息
@@ -424,16 +430,14 @@ void BottomGroupBox::getMetaData(bool)
 {
     QStringList title_author;
     title_author.append(musicList->player->metaData(QMediaMetaData::Title).toString());
-    if (title_author.isEmpty())
+    if (title_author.at(0).isEmpty())
     {
-        title_author[0] = "未知";
+        return;
     }
     title_author.append(musicList->player->metaData(QMediaMetaData::Author).toString());
-    if (title_author[1].isEmpty())
-    {
-        title_author[1] = "未知";
-    }
-    lab_musicMessage ->setText(tr("歌曲：%1\n歌手：%2").arg(title_author[0]).arg(title_author[1]));
+    QString musicMessage = tr("歌曲： %1\n歌手： %2").arg(title_author.at(0)).arg(title_author.at(1));
+    lab_musicMessage->setText(musicMessage);
+    emit musicTitleAndAuthor(musicMessage);
 
     //test
     QImage coverArtImage;
