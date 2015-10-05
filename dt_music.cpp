@@ -711,6 +711,10 @@ void DT_Music::addMusicFile(int selected)
             types += file_types.at(i) + " ";
         }
         musicNameListAdd = QFileDialog::getOpenFileNames(this, tr("添加音乐"), "D:/", tr("音乐文件(%1)").arg(types));
+        if (musicNameListAdd.isEmpty())
+        {
+            return;
+        }
     }
     else if (selected == 1)         //添加音乐目录
     {
@@ -719,6 +723,10 @@ void DT_Music::addMusicFile(int selected)
 
         //
         dirName = QFileDialog::getExistingDirectory(this, tr("选择文件夹"), "D:/");
+        if (dirName.isEmpty())
+        {
+            return;
+        }
         QDir dir(dirName);
         dir.setNameFilters(file_types);
         musicNames = dir.entryList();

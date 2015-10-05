@@ -97,6 +97,9 @@ public slots:
     void addVidwoFile(int);
     void durationChanged(qint64 totalTime);
     void positionChanged(qint64 currentPosition);
+
+//private slots:
+//    void itemDoubleClicked(QTreeWidgetItem *treeWidget, int index);
 };
 
 #endif // VIDEOCONTRAL_H

@@ -45,7 +45,7 @@ VideoPlayer::VideoPlayer(QString programPath, QWidget *parent) :
 //    videoList->show();
 
     //设置鼠标跟踪，响应鼠标移动事件
-    setMouseTracking(true);
+    this->setMouseTracking(true);
     lab_background->setMouseTracking(true);
 
     //

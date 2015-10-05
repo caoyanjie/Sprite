@@ -3,6 +3,7 @@
 #include <QListView>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QDebug>
 
 VideoContral::VideoContral(QWidget *parent) : QWidget(parent)
   ,tbnHeaderSize(12)
@@ -161,6 +162,9 @@ VideoContral::VideoContral(QWidget *parent) : QWidget(parent)
     connect(tbn_playPause, SIGNAL(clicked()), this, SIGNAL(playPause()));
     connect(tbn_playNext, SIGNAL(clicked()), this, SIGNAL(playNext()));
     connect(cob_addFile, SIGNAL(activated(int)), this, SLOT(addVidwoFile(int)));
+
+    //
+//    connect(list_playlist, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*,int)));
 
     //显式设置对象名
     fram_header->setObjectName("fram_header");
@@ -453,4 +457,10 @@ void VideoContral::positionChanged(qint64 currentPositon)
         emit currentMediaEnd();
     }
 }
+
+//双击列表中的电影
+//void VideoContral::itemDoubleClicked(QTreeWidgetItem *treeWidget, int index)
+//{
+//    qDebug() << tr("去给我播放第%1个").arg(index);
+//}
 
