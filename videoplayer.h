@@ -32,8 +32,7 @@ private:
     VideoContral *videoContral;
     HelpKeepAwake *helpKeepAwake;
     QMediaPlayer *player;
-    QMediaPlaylist *playlist;
-//    QList
+    QList<QMediaPlaylist*> playlist_list;
 
     VideoList *videoList;
     QToolButton *tbn_openVideoFile;
@@ -79,6 +78,9 @@ private slots:
     void volumnReduce();
     void playStateChanged(QMediaPlayer::State);
     void timeoutKeepAwake();
+
+    //双击播放列表
+    void itemDoubleClicked(int toplevel, int index);
 };
 
 #endif // VIDEOPLAYER_H

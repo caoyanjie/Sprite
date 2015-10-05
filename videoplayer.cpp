@@ -76,10 +76,14 @@ VideoPlayer::VideoPlayer(QString programPath, QWidget *parent) :
 
     //初始化多媒体播放器
     player = new QMediaPlayer(this);
-    playlist = new QMediaPlaylist(player);
-    playlist->setPlaybackMode(QMediaPlaylist::Sequential);
-    player->setPlaylist(playlist);
+    QMediaPlaylist *playlist = new QMediaPlaylist;
+    QMediaPlaylist *playlistHistory = new QMediaPlaylist;
+
+    playlist_list.append(playlistHistory);
+    playlist_list.append(playlist);
+
     player->setVideoOutput(videoWidget);
+    player->setPlaylist(playlist);
     player->setVolume(60);
 
     connect(tbn_openVideoFile,SIGNAL(clicked()), this, SLOT(openVideoFile()));
@@ -119,7 +123,7 @@ VideoPlayer::VideoPlayer(QString programPath, QWidget *parent) :
     connect(videoContral, SIGNAL(isHideWidget(bool)), this, SLOT(isHideWidget(bool)));
     connect(videoContral, SIGNAL(playerStop()), player, SLOT(stop()));
     connect(videoContral, SIGNAL(playPause()), this, SLOT(videoPlayPause()));
-    connect(videoContral, SIGNAL(playNext()), playlist, SLOT(next()));
+    connect(videoContral, SIGNAL(playNext()), player->playlist(), SLOT(next()));
     connect(videoContral, SIGNAL(currentMediaEnd()), this, SLOT(currentMediaEnd()));
 //    connect(videoContral, SIGNAL(goForward()), this, SLOT(videoGoForward()));
 //    connect(videoContral, SIGNAL(retreat()), this, SLOT(videoRetreat()));
@@ -131,6 +135,8 @@ VideoPlayer::VideoPlayer(QString programPath, QWidget *parent) :
     connect(player, SIGNAL(positionChanged(qint64)), videoContral, SLOT(positionChanged(qint64)));
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(playStateChanged(QMediaPlayer::State)));
 
+    //
+    connect(videoContral, SIGNAL(itemDoubleClicked(int, int)), this, SLOT(itemDoubleClicked(int, int)));
 
 //    videoWidget->setFocus();
     timerKeepAwake = new QTimer(this);
@@ -233,21 +239,21 @@ void VideoPlayer::openVideoFile(QString file)       //默认参数 file=""
     //添加到 playlist 中
     for(int indext=0; indext<openVideoFileNames.length(); indext++)
     {
-        playlist->addMedia(QUrl::fromLocalFile(tr("%1").arg(openVideoFileNames.at(indext))));
+        playlist_list.at(1)->addMedia(QUrl::fromLocalFile(tr("%1").arg(openVideoFileNames.at(indext))));
     }
     for(int indext=0; indext<openVideoFileNames.length(); indext++)
     {
         if(openVideoFileNames.at(indext) == file)
         {
-            playlist->setCurrentIndex(indext);
+            playlist_list.at(1)->setCurrentIndex(indext);
             break;
         }
     }
     player->play();
     QStringList fileBaseNames;
-    for(int indext=0; indext<playlist->mediaCount(); indext++)
+    for(int indext=0; indext<playlist_list.at(1)->mediaCount(); indext++)
     {
-        fileBaseNames.append(playlist->media(indext).canonicalUrl().fileName());
+        fileBaseNames.append(playlist_list.at(1)->media(indext).canonicalUrl().fileName());
     }
     videoContral->addVideoList(fileBaseNames);
     lab_background->setStyleSheet("border-image: url(:/Images/black.png);");
@@ -308,7 +314,7 @@ void VideoPlayer::metaDataChanged()
 //
 void VideoPlayer::setVideoTitle()
 {
-    videoContral->setVideoTitle(playlist->currentMedia().canonicalUrl().fileName());
+    videoContral->setVideoTitle(playlist_list.at(1)->currentMedia().canonicalUrl().fileName());
 }
 
 //拖放进度
@@ -403,8 +409,8 @@ void VideoPlayer::playStateChanged(QMediaPlayer::State state)
     {
         videoWidget->show();
         videoWidget->setFocus();
-        videoContral->setVideoTitle(playlist->currentMedia().canonicalUrl().fileName());
-//        videoContral->setVideoTitle(tr("%1").arg(playlist->currentIndex()));
+        videoContral->setVideoTitle(playlist_list.at(1)->currentMedia().canonicalUrl().fileName());
+//        videoContral->setVideoTitle(tr("%1").arg(playlist_list.at(1)->currentIndex()));
         //设置屏幕常亮
         timerKeepAwake->start(58000);
         //设置鼠标隐藏
@@ -429,5 +435,12 @@ void VideoPlayer::timeoutKeepAwake()
 //        helpKeepAwake->setWindowState(Qt::WindowActive);
 //        helpKeepAwake->setWindowState(Qt::WindowNoState);
 //    }
-//    keepAwakeTimes++;
+    //    keepAwakeTimes++;
+}
+
+void VideoPlayer::itemDoubleClicked(int toplevel, int index)
+{
+    playlist_list.at(toplevel)->setCurrentIndex(index);
+//    player->setPlaylist(playlist_list.at(toplevel));
+//    player->play();
 }

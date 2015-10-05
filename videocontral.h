@@ -93,13 +93,16 @@ signals:
     void isHideWidget(bool);
     void addedVideoFiles(QStringList);
 
+    //双击播放列表
+    void itemDoubleClicked(int toplevel, int index);
+
 public slots:
     void addVidwoFile(int);
     void durationChanged(qint64 totalTime);
     void positionChanged(qint64 currentPosition);
 
-//private slots:
-//    void itemDoubleClicked(QTreeWidgetItem *treeWidget, int index);
+private slots:
+    void itemDoubleClicked(QTreeWidgetItem *treeItem, int index);
 };
 
 #endif // VIDEOCONTRAL_H
