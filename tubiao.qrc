@@ -5,11 +5,9 @@
         <file>Images/bg8.jpg</file>
         <file>Images/bg11.jpg</file>
         <file>Images/bg12.jpg</file>
-        <file>Images/bg22222.png</file>
         <file>Images/closeWindow.png</file>
         <file>Images/closeWindow_hover.png</file>
         <file>Images/cobIcon.png</file>
-        <file>Images/internet.png</file>
         <file>Images/logo.ico</file>
         <file>Images/miniWindow.png</file>
         <file>Images/miniWindow_hover.png</file>
@@ -54,11 +52,6 @@
         <file>Images/playModel_loop_hover.png</file>
         <file>Images/add.png</file>
         <file>Images/createMusicList.png</file>
-        <file>Images/xiaowanzi.png</file>
-        <file>Images/xiaowanzi1.png</file>
-        <file>Images/xiaowanzi2.png</file>
-        <file>Images/xiaowanzi3.png</file>
-        <file>Images/active1.gif</file>
         <file>Images/gif1.png</file>
         <file>Images/gif2.png</file>
         <file>Images/gif3.png</file>
@@ -91,7 +84,6 @@
         <file>Images/gif30.png</file>
         <file>Images/delete.png</file>
         <file>Images/delete1.png</file>
-        <file>Images/bg111.jpg</file>
         <file>Images/play_stop.png</file>
         <file>Images/play_stop_hover.png</file>
         <file>Images/tbn_openVideoFile.png</file>
@@ -106,7 +98,6 @@
         <file>Images/tbn_switchMusicPlayer.png</file>
         <file>Images/videoPlayerBg.png</file>
         <file>Images/tbn_switchMusicPlayer1.png</file>
-        <file>Images/tbn_switchMusicPlayer2.png</file>
         <file>Images/tbn_switchMusicPlayer3.png</file>
         <file>Images/hideWindow.png</file>
         <file>Images/hideWindow_hover.png</file>
@@ -117,9 +108,6 @@
         <file>Images/mini_bg1.png</file>
         <file>Images/volumn_plus.png</file>
         <file>Images/volumn_less.png</file>
-        <file>Images/mini_bg2.png</file>
-        <file>Images/mini_bg3.png</file>
-        <file>Images/playing.gif</file>
         <file>Images/miniLogo.png</file>
         <file>Images/miniLogo_rotate.png</file>
         <file>Images/logo_rotate.png</file>
