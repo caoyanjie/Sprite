@@ -330,7 +330,7 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
 
     //创建二级菜单
     QMenu menu_child;
-    menu_child.setIcon(QIcon(":/Images/add.png"));
+    menu_child.setIcon(QIcon(":/Images/menu_add.png"));
     menu_child.setTitle(tr("添加到..."));
     for (int i=0; i<this->topLevelItemCount(); ++i)
     {
@@ -347,11 +347,11 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
 
     //创建项目菜单
     QMenu menu_item;
-    menu_item.addAction(QIcon(":/Images/play_play_hover.png"), tr("立即播放"), this, SIGNAL(itemPlay()));
+    menu_item.addAction(QIcon(":/Images/menu_play.png"), tr("立即播放"), this, SIGNAL(itemPlay()));
     menu_item.addMenu(&menu_child);
-    menu_item.addAction(QIcon(":/Images/delete2.png"), tr("移出列表"), this, SLOT(removeSelection()));
-    menu_item.addAction(QIcon(":/Images/delete2.png"), tr("删除歌曲及文件"), this, SLOT(deleteSelection()));
-    menu_item.addAction(tr("清空本列表"), this, SLOT(clearSelf()));
+    menu_item.addAction(QIcon(":/Images/miniWindow_hover.png"), tr("移出列表"), this, SLOT(removeSelection()));
+    menu_item.addAction(QIcon(":/Images/closeWindow_hover.png"), tr("删除歌曲及文件"), this, SLOT(deleteSelection()));
+    menu_item.addAction(QIcon(":/Images/menu_clear.png"), tr("清空本列表"), this, SLOT(clearSelf()));
     menu_item.exec(event ->globalPos());
     return;
 }

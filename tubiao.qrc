@@ -50,7 +50,6 @@
         <file>Images/playModel_single_hover.png</file>
         <file>Images/playModel_loop.png</file>
         <file>Images/playModel_loop_hover.png</file>
-        <file>Images/add.png</file>
         <file>Images/createMusicList.png</file>
         <file>Images/gif1.png</file>
         <file>Images/gif2.png</file>
@@ -82,8 +81,6 @@
         <file>Images/gif28.png</file>
         <file>Images/gif29.png</file>
         <file>Images/gif30.png</file>
-        <file>Images/delete.png</file>
-        <file>Images/delete1.png</file>
         <file>Images/play_stop.png</file>
         <file>Images/play_stop_hover.png</file>
         <file>Images/tbn_openVideoFile.png</file>
@@ -113,5 +110,8 @@
         <file>Images/logo_rotate.png</file>
         <file>Images/logo.png</file>
         <file>Images/black.png</file>
+        <file>Images/menu_add.png</file>
+        <file>Images/menu_play.png</file>
+        <file>Images/menu_clear.png</file>
     </qresource>
 </RCC>
