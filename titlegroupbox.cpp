@@ -118,6 +118,11 @@ void TitleGroupBox::setTitleUi()
     tbn_switch_video->setText("视 频");              //..................
     lab_bearHead = new QLabel(this);                //创建 小熊头 图标
     lab_bearFoot = new QLabel(this);                //创建 小熊脚 图标
+    lab_searchFrame = new QLabel;
+    lab_searchBg = new QLabel;
+    ln_search = new QLineEdit;                      //创建 搜索框
+    ln_search->setPlaceholderText("搜索歌曲......");
+    tbn_search = new QToolButton;                   //创建 搜索按钮
     lab_logo->setAlignment(Qt::AlignCenter);
 
     //设置按钮固定大小
@@ -134,6 +139,9 @@ void TitleGroupBox::setTitleUi()
     lab_logoWords->setFixedSize(51, 31);
     lab_bearHead->setFixedSize(41, 29);
     lab_bearFoot->setFixedSize(18, 6);
+    lab_searchFrame->setFixedSize(200, 22);
+    lab_searchBg->setFixedHeight(21);
+    tbn_search->setFixedSize(15, 15);
 
     //设置按钮提示
     tbn_closeWindow->setToolTip("退出程序");
@@ -155,6 +163,19 @@ void TitleGroupBox::setTitleUi()
     layout_H->setSpacing(9);
     layout_H->setContentsMargins(0, 0, 11, 0);
 
+    layout_search = new QHBoxLayout;
+    layout_search->addWidget(ln_search);
+    layout_search->addWidget(tbn_search);
+    layout_search->setSpacing(0);
+    layout_search->setContentsMargins(3, 0, 5, 0);
+
+    layout_searchFrame = new QGridLayout;
+    layout_searchFrame->addWidget(lab_searchBg, 0, 0, 1, 1);
+    layout_searchFrame->addLayout(layout_search, 0, 0, 1, 1);
+    layout_searchFrame->setSpacing(0);
+    layout_searchFrame->setMargin(0);
+    lab_searchFrame->setLayout(layout_searchFrame);
+
     //顶级布局
     layout_top = new QGridLayout;
     layout_top->addWidget(lab_logo, 8, 10, 50, 45);
@@ -164,10 +185,11 @@ void TitleGroupBox::setTitleUi()
     layout_top->addWidget(lab_bearFoot, 22+tbn_switchMusicVideo_height, 500+(tbn_switchMusicVideo_height-23)/2, 6, 18);
     layout_top->addWidget(tbn_switch_video, 20, 600, tbn_switchMusicVideo_height, tbn_switchMusicVideo_width);
     layout_top->addLayout(layout_H, 6, 650, 15, 50);
+    layout_top->addWidget(lab_searchFrame, 33, 650, 15, 50);
     layout_top->setSpacing(0);
     layout_top->setMargin(0);
     layout_top->setContentsMargins(10, 8, 0, 0);
-    setLayout(layout_top);
+    this->setLayout(layout_top);
 
     tbn_switch_video->setToolTip("切换到视频播放");
 //    lab_bearHead->setGeometry(tbn_switch_music->x()+(tbn_switch_music->width()-41)/2, tbn_switch_music->y()-16, 41, 29);
@@ -187,6 +209,9 @@ void TitleGroupBox::setTitleUi()
     tbn_switch_video->setObjectName("tbn_switch_video");
     lab_bearHead->setObjectName("lab_bearHead");
     lab_bearFoot->setObjectName("lab_bearFoot");
+    lab_searchBg->setObjectName("lab_searchBg");
+    ln_search->setObjectName("ln_search");
+    tbn_search->setObjectName("tbn_search");
 /*
     QMatrix logoMatrix;
     logoMatrix.rotate(rotateAngle -= angleOffset);
@@ -282,6 +307,23 @@ void TitleGroupBox::setTitleUi()
 //              "#tbn_switch_music_video{"
 //                    "border-image: url(:/Images/switch_video.png);"
 //              "}"
+
+                "#lab_searchBg{"
+                    "height: 21;"
+                    "border-radius: 10px;"
+                    "background: rgba(0, 0, 0, 100);"
+                "}"
+
+                "#ln_search{"
+                    "padding:2px 2px;"
+                    "background: rgba(0, 0, 0, 0);"
+                    "border: 0;"
+                    "color: rgb(200, 255, 255);"
+                "}"
+
+                "#tbn_search{"
+                    "border-image: url(:/Images/search);"
+                "}"
                 );
 
 

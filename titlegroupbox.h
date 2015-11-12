@@ -39,6 +39,10 @@ private:
 //    QToolButton *tbn_normal;		//定义 正常窗口 按钮
     QToolButton *tbn_switch_music;	//定义 切换音乐模式 按钮
     QToolButton *tbn_switch_video;	//定义 切换视频模式 按钮
+    QLabel *lab_searchFrame;
+    QLabel *lab_searchBg;
+    QLineEdit *ln_search;           //定义 搜索框
+    QToolButton *tbn_search;        //定义 搜索按钮
 
     Setting *setting;
     Theme *theme;
@@ -49,6 +53,8 @@ private:
 
     //布局
     QHBoxLayout *layout_H;
+    QHBoxLayout *layout_search;
+    QGridLayout *layout_searchFrame;
     QGridLayout *layout_top;
 	
 	//logo 旋转
