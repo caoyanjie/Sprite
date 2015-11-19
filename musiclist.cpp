@@ -308,7 +308,7 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
             //创建节点菜单
             QMenu menu_rootDir;
             menu_rootDir.addAction(tr("删除"), this, SLOT(remove_rootDir()));
-            menu_rootDir.addAction(tr("重命名"), this, SLOT(closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)));
+            menu_rootDir.addAction(tr("重命名"), this, SLOT(renameToplevel(QTreeWidgetItem *item)));
             menu_rootDir.addAction(tr("清空所有列表"), this, SLOT(clearAll()));
             menu_rootDir.exec(event ->globalPos());
             return;
@@ -360,7 +360,7 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
 void MusicList::initMusicList()
 {
     QStringList itemsRootNames;
-//    itemsRootNames << "默认列表" << "我的最爱";
+//    itemsRootNames << "默认列表" << "在线试听";
     itemsRootNames << "默认列表";
     for (int i=0; i<itemsRootNames.length(); i++)
     {
@@ -565,10 +565,16 @@ void MusicList::remove_rootDir()
     musicMenuActionList.removeAt(currentToplevel);
 }
 
-//重命名
-void MusicList::closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)
+// 重命名
+void MusicList::renameToplevel(QTreeWidgetItem *item)
 {
-    this ->editItem(createItem);
+
+}
+
+// 试听在线音乐
+void MusicList::playInternetMusic(QString musicUrl)
+{
+
 }
 
 //清空所有列表

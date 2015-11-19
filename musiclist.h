@@ -47,7 +47,7 @@ protected:
 private:
     void initMusicList();                               //初始化播放列表
     void loadMusicList();                               //加载歌曲列表
-    void createMusiclistToplevel(QString toplevelName);         //创建播放列表
+    void createMusiclistToplevel(QString toplevelName); //创建播放列表
 
 //    QString programDir;
     QTreeWidgetItem *createItem;                        //
@@ -97,7 +97,8 @@ private slots:
     void removeSelection(bool delete_file=false);                   //把歌曲移除列表
     void deleteSelection();                                         //彻底删除
     void remove_rootDir();                                          //删除播放列表
-    void closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint);  //重写关闭事件
+    void renameToplevel(QTreeWidgetItem *item);                     // 重命名
+    void playInternetMusic(QString musicUrl);                    //试听在线音乐
 
     //清空列表
     void clearAll();    //清空所有

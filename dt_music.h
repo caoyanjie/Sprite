@@ -17,7 +17,6 @@
 #include "network.h"
 class TitleGroupBox;
 class ToolGlobal;
-//class ToolInternet;
 class Timing;
 class Game;
 class QLabel;
@@ -29,14 +28,13 @@ class QLineEdit;
 class QToolButton;
 class BottomGroupBox;
 class DesktopLrc;
+class NetWorkWidget;
 class QTreeWidgetItem;
-//class Interidget;
 class QMediaPlayer;
 class QMediaPlaylist;
 class QSlider;
 class QCompleter;
 class VideoPlayer;              //视频播放器
-//class QGridLayout;
 class QGridLayout;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -64,20 +62,12 @@ class DT_Music : public QMainWindow
 
 public:
     explicit DT_Music(QString programPath, QWidget *parent = 0);
+    ~DT_Music();
 
     void openTempMusicFile(QString file);
     void openTempVideoFile(QString file);
 
-//    QMediaPlayer *player;                   //定义 多媒体播放器
-//    QMediaPlaylist *playlist;               //定义 播放列表
-//    QList<QMediaPlaylist*> playlistVector;  //定义 播放列表 容器
-//    playModelValue playModel_currentValue;
-//    QStringList lrcStringList;              //歌词行
-
-    //设置搜索时 自动补全
-    QCompleter *completer;                  //定义 自动补全功能
-
-    ~DT_Music();
+    QCompleter *completer;                  //搜索时 自动补全
 
 protected:
     void mousePressEvent(QMouseEvent *event);       //重写鼠标按下事件
@@ -110,14 +100,12 @@ private:
     //子类部件
     TitleGroupBox *titleGroupBox;       //定义 头部
     ToolGlobal *toolGlobal;
-//    ToolInternet *toolInternet;
     PlayModle *playModle;
     DesktopLrc *desktopLrc;             //定义 桌面歌词
     Create_MusicList *createMusicList;
     Timing *timing;
     MusicList *musicList;               //定义 播放列表
     LrcView *lrcView;                   //定义 歌词界面
-//    InternetWidget *internetWidget;
     BottomGroupBox *bottomGroupbox;     //定义底部
     Game *game;
     QSystemTrayIcon *trayIcon;
@@ -131,6 +119,8 @@ private:
     QLineEdit *ln_search;
     QToolButton *tbn_search;
     QString createMusiclist_name;
+
+    NetWorkWidget *netWorkWidget = NULL;
 
     //歌词
     void resolveLrc(const QString &sourceFileName);     //解析歌词
@@ -175,8 +165,6 @@ signals:
 private slots:
     void addMusicFile(int selected);                        //添加音乐
     void tbn_search_clicked();                              //查找歌曲
-//    void clickedGlobalMusic();
-//    void clickedInternetMusic();
     void durationChanged();
     void searchMusic();
     void volumeChanged(int);                                //声音改变
@@ -190,26 +178,14 @@ private slots:
     void seekableChanged(bool);                             //播放进度改变
     void metaDataAvailableChanged(bool);                    //多媒体 可用数据信息 改变
     void metaDataChanged();                                 //多媒体 数据信息     改变
-    void metaDataChanged(QString,QVariant);                      //多媒体 数据        改变
-    void mediaStatusChanged(QMediaPlayer::MediaStatus);          //多媒体 状态        改变2
-    void mediaChanged(QMediaContent);                            //多媒体 改变
-    void objectNameChanged(QString);                             //对象名改变
-    void playbackRateChanged(qreal);                             //播放频率 改变
+    void metaDataChanged(QString,QVariant);                 //多媒体 数据        改变
+    void mediaStatusChanged(QMediaPlayer::MediaStatus);     //多媒体 状态        改变2
+    void mediaChanged(QMediaContent);                       //多媒体 改变
+    void objectNameChanged(QString);                        //对象名改变
+    void playbackRateChanged(qreal);                        //播放频率 改变
 
     void ShowVideoPlayer();
     void switchMusicPlayer();
-
-//    void audioAvailableChanged(bool);                            //未知信号
-//    void availabilityChanged(bool);                              //未知信号
-//    void availabilityChanged(QMultimedia::AvailabilityStatus);   //未知信号
-//    void bufferStatusChanged(int);                               //未知信号
-//    void currentMediaChanged(QMediaContent);                     //未知信号
-//    void destroyed();                                            //未知信号
-//    void destroyed(QObject*);                                    //未知信号
-//    void error(QMediaPlayer::Error);                             //未知信号
-//    void mutedChanged(bool);                                     //未知信号
-//    void notifyIntervalChanged(int);                             //未知信号
-//    void videoAvailableChanged(bool);                            //video 有用信息改变
 
     void play_stop();
     void lrc_clicked();
@@ -223,6 +199,8 @@ private slots:
     void create_musicList_ok(QString);
     void update_createMusiclist_name(QString);
     void timeoutBear();
+
+    void searchMusicClicked(QString musicName);                                      // 搜索在线音乐
 };
 
 #endif // DT_MUSIC_H

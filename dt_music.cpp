@@ -17,7 +17,6 @@
 #include "toolinternet.h"
 #include "lrcview.h"
 #include "bottomgroupbox.h"
-#include "internetwidget.h"
 #include "playmodle.h"
 #include "desktoplrc.h"
 #include "create_musiclist.h"
@@ -26,6 +25,7 @@
 #include "videoplayer.h"        //视频播放器
 #include "game.h"
 #include "databaseoperation.h"
+#include "networkwidget.h"
 
 //部件类
 #include <QMouseEvent>          //鼠标事件
@@ -67,6 +67,8 @@
 //数据库
 #include <QSqlQuery>
 #include <QSqlError>
+
+//动画
 #include <QPropertyAnimation>
 
 DT_Music::DT_Music(QString programPath, QWidget *parent) :
@@ -144,6 +146,9 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     connect(titleGroupBox, SIGNAL(callPlayNext()),     bottomGroupbox, SLOT(play_next_clicked()));      //MiNiPlayer 下一曲
     connect(titleGroupBox, SIGNAL(callVolumnPlus()),   musicList,      SLOT(setVolumnPlus()));          //MiNiPlayer 增加音量
     connect(titleGroupBox, SIGNAL(callVolumnLess()),   musicList,      SLOT(setVolumnLess()));          //MiNiPlayer 减小音量
+
+    //搜索在线音乐
+    connect(titleGroupBox, SIGNAL(searchMusicClicked(QString)), this, SLOT(searchMusicClicked(QString)));
 
     //边缘缩放
     isLeftPressDown = false;
@@ -1183,6 +1188,18 @@ void DT_Music::timeoutBear()
 {
     titleGroupBox->timeoutBear();
     timerBear->deleteLater();
+}
+
+// 搜索在线音乐
+void DT_Music::searchMusicClicked(QString musicName)
+{
+    if (! netWorkWidget)
+    {
+        netWorkWidget = new NetWorkWidget(this);
+    }
+    netWorkWidget->show();
+    netWorkWidget->searchMusic(musicName);
+    connect(netWorkWidget, SIGNAL(playInternetMusic(QString)), musicList, SLOT(playInternetMusic(QString)));
 }
 
 //判断鼠标区域

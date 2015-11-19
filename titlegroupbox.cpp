@@ -30,10 +30,6 @@ TitleGroupBox::TitleGroupBox(QWidget *parent) :
     setting = new Setting(this);                        //创建 “设置” 对话框
     theme = new Theme(this);                            //创建 “主题” 对话框
 
-//    tbn_globalMusic_icon ->installEventFilter(this);    //安装事件过滤器
-//    tbn_globalMusic ->installEventFilter(this);         //安装事件过滤器
-//    tbn_internet_Music_icon ->installEventFilter(this); //安装事件过滤器
-//    tbn_internet_Music ->installEventFilter(this);      //安装事件过滤器
     tbn_closeWindow ->installEventFilter(this);         //安装事件过滤器
     tbn_miniWindow ->installEventFilter(this);          //安装事件过滤器
     tbn_setting ->installEventFilter(this);             //安装事件过滤器
@@ -110,8 +106,6 @@ void TitleGroupBox::setTitleUi()
     tbn_theme = new QToolButton(this);              //创建 主题 按钮
     tbn_simple = new QToolButton(this);             //创建 MiNi窗口 按钮
     tbn_simple->setText("精简");                     //................
-//    tbn_normal = new QToolButton(this);             //创建 正常窗口 按钮
-//    tbn_normal->setText("标准");                     //...............
     tbn_switch_music = new QToolButton(this);       //创建 切换音乐模式 按钮
     tbn_switch_music->setText("音 乐");              //..................
     tbn_switch_video = new QToolButton(this);       //创建 切换视频模式 按钮
@@ -132,7 +126,6 @@ void TitleGroupBox::setTitleUi()
     tbn_setting->setFixedSize(13, 13);
     tbn_theme->setFixedSize(15, 15);
     tbn_simple->setFixedSize(30, 14);
-//    tbn_normal->setFixedSize(30, 14);
     tbn_switch_music->setFixedSize(tbn_switchMusicVideo_width, tbn_switchMusicVideo_height);
     tbn_switch_video->setFixedSize(tbn_switchMusicVideo_width, tbn_switchMusicVideo_height);
     lab_logo->setFixedSize(50, 50);
@@ -154,7 +147,6 @@ void TitleGroupBox::setTitleUi()
     layout_H = new QHBoxLayout;
     layout_H->addStretch();
     layout_H->addWidget(tbn_simple);
-//    layout_H->addWidget(tbn_normal);
     layout_H->addWidget(tbn_theme);
     layout_H->addWidget(tbn_setting);
     layout_H->addWidget(tbn_miniWindow);
@@ -192,8 +184,6 @@ void TitleGroupBox::setTitleUi()
     this->setLayout(layout_top);
 
     tbn_switch_video->setToolTip("切换到视频播放");
-//    lab_bearHead->setGeometry(tbn_switch_music->x()+(tbn_switch_music->width()-41)/2, tbn_switch_music->y()-16, 41, 29);
-//    lab_bearFoot->setGeometry(tbn_switch_music->x()+(tbn_switch_music->width()-18)/2, tbn_switch_video->y()+tbn_switchMusicVideo_height, 18, 6);
 
     //显示设置按钮对象名称
     lab_logo->setObjectName("lab_logo");
@@ -204,7 +194,6 @@ void TitleGroupBox::setTitleUi()
     tbn_setting->setObjectName("tbn_setting");
     tbn_theme->setObjectName("tbn_theme");
     tbn_simple->setObjectName("tbn_simple_head");
-//    tbn_normal->setObjectName("tbn_normal_head");
     tbn_switch_music->setObjectName("tbn_switch_music");
     tbn_switch_video->setObjectName("tbn_switch_video");
     lab_bearHead->setObjectName("lab_bearHead");
@@ -220,8 +209,6 @@ void TitleGroupBox::setTitleUi()
     //设置样式表
     setStyleSheet(
                 "#titleGroupBox{"
-//                    "border-image: url(:/Images/bgTool1.png);"
-//                    "background: rgba(0, 0, 0, 100);"
                     "border: 0 solid white;"
                     "background: rgba(51, 73, 100, 180);"
                 "}"
@@ -233,6 +220,7 @@ void TitleGroupBox::setTitleUi()
                 "#lab_logoWords{"
                     "border-image: url();"
                 "}"
+
                 //设置 关闭窗口 样式表
                 "#tbn_closeWindow{"
                     "border-image: url(:/Images/closeWindow.png);"
@@ -271,7 +259,6 @@ void TitleGroupBox::setTitleUi()
 
                 "#tbn_simple_head{"
                     "background: rgba(0, 0, 0, 0);"
-//                    "color: rgb(23, 215, 255);"
                     "color: rgb(230, 230, 230);"
                 "}"
                 "#tbn_simple_head::hover{"
@@ -279,13 +266,7 @@ void TitleGroupBox::setTitleUi()
                     "color: rgb(23, 215, 255);"
                 "}"
 
-//                "#tbn_normal_head{"
-//                    "background: rgba(0, 0, 0, 0);"
-//                    "color: gray;"
-//                "}"
-
                 "#tbn_switch_music, #tbn_switch_video{"
-//                    "background: rgba(0, 0, 0, 100);"
                     "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(255, 255, 255, 230), stop:0.4 rgba(50, 50, 50, 100), stop:0.5 rgba(50, 50, 50, 100), stop:0.6 rgba(50, 50, 50, 100), stop:1 rgba(255, 255, 255, 230));"
                     "border: 1px solid rgba(255, 255, 255, 60);"
                     "border-radius: 2px;"
@@ -303,10 +284,6 @@ void TitleGroupBox::setTitleUi()
                 "#lab_bearFoot{"
                     "border-image: url(:/Images/bear_foot.png);"
                 "}"
-
-//              "#tbn_switch_music_video{"
-//                    "border-image: url(:/Images/switch_video.png);"
-//              "}"
 
                 "#lab_searchBg{"
                     "height: 21;"
@@ -330,13 +307,13 @@ void TitleGroupBox::setTitleUi()
     lab_logoWords ->setText("<html><body><p><center><span style='color:#ffffff;'>小妖精</span></center></p></body></html>");
 
     connect(tbn_switch_video, SIGNAL(clicked()), this, SLOT(ShowVideoPlayerSlot()));            //播放视频
+    connect(tbn_search, SIGNAL(clicked()), this, SLOT(searchMusic()));
 
     timer_logoRotate = new QTimer(this);
     timer_logoRotatePause = new QTimer(this);
     connect(timer_logoRotate, SIGNAL(timeout()), this, SLOT(timeout_logoRotate()));
     connect(timer_logoRotatePause, SIGNAL(timeout()), this, SLOT(timeout_logoRotetaRedo()));
     timer_logoRotate->start(timer_rotateStart);
-
 }
 
 //单击 设置 槽函数
@@ -383,7 +360,17 @@ void TitleGroupBox::themeClicked()
 
 //        //关闭文件
 //        iniData.close();
-//    }
+    //    }
+}
+
+//搜索在线音乐
+void TitleGroupBox::searchMusic()
+{
+    QString musicName = ln_search->text();
+    if (! musicName.isEmpty())
+    {
+        emit searchMusicClicked(musicName);
+    }
 }
 
 //切换精简播放窗口

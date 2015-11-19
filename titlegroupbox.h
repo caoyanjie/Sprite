@@ -12,7 +12,6 @@ class Theme;
 
 class QHBoxLayout;
 class QGridLayout;
-
 class TitleGroupBox : public QGroupBox
 {
     Q_OBJECT
@@ -66,9 +65,10 @@ private:
     const int timer_rotateStart;
     const int timer_rotatePause;
 
-protected slots:
+private slots:
     void settingClicked();
     void themeClicked();
+    void searchMusic();             // 搜索在线音乐
 
 signals:
     void clickGlobalMusic();
@@ -83,6 +83,7 @@ signals:
     void callPlayNext();
     void callVolumnPlus();
     void callVolumnLess();
+    void searchMusicClicked(QString);           //搜索在线音乐
 
 public slots:
     void showMiniWindow();

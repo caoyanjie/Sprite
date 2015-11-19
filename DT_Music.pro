@@ -9,6 +9,7 @@ QT       += multimedia
 QT       += multimediawidgets
 QT       += sql
 QT       += network
+QT       += xml
 CONFIG+=qaxcontainer
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -26,7 +27,6 @@ SOURCES += main.cpp\
     setting.cpp \
     theme.cpp \
     desktoplrc.cpp \
-    internetwidget.cpp \
     toolglobal.cpp \
     toolinternet.cpp \
     playmodle.cpp \
@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     helpkeepawake.cpp \
     network.cpp \
     gamer.cpp \
-    subthread.cpp
+    subthread.cpp \
+    networkwidget.cpp
 
 HEADERS  += dt_music.h \
     titlegroupbox.h \
@@ -53,7 +54,6 @@ HEADERS  += dt_music.h \
     setting.h \
     theme.h \
     desktoplrc.h \
-    internetwidget.h \
     toolglobal.h \
     toolinternet.h \
     playmodle.h \
@@ -70,7 +70,8 @@ HEADERS  += dt_music.h \
     helpkeepawake.h \
     network.h \
     gamer.h \
-    subthread.h
+    subthread.h \
+    networkwidget.h
 
 FORMS    += dt_music.ui
 

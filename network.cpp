@@ -1,8 +1,11 @@
 #include "network.h"
-
+#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
 #include <QRegExp>
+#include <QtXml>
+#include <QXmlReader>
+#include <QXmlStreamReader>
 
 NetWork::NetWork()
 {
@@ -16,12 +19,31 @@ NetWork::~NetWork()
 
 void NetWork::downLoadLrc(QString musicName)
 {
+    if (musicName.isEmpty())
+    {
+        return;
+    }
+
     QString lrcName = QFileInfo(musicName).baseName();
     QString lrcUrl = "http://music.baidu.com/search/lrc?key=" + lrcName;
     manager->get(QNetworkRequest(QUrl(lrcUrl)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replayFinished(QNetworkReply*)));
 
     lrcFileName = musicName + ".lrc";
+}
+
+// 搜索在线音乐
+void NetWork::searchMusic(QString musicName)
+{
+    if (musicName.isEmpty())
+    {
+        return;
+    }
+
+    this->musicName = musicName;
+    QString musicUrl = tr("http://box.zhangmen.baidu.com/x?op=12&&count=1&&title=%1$$").arg(musicName);
+    manager->get(QNetworkRequest(QUrl(musicUrl)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(getMusicUrlFinished(QNetworkReply*)));
 }
 
 void NetWork::replayFinished(QNetworkReply *replay)
@@ -56,11 +78,44 @@ void NetWork::replayLrcFile(QNetworkReply *replay)
 
     QFile file(tr("%1").arg(lrcFileName));
     file.open(QIODevice::WriteOnly | QIODevice::Text);
-//    QTextStream out(&file);
-//    out << lrcLines.toUtf8();
     file.write(lrcLines.toUtf8());
     file.close();
     emit lrcDownloadFinished();
+
+    replay->deleteLater();
+}
+
+// 获得在线音乐播放地址
+void NetWork::getMusicUrlFinished(QNetworkReply *replay)
+{
+    // QDomDocument dom(replay->readAll());
+    // qDebug() << dom.elementsByTagName("count").at(0).localName();
+    // qDebug() << dom.elementsByTagName("encode").length();
+
+    QXmlStreamReader reader(replay->readAll());
+    // int musicCount = 0;
+    QString head;
+    QString tail;
+    QStringList musicUrls;
+    while(!reader.atEnd())
+    {
+        reader.readNext();
+        // if (reader.name() == "count"){musicCount = reader.readElementText().toInt();} // API 返回多少首音乐
+        if (reader.name() == "encode")
+        {
+            QString text = reader.readElementText();            // 获得前半部分
+            int index = text.lastIndexOf("/");
+            head = text.left(index + 1);
+        }
+        else if (reader.name() == "decode")
+        {
+            tail = reader.readElementText();                    // 获得后半部分
+            musicUrls.append(head + tail);                      // 组合完整的 URL 添加到列表
+        }
+    }
+    QMap<QString, QStringList> result;
+    result.insert(musicName, musicUrls);
+    emit getMusicUrlsFinished(result);
 
     replay->deleteLater();
 }

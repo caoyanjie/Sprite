@@ -13,19 +13,23 @@ public:
     ~NetWork();
 
     void downLoadLrc(QString lrcName);
+    void searchMusic(QString musicName);
 
 private:
     QNetworkAccessManager *manager;
     QNetworkAccessManager *managerDownloadLrc;
     QString lrcFileName;
+    QString musicName;
     int a;
 
 signals:
     void lrcDownloadFinished();
+    void getMusicUrlsFinished(QMap<QString, QStringList>);
 
 private slots:
     void replayFinished(QNetworkReply *replay);
     void replayLrcFile(QNetworkReply *replay);
+    void getMusicUrlFinished(QNetworkReply *replay);
 };
 
 #endif // NETWORK_H
