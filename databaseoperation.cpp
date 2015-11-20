@@ -1,5 +1,5 @@
 #include "databaseoperation.h"
-
+#include <QDebug>
 #include <QObject>
 #include <QVariant>
 #include <QMessageBox>
@@ -37,23 +37,6 @@ bool DatabaseOperation::openDatabase(QString hostName, QString userName, QString
     return true;
 }
 
-//创建数据库
-void DatabaseOperation::createDatabase(QString defaultTableName)
-{
-    if (!openDatabase())
-    {
-        return;
-    }
-    QSqlQuery query(db);
-    if (!query.exec(QObject::tr("CREATE TABLE %1(id integer primary key, musicName text)").arg(defaultTableName)))
-    {
-        QMessageBox::warning(0, "错误！", "数据建表失败！\n错误代码：'Error: DatabaseOperation::createDatabase::001'", QMessageBox::Ok);
-        db.close();
-        return;
-    }
-    db.close();
-}
-
 //创建表
 bool DatabaseOperation::createTable(QString tableName, QString columnMessage)
 {
@@ -71,6 +54,35 @@ bool DatabaseOperation::createTable(QString tableName, QString columnMessage)
         db.close();
         QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库创建表失败！%1").arg(query.lastError().text()), QMessageBox::Ok);
         return false;
+    }
+    db.close();
+    return true;
+}
+
+bool DatabaseOperation::createTables(QStringList tableNames, QStringList columnMessages)
+{
+    Q_ASSERT_X(tableNames.length() == columnMessages.length(), "createTables", "arguments error");
+
+    //打开数据库
+    if (!openDatabase())
+    {
+        QMessageBox::warning(0, QObject::tr("严重错误！"), QObject::tr("配置文件保存失败！"), QMessageBox::Ok);
+        return false;
+    }
+
+    //创建表
+    QSqlQuery query(db);
+    for (int i=0; i<tableNames.length(); ++i)
+    {
+        if (!query.exec(QObject::tr("create table %1(%2)").
+                         arg(tableNames.at(i)).
+                         arg(columnMessages.at(i))
+                         ))
+        {
+            db.close();
+            QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库创建表失败！%1").arg(query.lastError().text()), QMessageBox::Ok);
+            return false;
+        }
     }
     db.close();
     return true;
@@ -159,6 +171,42 @@ bool DatabaseOperation::updateDatabase(QString tableName, QMap<QString, QString>
 bool DatabaseOperation::alterDatabase(QString tableName, QString oldDate, QString newDate)
 {
 
+}
+
+// 查询所有表及每张表对应的数据
+QList<QMap<QString, QStringList> > DatabaseOperation::getTableNamesAndTableData()
+{
+    QList<QMap<QString, QStringList> > result;                   //
+
+    //打开数据库
+    if (!openDatabase())
+    {
+        return result;
+    }
+
+    QSqlQuery queryTableName(db);                               // 查询表名
+    QSqlQuery queryLineData(db);                                // 查询表中数据
+
+    queryTableName.exec("SELECT NAME FROM sqlite_master");
+    while(queryTableName.next())
+    {
+        QString tableName;
+        QStringList lineDataList;
+        QMap<QString, QStringList> tableData;       // key:表名  value:表中数据
+
+        tableName = queryTableName.value("name").toString();
+
+        queryLineData.exec(QObject::tr("SELECT * FROM %1").arg(tableName));
+        while(queryLineData.next())
+        {
+            lineDataList.append(queryLineData.value("musicName").toString());
+        }
+
+        tableData.insert(tableName, lineDataList);
+        result.append(tableData);
+    }
+
+    return result;
 }
 
 //数据库删除数据

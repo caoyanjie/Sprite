@@ -21,25 +21,16 @@ class MusicList : public QTreeWidget
 public:
     explicit MusicList(QString programPath, QWidget *parent = 0);
 
-    //枚举切换方式
-    enum method{
-        auto_next,              //自动切换
-        click_next              //手动切换
-    };
-
     friend class DT_Music;          //设置友元类
     friend class BottomGroupBox;    //设置友元类
-//    friend class ToolGlobal;        //设置友元类
 
     void create_musicList(QString);                     //创建播放列表
     int get_current_rootDir();                          //检测当前播放列表
     QStringList getToplevelNames();
     void openTempFile(QString file);
     void addMusicToList(int topLevelIndex, QStringList musicNames);
+    void addMusicToList(QString topLevelName, QStringList musicNames);
     void setPlayMode(PlayModle::PlayMode playModeValue);
-
-//    QList<QTreeWidgetItem*> rootDirVector;              //定义 播放列表 容器                    ########有什么用#########
-//    int currentPlayingIndex[2];                         //标记 当前播放二维索引（播放列表， 播放索引）############ 尝试去掉 ##############
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);    //上下文菜单事件
@@ -49,7 +40,6 @@ private:
     void loadMusicList();                               //加载歌曲列表
     void createMusiclistToplevel(QString toplevelName); //创建播放列表
 
-//    QString programDir;
     QTreeWidgetItem *createItem;                        //
     QSqlDatabase db;
     QMediaPlayer *player;                           //定义 多媒体播放器
@@ -66,14 +56,13 @@ private:
     QList<QAction*> musicMenuActionList;
 
     //定义子线程
-//    SubThread *subThread;
     SubThread subThread;
 
     int volumn;
     int toStopNum;                                  //自定义播放模式（N首后停止）
     int selectedIndex[2];                              //播放列表中被选中的歌曲
 
-    method thisMethod;
+    QStringList DefaultList;
     const QString musicListDatabaseName;
     const QString setupDatabaseName;
 
@@ -86,7 +75,7 @@ public slots:
 
 private slots:
     //数据库操作
-    void createDatebase(QString databaseName, QString tableName);                                                                                              //创建数据库
+    void createDatebase(QStringList tableNames);                                                                                              //创建数据库
     bool openDatebase(QString datebaseName, QString hostName="localhost", QString userName="", QString password="");    //打开数据库
 
     //

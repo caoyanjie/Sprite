@@ -29,11 +29,10 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
     font.setPointSize(10);
     this->setFont(font);
     this->setHeaderLabel(tr("播放列表"));
+    DefaultList << "默认列表" << "在线试听";
 
     //初始化 多媒体播放器
     player = new QMediaPlayer(this);		//创建 多媒体播放器
-//    playlist = new QMediaPlaylist(this);	//创建 多媒体播放列表
-//    playlistVector.append(playlist);		//把创建的播放列表添加到 playlistVector 容器中（每个列表一个playlist）
 
     //创建 搜索 自动补全
     completer = new QCompleter(this);
@@ -48,7 +47,7 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
     }
     else
     {
-        createDatebase(musicListDatabaseName, "默认列表");                   //如果数据库不存在，创建数据库
+        createDatebase(DefaultList);                        //如果数据库不存在，创建数据库
     }
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
             this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));          //双击 播放歌曲
@@ -124,16 +123,15 @@ void MusicList::create_musicList(QString listName)
 //检测当前播放列表(有孩子的情况下，判断孩子所在的toplevel，如果没子孩子，返回-1）
 int MusicList::get_current_rootDir()
 {
-    QTreeWidgetItem *item = this ->currentItem() ->parent();    //当前行所在 父节点的指针
-    int forCount = this->topLevelItemCount();                   //总节点数
-    for (int i=0; i<forCount; i++)
+    QTreeWidgetItem *item = this->currentItem()->parent();    //当前行所在 父节点的指针
+    for (int i=0; i<this->topLevelItemCount(); i++)
     {
         if (this->topLevelItem(i) == item)                   //i 为当前项所在父节点在总节点中的索引
         {
             return i;
         }
     }
-    return -1;
+    Q_ASSERT_X(false, "MusicList::get_current_rootDir()", "wrong index");
 }
 
 //获得播放列表名列表
@@ -154,7 +152,6 @@ void MusicList::openTempFile(QString file)
     this->addTopLevelItem(createItem);
     playlist = new QMediaPlaylist(this);
     playlistVector.append(playlist);
-//    rootDirVector.append(createItem);
 
     createItem = new QTreeWidgetItem(QStringList(QFileInfo(file).fileName()));
     this->topLevelItem(this->topLevelItemCount()-1) ->addChild(createItem);
@@ -164,13 +161,38 @@ void MusicList::openTempFile(QString file)
     this->topLevelItem(this->topLevelItemCount()-1)->setExpanded(true);
     this->setCurrentItem(createItem);
     itemPlay();
-    //    player->setPlaylist(playlist);
-    //    player->play();
 }
 
 //添加音乐
 void MusicList::addMusicToList(int topLevelIndex, QStringList musicNames)
 {
+    for (int i=0; i<musicNames.length(); ++i)
+    {
+        QString fileName = QFileInfo(musicNames.at(i)).fileName();
+        createItem = new QTreeWidgetItem(QStringList(fileName));
+        this->topLevelItem(topLevelIndex)->addChild(createItem);
+        this->playlistVector[topLevelIndex]->addMedia(QUrl::fromLocalFile(musicNames.at(i)));
+        createItem->setToolTip(topLevelIndex, fileName);
+        completerList.append(QFileInfo(musicNames.at(i)).fileName());	//添加到自动补全列表
+    }
+
+    //设置自动补全
+    stringListModel->setStringList(completerList);
+}
+//添加音乐
+void MusicList::addMusicToList(QString topLevelName, QStringList musicNames)
+{
+    int topLevelIndex = -1;
+    for (int i=0; i<this->topLevelItemCount(); ++i)
+    {
+        if (this->topLevelItem(i)->text(0) == topLevelName)
+        {
+            topLevelIndex = i;
+            break;
+        }
+    }
+    Q_ASSERT_X(topLevelIndex > -1, "MusicList::adMusicToList()", "index not exists");
+
     for (int i=0; i<musicNames.length(); ++i)
     {
         QString fileName = QFileInfo(musicNames.at(i)).fileName();
@@ -190,37 +212,37 @@ void MusicList::setPlayMode(PlayModle::PlayMode playModeValue)
 {
     switch(playModeValue)
     {
-    case PlayModle::PlayRandom:
+    case PlayModle::PlayRandom:         // 随机播放
         for (int i=0; i<playlistVector.length(); ++i)
         {
             playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Random);
         }
         break;
-    case PlayModle::PlayOnce:
+    case PlayModle::PlayOnce:           // 单次播放
         for (int i=0; i<playlistVector.length(); ++i)
         {
             playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemOnce);
         }
         break;
-    case PlayModle::PlaySingle:
+    case PlayModle::PlaySingle:         // 单曲循环
         for (int i=0; i<playlistVector.length(); ++i)
         {
             playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
         }
         break;
-    case PlayModle::PlaySequence:
+    case PlayModle::PlaySequence:       // 顺序列表
         for (int i=0; i<playlistVector.length(); ++i)
         {
             playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Sequential);
         }
         break;
-    case PlayModle::PlayLoop:
+    case PlayModle::PlayLoop:           // 列表循环
         for (int i=0; i<playlistVector.length(); ++i)
         {
             playlistVector.at(i)->setPlaybackMode(QMediaPlaylist::Loop);
         }
         break;
-    case PlayModle::PlayCustom:
+    case PlayModle::PlayCustom:         // 自定义播放
         break;
     default:
         break;
@@ -359,60 +381,32 @@ void MusicList::contextMenuEvent(QContextMenuEvent *event)
 //初始化播放列表（创建[默认列表]）
 void MusicList::initMusicList()
 {
-    QStringList itemsRootNames;
-//    itemsRootNames << "默认列表" << "在线试听";
-    itemsRootNames << "默认列表";
-    for (int i=0; i<itemsRootNames.length(); i++)
+    for (int i=0; i<DefaultList.count(); ++i)
     {
-        createMusiclistToplevel(itemsRootNames[i]);
+        createMusiclistToplevel(DefaultList[i]);
     }
     this->topLevelItem(0) ->setExpanded(true);          //展开默认列表
-
-    //初始化成员函数 和 初始状态
-//    currentPlayingIndex[0] = -1;   //当前播放 节点索引
-//    currentPlayingIndex[1] = -1;   //当前播放 列表索引
 }
 
 //从数据库加载用户歌曲到播放器
 void MusicList::loadMusicList()
 {
-    //打开 数据库 加载音乐列表
-    if (!openDatebase(musicListDatabaseName))
+    DatabaseOperation db(musicListDatabaseName);
+    QList<QMap<QString, QStringList> > tableNamesAndTableData;
+    tableNamesAndTableData = db.getTableNamesAndTableData();
+
+    for (int i=0; i<tableNamesAndTableData.length(); ++i)
     {
-        QMessageBox::warning(0, "错误！", "数据库读取失败！", QMessageBox::Ok);
-        return;
-    }
-    QSqlQuery query_musicListName(db);                        //查询表名（即播放列表名）
-    QSqlQuery query_musicName(db);                            //查询音乐名（即每音乐的路径）
-    if (!query_musicListName.exec("SELECT NAME FROM sqlite_master"))    //如果数据库中没有表，则返回
-    {
-        return;
-    }
-    while(query_musicListName.next())
-    {
-        //查询播放列表名称
-        if (query_musicListName.value("name").toString() != "默认列表")      //如果不是默认播放列表，就创建这个播放列表
+        QString musicListName = tableNamesAndTableData.at(i).firstKey();
+        QStringList musicNames = tableNamesAndTableData.at(i).first();
+
+        if ( !DefaultList.contains(musicListName) )
         {
-            //创建用户自定义的播放列表
-            createMusiclistToplevel(query_musicListName.value("name").toString());
-//            this->rootDirVector.append(createItem);
-        }
-        //查询歌曲路径
-        if(!query_musicName.exec(tr("SELECT * FROM %1").arg(query_musicListName.value("name").toString())))
-        {
-            continue;                   //如果列表为空，加载下一个列表
+            createMusiclistToplevel(musicListName);
         }
 
-        int topLevelIndex = this->topLevelItemCount() - 1;
-        QStringList musicNames;
-        while(query_musicName.next())   //加载音乐名到播放列表中
-        {
-            musicNames.append(query_musicName.value("musicName").toString());
-        }
-        addMusicToList(topLevelIndex, musicNames);
+        addMusicToList(musicListName, musicNames);
     }
-    //关闭数据库
-    db.close();
 }
 
 // 创建播放列表
@@ -421,7 +415,6 @@ void MusicList::createMusiclistToplevel(QString toplevelName)
     //界面添加 toplevel
     createItem = new QTreeWidgetItem(QStringList(QString(toplevelName)));
     this->addTopLevelItem(createItem);
-//    rootDirVector.append(createItem);                   //rootDirVector
 
     //为右键菜单事件绑定 action
     musicMenuAction = new QAction(toplevelName, this);
@@ -432,22 +425,16 @@ void MusicList::createMusiclistToplevel(QString toplevelName)
     playlistVector.append(playlist);
 }
 
-//创建数据库
-void MusicList::createDatebase(QString databaseName, QString tableName)
+// 初始化数据库
+void MusicList::createDatebase(QStringList tableNames)
 {
-    if (!openDatebase(databaseName))
+    DatabaseOperation db(musicListDatabaseName);
+    QStringList columnMessages;
+    for (int i=0; i<tableNames.length(); ++i)
     {
-        QMessageBox::warning(0, "错误！", "数据创建失败！", QMessageBox::Ok);
-        return;
+       columnMessages << "id integer primary key, musicName text";
     }
-    QSqlQuery query(db);
-    if (!query.exec(tr("CREATE TABLE %1(id integer primary key, musicName text)").arg(tableName)))
-    {
-        QMessageBox::warning(0, "错误！", "数据建表失败！", QMessageBox::Ok);
-        db.close();
-        return;
-    }
-    db.close();
+    db.createTables(tableNames, columnMessages);
 }
 
 //打开数据库
@@ -617,7 +604,31 @@ void MusicList::clearSelf()
 //添加歌曲到其他列表
 void MusicList::add_otherMusicList(QAction *action)
 {
-    for (int i=0,act=0; i<musicMenuActionList.length(); ++i)
+    int currentToplevel = get_current_rootDir();                                        // 当前列表索引
+    int itemIndex = this->currentIndex().row();                                         // 当前歌曲索引
+    QString musicName = this->topLevelItem(currentToplevel)->child(itemIndex)->text(0); // 当前歌曲名字
+
+    int targetIndex;
+    for (int i=0; i<this->topLevelItemCount(); ++i)
+    {
+        if (action->text() == this->topLevelItem(i)->text(0))
+        {
+            targetIndex = i;
+            break;
+        }
+    }
+
+    addMusicToList(action->text(), QStringList(musicName));
+    if (!this->topLevelItem(targetIndex)->isExpanded())
+    {
+        this->topLevelItem(targetIndex)->setExpanded(true);
+    }
+
+    DatabaseOperation db(musicListDatabaseName);
+    db.insertDatabase(this->topLevelItem(targetIndex)->text(0), "musicName", QStringList(musicName));
+
+
+  /*for (int i=0,act=0; i<musicMenuActionList.length(); ++i)
     {
         if (this->topLevelItem(i) == this->topLevelItem(get_current_rootDir()))
         {
@@ -651,7 +662,7 @@ void MusicList::add_otherMusicList(QAction *action)
             }
         }
         act++;
-    }
+    }*/
 }
 
 //设置音量增加
