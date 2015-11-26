@@ -1199,7 +1199,7 @@ void DT_Music::searchMusicClicked(QString musicName)
     }
     netWorkWidget->show();
     netWorkWidget->searchMusic(musicName);
-    connect(netWorkWidget, SIGNAL(playInternetMusic(QString)), musicList, SLOT(playInternetMusic(QString)));
+    connect(netWorkWidget, SIGNAL(playInternetMusic(QString, QString)), musicList, SLOT(playInternetMusic(QString, QString)));
 }
 
 //判断鼠标区域

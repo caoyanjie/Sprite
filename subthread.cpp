@@ -9,7 +9,7 @@ SubThread::SubThread(QObject *parent) :
 {
 }
 
-//get arguments
+//插入数据
 void SubThread::insertDatabase(Method method, QString databaseName, QString tableName, QString columnNames, QStringList lineValues)
 {
     this->method = method;

@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     network.cpp \
     gamer.cpp \
     subthread.cpp \
-    networkwidget.cpp
+    networkwidget.cpp \
+    xmlprocess.cpp
 
 HEADERS  += dt_music.h \
     titlegroupbox.h \
@@ -71,7 +72,8 @@ HEADERS  += dt_music.h \
     network.h \
     gamer.h \
     subthread.h \
-    networkwidget.h
+    networkwidget.h \
+    xmlprocess.h
 
 FORMS    += dt_music.ui
 

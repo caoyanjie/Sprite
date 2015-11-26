@@ -95,5 +95,5 @@ void NetWorkWidget::showSearchResult(QMap<QString, QStringList> musicList)
 // 双击试听
 void NetWorkWidget::playMusic(int row, int column)
 {
-    emit playInternetMusic(musicUrls.at(row));
+    emit playInternetMusic(musicUrls.at(row), tableWidget->item(row, 0)->text());
 }

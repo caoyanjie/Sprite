@@ -148,14 +148,14 @@ QStringList MusicList::getToplevelNames()
 //打开播放临时文件
 void MusicList::openTempFile(QString file)
 {
-    createItem = new QTreeWidgetItem(QStringList(QString("临时列表")));
+    QTreeWidgetItem *createItem = new QTreeWidgetItem(QStringList(QString("临时列表")));
     this->addTopLevelItem(createItem);
-    playlist = new QMediaPlaylist(this);
+    QMediaPlaylist *playlist = new QMediaPlaylist(this);
     playlistVector.append(playlist);
 
     createItem = new QTreeWidgetItem(QStringList(QFileInfo(file).fileName()));
     this->topLevelItem(this->topLevelItemCount()-1) ->addChild(createItem);
-    playlist ->addMedia(QUrl::fromLocalFile(file));                              ///////////////////////或者这个 musicNameList.at(musicNameList.length - 1).append(read_musicList);
+    playlist->addMedia(QUrl::fromLocalFile(file));
 //    completerList.append(QFileInfo(query_musicName.value("musicName").toString()).fileName());
     this->topLevelItem(0)->setExpanded(false);
     this->topLevelItem(this->topLevelItemCount()-1)->setExpanded(true);
@@ -169,7 +169,7 @@ void MusicList::addMusicToList(int topLevelIndex, QStringList musicNames)
     for (int i=0; i<musicNames.length(); ++i)
     {
         QString fileName = QFileInfo(musicNames.at(i)).fileName();
-        createItem = new QTreeWidgetItem(QStringList(fileName));
+        QTreeWidgetItem *createItem = new QTreeWidgetItem(QStringList(fileName));
         this->topLevelItem(topLevelIndex)->addChild(createItem);
         this->playlistVector[topLevelIndex]->addMedia(QUrl::fromLocalFile(musicNames.at(i)));
         createItem->setToolTip(topLevelIndex, fileName);
@@ -196,11 +196,41 @@ void MusicList::addMusicToList(QString topLevelName, QStringList musicNames)
     for (int i=0; i<musicNames.length(); ++i)
     {
         QString fileName = QFileInfo(musicNames.at(i)).fileName();
-        createItem = new QTreeWidgetItem(QStringList(fileName));
+        QTreeWidgetItem *createItem = new QTreeWidgetItem(QStringList(fileName));
         this->topLevelItem(topLevelIndex)->addChild(createItem);
         this->playlistVector[topLevelIndex]->addMedia(QUrl::fromLocalFile(musicNames.at(i)));
         createItem->setToolTip(topLevelIndex, fileName);
         completerList.append(QFileInfo(musicNames.at(i)).fileName());	//添加到自动补全列表
+    }
+
+    //设置自动补全
+    stringListModel->setStringList(completerList);
+
+    DatabaseOperation db(musicListDatabaseName);
+}
+//添加音乐
+void MusicList::addMusicToList(QString topLevelName, QList<QMap<QString, QString> > musicUrlsAndNames)
+{
+    int topLevelIndex = -1;
+    for (int i=0; i<this->topLevelItemCount(); ++i)
+    {
+        if (this->topLevelItem(i)->text(0) == topLevelName)
+        {
+            topLevelIndex = i;
+            break;
+        }
+    }
+    Q_ASSERT_X(topLevelIndex > -1, "MusicList::adMusicToList()", "index not exists");
+
+    for (int i=0; i<musicUrlsAndNames.length(); ++i)
+    {
+        QString musicUrl = musicUrlsAndNames.at(i).firstKey();
+        QString musicName = musicUrlsAndNames.at(i).first();
+        QTreeWidgetItem *createItem = new QTreeWidgetItem(QStringList(musicName));
+        this->topLevelItem(topLevelIndex)->addChild(createItem);
+        this->playlistVector[topLevelIndex]->addMedia(QUrl(musicUrl));
+        createItem->setToolTip(topLevelIndex, musicName);
+        completerList.append(musicName);	//添加到自动补全列表
     }
 
     //设置自动补全
@@ -413,15 +443,15 @@ void MusicList::loadMusicList()
 void MusicList::createMusiclistToplevel(QString toplevelName)
 {
     //界面添加 toplevel
-    createItem = new QTreeWidgetItem(QStringList(QString(toplevelName)));
+    QTreeWidgetItem *createItem = new QTreeWidgetItem(QStringList(QString(toplevelName)));
     this->addTopLevelItem(createItem);
 
     //为右键菜单事件绑定 action
-    musicMenuAction = new QAction(toplevelName, this);
+    QAction *musicMenuAction = new QAction(toplevelName, this);
     musicMenuActionList.append(musicMenuAction);
 
     //创建对应的播放列表
-    playlist = new QMediaPlaylist(this);
+    QMediaPlaylist *playlist = new QMediaPlaylist(this);
     playlistVector.append(playlist);
 }
 
@@ -559,9 +589,25 @@ void MusicList::renameToplevel(QTreeWidgetItem *item)
 }
 
 // 试听在线音乐
-void MusicList::playInternetMusic(QString musicUrl)
+void MusicList::playInternetMusic(QString musicUrl, QString musicName)
 {
+//    playlistVector[1]->addMedia(QUrl(musicUrl));
+//    player->setPlaylist(playlistVector[1]);
+//    playlistVector[1]->addMedia(QUrl::fromLocalFile("C:\\Users\\caoyanjie\\Music\\自由行走的花.mp3"));
+//    qDebug() << playlistVector.at(1)->mediaCount();
+//    playlistVector[1]->setCurrentIndex(0);
+//    player->setPlaylist(playlistVector.at(1));
+//    player->play();
 
+//    player->setPlaylist(playlistVector[0]);
+//    playlistVector[0]->addMedia(QUrlfrom(musicUrl));
+//    playlistVector[0]->setCurrentIndex(0);
+//    player->play();
+    QList<QMap<QString, QString> > musicUrlsAndNames;
+    QMap<QString, QString> musicUrlAndName;
+    musicUrlAndName.insert(musicUrl, musicName);
+    musicUrlsAndNames.append(musicUrlAndName);
+    addMusicToList(DefaultList.at(1)/*"在线试听"*/, musicUrlsAndNames);
 }
 
 //清空所有列表

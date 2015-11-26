@@ -24,7 +24,7 @@ private:
     QVBoxLayout *layout;
 
 signals:
-    void playInternetMusic(QString);        // 双击试听在线音乐
+    void playInternetMusic(QString musicUrl, QString musicName);        // 双击试听在线音乐
 
 private slots:
     void showSearchResult(QMap<QString, QStringList> musicList);

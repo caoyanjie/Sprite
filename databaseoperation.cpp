@@ -22,6 +22,10 @@ DatabaseOperation::~DatabaseOperation()
 //打开数据库
 bool DatabaseOperation::openDatabase(QString hostName, QString userName, QString password)
 {
+//    if(QSqlDatabase::contains("qt_sql_default_connection"))
+//      db = QSqlDatabase::database("qt_sql_default_connection");
+//    else
+//      db = QSqlDatabase::addDatabase("QSQLITE");
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(databaseName);
     db.setHostName(hostName);
@@ -51,10 +55,12 @@ bool DatabaseOperation::createTable(QString tableName, QString columnMessage)
     //创建表
     if (!query.exec(QObject::tr("create table %1(%2)").arg(tableName).arg(columnMessage)))
     {
+        db.removeDatabase("qt_sql_default_connection");
         db.close();
         QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库创建表失败！%1").arg(query.lastError().text()), QMessageBox::Ok);
         return false;
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return true;
 }
@@ -79,11 +85,13 @@ bool DatabaseOperation::createTables(QStringList tableNames, QStringList columnM
                          arg(columnMessages.at(i))
                          ))
         {
+            db.removeDatabase("qt_sql_default_connection");
             db.close();
             QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库创建表失败！%1").arg(query.lastError().text()), QMessageBox::Ok);
             return false;
         }
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return true;
 }
@@ -99,15 +107,18 @@ QStringList DatabaseOperation::getData(QString tableName, QString columnName)
     QSqlQuery query(db);
     if (!query.exec(QObject::tr("SELECT %1 FROM %2").arg(columnName).arg(tableName)))
     {
+        db.removeDatabase("qt_sql_default_connection");
         db.close();
         return QStringList("ERROR: DatabaseOperation::getData()::001");
     }
     query.next();
     if (query.value(0).toString().isEmpty())    //用到 <QVariant>
     {
+        db.removeDatabase("qt_sql_default_connection");
         db.close();
         return QStringList("ERROR: DatabaseOperation::getData()::002");
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return query.value(0).toStringList();       //用到 <QVariant>
 }
@@ -137,11 +148,13 @@ bool DatabaseOperation::insertDatabase(QString tableName, QString columnName, QS
         //插入
         if (!query.exec(QObject::tr("INSERT INTO %1(%2) VALUES('%3')").arg(tableName).arg(columnName).arg(line)))
         {
+            db.removeDatabase("qt_sql_default_connection");
             db.close();
             QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库写入数据失败！本次添加的列表%1将成为临时列表！").arg(line), QMessageBox::Ok);
             return false;
         }
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return true;
 }
@@ -159,10 +172,12 @@ bool DatabaseOperation::updateDatabase(QString tableName, QMap<QString, QString>
     {
         if (!query.exec(QObject::tr("UPDATE %1 SET %2=%3").arg(tableName).arg(key).arg(columnContent.value(key))))
         {
+            db.removeDatabase("qt_sql_default_connection");
             db.close();
             return false;
         }
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return true;
 }
@@ -206,6 +221,8 @@ QList<QMap<QString, QStringList> > DatabaseOperation::getTableNamesAndTableData(
         result.append(tableData);
     }
 
+    db.removeDatabase("qt_sql_default_connection");
+    db.close();
     return result;
 }
 
@@ -219,6 +236,7 @@ bool DatabaseOperation::deleteDatabase(QString tableName, int id_deleteDate)
     QSqlQuery query(db);
     if (!query.exec(QObject::tr("DELETE FROM %1 WHERE id=%2").arg(tableName).arg(id_deleteDate)))
     {
+        db.removeDatabase("qt_sql_default_connection");
         db.close();
         QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库删除数据失败！"), QMessageBox::Ok);
         return false;
@@ -226,9 +244,11 @@ bool DatabaseOperation::deleteDatabase(QString tableName, int id_deleteDate)
     if (!query.exec(QObject::tr("UPDATE %1 SET id=id-1 WHERE id>%2").arg(tableName).arg(id_deleteDate)))
     {
         QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库id排序失败！"), QMessageBox::Ok);
+        db.removeDatabase("qt_sql_default_connection");
         db.close();
         return false;
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return true;
 }
@@ -243,9 +263,11 @@ bool DatabaseOperation::deleteAllOfTable(QString tableName)
     QSqlQuery query(db);
     if (!query.exec(QObject::tr("DELETE FROM %1").arg(tableName)))
     {
+        db.removeDatabase("qt_sql_default_connection");
         db.close();
         return false;
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return true;
 }
@@ -260,10 +282,12 @@ bool DatabaseOperation::deleteTable(QString tableName)
     QSqlQuery query(db);
     if (!query.exec(QObject::tr("DROP TABLE %1").arg(tableName)))
     {
+        db.removeDatabase("qt_sql_default_connection");
         db.close();
         QMessageBox::warning(0, QObject::tr("错误！"), QObject::tr("数据库删除表失败！"), QMessageBox::Ok);
         return false;
     }
+    db.removeDatabase("qt_sql_default_connection");
     db.close();
     return true;
 }
