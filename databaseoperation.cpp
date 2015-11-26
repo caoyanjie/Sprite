@@ -8,7 +8,6 @@
 DatabaseOperation::DatabaseOperation(QString databasePath) :
     databaseName(databasePath)
 {
-
 }
 
 DatabaseOperation::~DatabaseOperation()

@@ -15,6 +15,7 @@
 #include <QString>
 #include "subthread.h"          //子线程
 #include "network.h"
+#include "xmlprocess.h"
 class TitleGroupBox;
 class ToolGlobal;
 class Timing;
@@ -90,6 +91,9 @@ private:
     const QString musicListDatabaseName;
     const QString setUpDatabaseName;
     bool openDatebase(QString datebaseName, QString sqlDriver="QSQLITE", QString hostName="localhost", QString userName="", QString password="");
+    //
+    const QString xmlPath;
+    XMLProcess xml;
 
     //程序路径
     QString programDir;

@@ -2,7 +2,8 @@
 #define MUSICLIST_H
 
 #include "playmodle.h"
-#include "subthread.h"
+//#include "subthread.h"
+#include <xmlprocess.h>
 #include <QTreeWidget>
 
 #include <QSqlDatabase>
@@ -40,8 +41,11 @@ private:
     void initMusicList();                               // 初始化播放列表
     void loadMusicList();                               // 加载歌曲列表
     void createMusiclistToplevel(QString toplevelName); // 创建播放列表
+    void initIniFile();
 
     QSqlDatabase db;
+    const QString xmlPath;
+    XMLProcess xml;
     QMediaPlayer *player;                               // 定义 多媒体播放器
     QList<QMediaPlaylist*> playlistVector;              // 定义 播放列表 容器
 
@@ -54,7 +58,7 @@ private:
     QList<QAction*> musicMenuActionList;
 
     //定义子线程
-    SubThread subThread;
+//    SubThread subThread;
 
     int volumn;
     int toStopNum;                                      // 自定义播放模式（N首后停止）

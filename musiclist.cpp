@@ -1,6 +1,7 @@
 #include "musiclist.h"
 //#include "subthread.h"
-#include "databaseoperation.h"
+//#include "databaseoperation.h"
+#include "xmlprocess.h"
 
 #include <QScrollBar>
 #include <QFrame>
@@ -14,12 +15,14 @@
 
 MusicList::MusicList(QString programPath, QWidget *parent) :
     QTreeWidget(parent)
-//  ,programDir(programPath)
-//  ,volumn(40)
+  ,xmlPath(programPath + "ini.xml")
+  ,xml(xmlPath)
   ,toStopNum(-1)
   ,selectedIndex({-1, -1})
-  ,musicListDatabaseName(programPath + "musicList.db")
-  ,setupDatabaseName(programPath + "setUp.db")
+//  ,programDir(programPath)
+//  ,volumn(40)
+//  ,musicListDatabaseName(programPath + "musicList.db")
+//  ,setupDatabaseName(programPath + "setUp.db")
 {
     this->setHeaderHidden(true);            //隐藏表头
     this->setFrameStyle(QFrame::NoFrame);   //设置无边框线
@@ -41,13 +44,21 @@ MusicList::MusicList(QString programPath, QWidget *parent) :
     completer->setCaseSensitivity(Qt::CaseInsensitive);     //设置大小写不敏感
 
     initMusicList();                                        //初始化一个空的播放列表
-    if (QFileInfo(musicListDatabaseName).exists())          //检测数据库是否存在
+//    if (QFileInfo(musicListDatabaseName).exists())          //检测数据库是否存在
+//    {
+//        loadMusicList();                                    //如果数据库存在，加载歌曲列表
+//    }
+//    else
+//    {
+//        createDatebase(DefaultList);                        //如果数据库不存在，创建数据库
+//    }
+    if (QFileInfo(xmlPath).exists())
     {
-        loadMusicList();                                    //如果数据库存在，加载歌曲列表
+        loadMusicList();
     }
     else
     {
-        createDatebase(DefaultList);                        //如果数据库不存在，创建数据库
+        initIniFile();
     }
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
             this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));          //双击 播放歌曲
@@ -116,8 +127,10 @@ void MusicList::create_musicList(QString listName)
     this->setCurrentItem(this->topLevelItem(this->topLevelItemCount()-1));
 
     //添加到数据库
-    DatabaseOperation db(musicListDatabaseName);
-    db.createTable(listName, tr("id integer primary key, musicName text"));
+//    DatabaseOperation db(musicListDatabaseName);
+//    db.createTable(listName, tr("id integer primary key, musicName text"));
+    // 添加到 xml 配置文件
+    xml.addElement(xml.FirstChildElement, xml.MusicListElement, xml.MusicListElementKey, listName);
 }
 
 //检测当前播放列表(有孩子的情况下，判断孩子所在的toplevel，如果没子孩子，返回-1）
@@ -206,7 +219,7 @@ void MusicList::addMusicToList(QString topLevelName, QStringList musicNames)
     //设置自动补全
     stringListModel->setStringList(completerList);
 
-    DatabaseOperation db(musicListDatabaseName);
+//    DatabaseOperation db(musicListDatabaseName);
 }
 //添加音乐
 void MusicList::addMusicToList(QString topLevelName, QList<QMap<QString, QString> > musicUrlsAndNames)
@@ -220,7 +233,7 @@ void MusicList::addMusicToList(QString topLevelName, QList<QMap<QString, QString
             break;
         }
     }
-    Q_ASSERT_X(topLevelIndex > -1, "MusicList::adMusicToList()", "index not exists");
+    Q_ASSERT_X(topLevelIndex > -1, "adMusicToList()", "topLevel is not exists");
 
     for (int i=0; i<musicUrlsAndNames.length(); ++i)
     {
@@ -281,9 +294,9 @@ void MusicList::setPlayMode(PlayModle::PlayMode playModeValue)
     //保存到数据库（子线程）
     QMap<QString, QString> playMode;
     playMode.insert("playMode", tr("%1").arg(playModeValue));
-
-    subThread.updateDatabase(SubThread::UpdateDatabase, setupDatabaseName, "setUp", playMode);
-    subThread.start();
+    xml.alterElementText(xml.SettingElement, xml.PlayModeElement, tr("%1").arg(playModeValue));
+//    subThread.updateDatabase(SubThread::UpdateDatabase, setupDatabaseName, "setUp", playMode);
+//    subThread.start();
 }
 
 //
@@ -418,9 +431,10 @@ void MusicList::initMusicList()
     this->topLevelItem(0) ->setExpanded(true);          //展开默认列表
 }
 
-//从数据库加载用户歌曲到播放器
+//从配置文件加载用户歌曲到播放器
 void MusicList::loadMusicList()
 {
+    /*
     DatabaseOperation db(musicListDatabaseName);
     QList<QMap<QString, QStringList> > tableNamesAndTableData;
     tableNamesAndTableData = db.getTableNamesAndTableData();
@@ -436,6 +450,24 @@ void MusicList::loadMusicList()
         }
 
         addMusicToList(musicListName, musicNames);
+    }
+    */
+    QList<QMap<QString, QList<QMap<QString, QString> > > > musicListAndMusics;
+    QStringList urlAndName;
+    urlAndName << "url" << "name";
+    musicListAndMusics = xml.getElementAttributeValueAndChildrenText(xml.MusicListElement, urlAndName);
+
+    for (int i=0; i<musicListAndMusics.length(); ++i)
+    {
+        QString musicListName = musicListAndMusics.at(i).firstKey();
+        QList<QMap<QString, QString> > musics = musicListAndMusics.at(i).first();
+
+        if ( !DefaultList.contains(musicListName) )
+        {
+            createMusiclistToplevel(musicListName);
+        }
+
+        addMusicToList(musicListName, musics);
     }
 }
 
@@ -455,16 +487,32 @@ void MusicList::createMusiclistToplevel(QString toplevelName)
     playlistVector.append(playlist);
 }
 
+// 初始化配置文件（ini.xml）
+void MusicList::initIniFile()
+{
+    xml.initXmlFile();
+    QList<QMap<QString, QMap<QString, QString> > > musicListElements;
+    for (int i=0; i<DefaultList.length(); ++i)
+    {
+        QMap<QString, QMap<QString, QString> > musicList;
+        QMap<QString, QString> attribute;
+        attribute.insert(xml.MusicListElementKey, DefaultList.at(i));
+        musicList.insert(xml.MusicListElement, attribute);
+        musicListElements.append(musicList);
+    }
+    xml.addElements(xml.FirstChildElement, musicListElements);
+}
+
 // 初始化数据库
 void MusicList::createDatebase(QStringList tableNames)
-{
+{/*
     DatabaseOperation db(musicListDatabaseName);
     QStringList columnMessages;
     for (int i=0; i<tableNames.length(); ++i)
     {
        columnMessages << "id integer primary key, musicName text";
     }
-    db.createTables(tableNames, columnMessages);
+    db.createTables(tableNames, columnMessages);*/
 }
 
 //打开数据库
@@ -535,8 +583,14 @@ void MusicList::removeSelection(bool delete_file)
     playlistVector.at(rootDir)->removeMedia(currentRow);
 
     //更新数据库
-    DatabaseOperation db(musicListDatabaseName);
-    db.deleteDatabase(this->topLevelItem(rootDir)->text(0), currentRow+1);
+//    DatabaseOperation db(musicListDatabaseName);
+//    db.deleteDatabase(this->topLevelItem(rootDir)->text(0), currentRow+1);
+
+    // 更新配置文件
+    QString musicListName = this->topLevelItem(rootDir)->text(0);
+    QMap<QString, QString> attribute;
+    attribute.insert("id", tr("%1-%2").arg(musicListName).arg(currentRow));
+    xml.removeElementByAttribute("music", attribute);
 
     if (delete_file)
     {
@@ -575,8 +629,13 @@ void MusicList::remove_rootDir()
     this->takeTopLevelItem(currentToplevel);
 
     //更新数据库
-    DatabaseOperation db(musicListDatabaseName);
-    db.deleteTable(deleteName);
+//    DatabaseOperation db(musicListDatabaseName);
+//    db.deleteTable(deleteName);
+
+    // 更新配置文件
+    QMap<QString, QString> attribute;
+    attribute.insert(xml.MusicListElementKey, deleteName);
+    xml.removeElementByAttribute(xml.MusicListElement, attribute);
 
     //删除绑定的 action
     musicMenuActionList.removeAt(currentToplevel);
@@ -619,11 +678,8 @@ void MusicList::clearAll()
     //重新初始化播放列表
     initMusicList();
 
-    QFile clearList(".mData.ini");
-    if (clearList.open(QIODevice::WriteOnly))
-    {
-        clearList.remove();
-    }
+    // 更新配置文件
+    xml.removeElements(xml.MusicElement);
 }
 
 //清空本列表
@@ -642,9 +698,15 @@ void MusicList::clearSelf()
     playlistVector.at(rootDir)->clear();
 
     //更新数据库
-    QString databaseName = this->topLevelItem(rootDir)->text(0);
-    DatabaseOperation db_delete_all(musicListDatabaseName);
-    db_delete_all.deleteAllOfTable(databaseName);
+//    QString databaseName = this->topLevelItem(rootDir)->text(0);
+//    DatabaseOperation db_delete_all(musicListDatabaseName);
+//    db_delete_all.deleteAllOfTable(databaseName);
+
+    // 更新配置文件
+    QString musicListName = this->topLevelItem(rootDir)->text(0);
+    QMap<QString, QString> attribute;
+    attribute.insert(xml.MusicListElementKey, musicListName);
+    xml.removeAllChildrenByAttribute(xml.MusicListElement, xml.MusicListElementKey, musicListName);
 }
 
 //添加歌曲到其他列表
@@ -653,16 +715,17 @@ void MusicList::add_otherMusicList(QAction *action)
     int currentToplevel = get_current_rootDir();                                        // 当前列表索引
     int itemIndex = this->currentIndex().row();                                         // 当前歌曲索引
     QString musicName = this->topLevelItem(currentToplevel)->child(itemIndex)->text(0); // 当前歌曲名字
+    QString musicUrl = playlistVector.at(currentToplevel)->media(itemIndex).canonicalUrl().toString();
 
-    int targetIndex;
-    for (int i=0; i<this->topLevelItemCount(); ++i)
+    int targetIndex = -1;
+    for (targetIndex=0; targetIndex<this->topLevelItemCount(); ++targetIndex)
     {
-        if (action->text() == this->topLevelItem(i)->text(0))
+        if (action->text() == this->topLevelItem(targetIndex)->text(0))
         {
-            targetIndex = i;
             break;
         }
     }
+    Q_ASSERT_X(targetIndex>-1, "add_otherMusicList", "wrong index!");
 
     addMusicToList(action->text(), QStringList(musicName));
     if (!this->topLevelItem(targetIndex)->isExpanded())
@@ -670,9 +733,25 @@ void MusicList::add_otherMusicList(QAction *action)
         this->topLevelItem(targetIndex)->setExpanded(true);
     }
 
-    DatabaseOperation db(musicListDatabaseName);
-    db.insertDatabase(this->topLevelItem(targetIndex)->text(0), "musicName", QStringList(musicName));
+//    DatabaseOperation db(musicListDatabaseName);
+//    db.insertDatabase(this->topLevelItem(targetIndex)->text(0), "musicName", QStringList(musicName));
 
+    // 更新配置文件
+    QList<QMap<QString, QString> > musics;
+    QMap<QString, QString> urlAndName;
+    urlAndName.insert(musicUrl, musicName);
+    musics.append(urlAndName);
+
+    QList<QMap<QString, QMap<QString, QString> > > elementsNameAttributeAndValue;
+    QMap<QString, QString> attributeKeyAndValue;
+    QMap<QString, QMap<QString, QString> > nameAttributeAndValue;
+    attributeKeyAndValue.insert("id", tr("%1-%2").arg(action->text()).arg("null"));
+    nameAttributeAndValue.insert(xml.MusicElement, attributeKeyAndValue);
+    elementsNameAttributeAndValue.append(nameAttributeAndValue);
+
+    QStringList childrenElementNames;
+    childrenElementNames << "url" << "name";
+    xml.addRecursiveElement(xml.MusicListElement, xml.MusicListElementKey, action->text(), elementsNameAttributeAndValue, childrenElementNames, musics);
 
   /*for (int i=0,act=0; i<musicMenuActionList.length(); ++i)
     {

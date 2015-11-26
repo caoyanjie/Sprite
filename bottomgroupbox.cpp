@@ -1,8 +1,5 @@
 #include "bottomgroupbox.h"
 #include <QMessageBox>
-
-#include "databaseoperation.h"
-
 #include <QMouseEvent>
 #include <QToolButton>
 #include <QSlider>

@@ -24,7 +24,8 @@
 #include "currentlrc.h"
 #include "videoplayer.h"        //视频播放器
 #include "game.h"
-#include "databaseoperation.h"
+//#include "databaseoperation.h"
+#include "xmlprocess.h"
 #include "networkwidget.h"
 
 //部件类
@@ -75,8 +76,10 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::DT_Music)
   ,programDir(programPath)
-  ,musicListDatabaseName(programPath + "musicList.db")
-  ,setUpDatabaseName(programPath + "setUp.db")
+//  ,musicListDatabaseName(programPath + "musicList.db")
+//  ,setUpDatabaseName(programPath + "setUp.db")
+  ,xmlPath(programPath + "ini.xml")
+  ,xml(xmlPath)
   ,theme_defultValue(1)
   ,volumn_defaultValue(40)
   ,playmode_defaultValue(4)
@@ -705,23 +708,42 @@ void DT_Music::addMusicFile(int selected)
     QStringList file_types;
     file_types << "*.mp3" << "*.wma" << "*.wav" << "*.asf" << "*.aac" << "*.mp3pro" << "*.vqf" << "*.flac" << "*.ape" << "*.mid" << "*.ogg" << "*.aac"
                << "*.MP3" << "*.WMA" << "*.WAV" << "*.ASF" << "*.AAC" << "*.MP3PRO" << "*.VQF" << "*.FLAC" << "*.APE" << "*.MID" << "*.OGG" << "*.AAC";
-    QStringList musicNameListAdd;   //音乐文件路径
+//    QStringList musicNameListAdd;   //音乐文件路径
 
-    //获得要添加的音乐路径
-    if (selected == 0)              //添加音乐文件
+    //获得要添加的音乐文件路径
+    QList<QMap<QString, QString> > musics;
+    QList<QMap<QString, QMap<QString, QString> > > elementsNameAttributeAndValue;
+    switch(selected)
+    {
+    case 0:             //添加音乐文件
     {
         QString types;
-        for (int i=0; i<file_types.count(); ++i)
+        for (int i=0; i<file_types.count(); ++i)        // 组合字符串
         {
             types += file_types.at(i) + " ";
         }
-        musicNameListAdd = QFileDialog::getOpenFileNames(this, tr("添加音乐"), "D:/", tr("音乐文件(%1)").arg(types));
-        if (musicNameListAdd.isEmpty())
+        QStringList urls = QFileDialog::getOpenFileNames(this, tr("添加音乐"), "D:/", tr("音乐文件(%1)").arg(types));
+        for (int i=0; i<urls.length(); ++i)
+        {
+            QMap<QString, QString> urlAndName;
+            urlAndName.insert(urls.at(i), QFileInfo(urls.at(i)).fileName());
+            musics.append(urlAndName);
+
+            QMap<QString, QString> attributeKeyAndValue;
+            attributeKeyAndValue.insert("id", tr("默认列表-%1").arg(i));
+
+            QMap<QString, QMap<QString, QString> > nameAttributeAndValue;
+            nameAttributeAndValue.insert(xml.MusicElement, attributeKeyAndValue);
+
+            elementsNameAttributeAndValue.append(nameAttributeAndValue);
+        }
+        if (musics.isEmpty())
         {
             return;
         }
+        break;
     }
-    else if (selected == 1)         //添加音乐目录
+    case 1:             //添加音乐目录
     {
         QString dirName;
         QStringList musicNames;
@@ -737,21 +759,35 @@ void DT_Music::addMusicFile(int selected)
         musicNames = dir.entryList();
         for (int i=0; i<musicNames.length(); i++)
         {
-            musicNameListAdd.append(dirName + "/" + musicNames[i]);
+            QMap<QString, QString> urlAndName;
+            urlAndName.insert(dirName + "/" + musicNames.at(i), musicNames.at(i));
+            musics.append(urlAndName);
+
+            QMap<QString, QString> attributeKeyAndValue;
+            attributeKeyAndValue.insert("id", tr("默认列表-%1").arg(i));
+
+            QMap<QString, QMap<QString, QString> > nameAttributeAndValue;
+            nameAttributeAndValue.insert(xml.MusicElement, attributeKeyAndValue);
+
+            elementsNameAttributeAndValue.append(nameAttributeAndValue);
         }
+        break;
     }
-    else
-    {
-        qDebug() << "Error!!! The index of combbox is not found!";
-        return;
+    default:
+        Q_ASSERT_X(false, "select combbox", "The index of combbox is not found!");
     }
 
     //添加到界面和播放列表中
-    musicList->addMusicToList(0, musicNameListAdd);
+//    musicList->addMusicToList(0, musicNameListAdd);
+    musicList->addMusicToList("默认列表", musics);
 
     //添加到数据库中（子线程）
-    subThread.insertDatabase(SubThread::InsertDataBase, musicListDatabaseName, "默认列表", "musicName", musicNameListAdd);
-    subThread.start();
+//    subThread.insertDatabase(SubThread::InsertDataBase, musicListDatabaseName, "默认列表", "musicName", musicNameListAdd);
+//    subThread.start();
+
+    QStringList childrenElementNames;
+    childrenElementNames << "url" << "name";
+    xml.addRecursiveElement(xml.MusicListElement, xml.MusicListElementKey, "默认列表", elementsNameAttributeAndValue, childrenElementNames, musics);
 }
 
 //单击 搜索 按钮
@@ -1040,10 +1076,12 @@ void DT_Music::volumValue_changed()
 //更新数据库中音量值
 void DT_Music::update_volumn_value_of_database()
 {
-    QMap<QString, QString> new_volumn_value;
-    new_volumn_value.insert("volumn", tr("%1").arg(slider_volumn->value()));
-    DatabaseOperation db_update_volumn(setUpDatabaseName);
-    db_update_volumn.updateDatabase("setUp", new_volumn_value);
+//    QMap<QString, QString> new_volumn_value;
+//    new_volumn_value.insert("volumn", tr("%1").arg(slider_volumn->value()));
+//    DatabaseOperation db_update_volumn(setUpDatabaseName);
+//    db_update_volumn.updateDatabase("setUp", new_volumn_value);
+    QString volumn = tr("%1").arg(slider_volumn->value());
+    xml.alterElementText(xml.SettingElement, xml.VolumnElement, volumn);
 }
 
 //倒计时处理，停止播放

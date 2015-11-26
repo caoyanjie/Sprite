@@ -1,4 +1,5 @@
 #include "xmlprocess.h"
+#include <QDebug>
 #include <QFile>
 #include <QTextStream>
 #include <QXmlStreamWriter>
@@ -11,6 +12,13 @@
 
 XMLProcess::XMLProcess(const QString xmlPath) :
     xmlPath(xmlPath)
+  ,FirstChildElement("UserData")
+  ,MusicListElement("MusicList")
+  ,MusicListElementKey("name")
+  ,MusicElement("music")
+  ,SettingElement("Setting")
+  ,VolumnElement("VolumnElement")
+  ,PlayModeElement("PlayMode")
 {
 }
 
@@ -31,6 +39,391 @@ void XMLProcess::initXmlFile()
     stream.writeEndElement();
     stream.writeEndDocument();
     file.close();
+}
+
+// 增加元素
+void XMLProcess::addElement(QString parentName, QString elementName, QString attributeKey/*=""*/, QString attributeValue/*=""*/, QString elementText/*=""*/)
+{
+    Q_ASSERT_X((!attributeKey.isEmpty()) || attributeValue.isEmpty(), "addElement", "key is empty and value is not empty!"); /* !(attributeKey.isEmpty() && (!attributeValue.isEmpty()) */
+
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // new element
+    QDomElement parentElement = dom.elementsByTagName(parentName).at(0).toElement();
+    QDomElement newElement = dom.createElement(elementName);
+
+    // set attribute
+    if (!attributeKey.isEmpty())
+    {
+        newElement.setAttribute(attributeKey, attributeValue);
+    }
+
+    // set text
+    if (!elementText.isEmpty())
+    {
+        QDomText newElementText = dom.createTextNode(elementText);
+        newElement.appendChild(newElementText);
+    }
+
+    parentElement.appendChild(newElement);
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 增加元素
+void XMLProcess::addElement(QString parentName, QString elementName, QList<QMap<QString, QString> > attribute, QString elementText/* ="" */)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // new element
+    QDomElement parentElement = dom.elementsByTagName(parentName).at(0).toElement();
+    QDomElement newElement = dom.createElement(elementName);
+    for (int i=0; i<attribute.length(); ++i)
+    {
+        Q_ASSERT_X(attribute.at(i).firstKey().isEmpty() && (!attribute.at(i).first().isEmpty()), "addElement", "key is empty and value is not empty!");
+        newElement.setAttribute(attribute.at(i).firstKey(), attribute.at(i).first());
+    }
+    if (!elementText.isEmpty())
+    {
+        QDomText newElementText = dom.createTextNode(elementText);
+        newElement.appendChild(newElementText);
+    }
+    parentElement.appendChild(newElement);
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 增加多个元素
+void XMLProcess::addElements(QString parentName, QList<QMap<QString, QMap<QString, QString> > > children)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // add children
+    QDomElement parent = dom.elementsByTagName(parentName).at(0).toElement();
+    for (int i=0; i<children.length(); ++i)
+    {
+        QString childName = children.at(i).firstKey();
+        QString attributeKey = children.at(i).first().firstKey();
+        QString attributeValue = children.at(i).first().first();
+
+        QDomElement newElement = dom.createElement(childName);
+        newElement.setAttribute(attributeKey, attributeValue);
+        parent.appendChild(newElement);
+    }
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 增加递归节点
+void XMLProcess::addRecursiveElement(QString parentNode, QString nodeName, QList<QMap<QString, QString> > selfAttributes, QList<QMap<QString, QString> > children)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // new element
+    QDomElement parentElement = dom.elementsByTagName(parentNode).at(0).toElement();
+    QDomElement newElement = dom.createElement(nodeName);
+    for (int i=0; i<selfAttributes.length(); ++i)
+    {
+        newElement.setAttribute(selfAttributes.at(i).firstKey(), selfAttributes.at(i).first());
+    }
+
+    // add children
+    for (int i=0; i<children.length(); ++i)
+    {
+        QDomElement child = dom.createElement(children.at(i).firstKey());
+        QDomText text = dom.createTextNode(children.at(i).first());
+        child.appendChild(text);
+        newElement.appendChild(child);
+    }
+
+    // add new element
+    parentElement.appendChild(newElement);
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 增加递归节点
+void XMLProcess::addRecursiveElement(QString parentName, QString parentAttributeKey, QString parentAttributeValue, QList<QMap<QString, QMap<QString, QString> > > selfNameAttributeKeyAndValue, QStringList childrenName, QList<QMap<QString, QString> > children)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // find parent element
+    QDomElement parentElement;
+    QDomNodeList nodeList = dom.elementsByTagName(parentName);
+    for (int i=0; i<nodeList.length(); ++i)
+    {
+        if (nodeList.at(i).attributes().contains(parentAttributeKey))
+        {
+            QDomElement element = nodeList.at(i).toElement();
+            if (element.attribute(parentAttributeKey) == parentAttributeValue)
+            {
+                parentElement = element;
+                break;
+            }
+        }
+    }
+    Q_ASSERT_X(!parentElement.isNull(), "addRecursiveElement", "parent element is not exist!");
+
+    // add element
+    for (int i=0; i<selfNameAttributeKeyAndValue.length(); ++i)
+    {
+        // new element
+        QString selfName = selfNameAttributeKeyAndValue.at(i).firstKey();
+        QString selfAttributeKey = selfNameAttributeKeyAndValue.at(i).first().firstKey();
+        QString selfAttributeValue = selfNameAttributeKeyAndValue.at(i).first().first();
+        QDomElement newElement = dom.createElement(selfName);
+        newElement.setAttribute(selfAttributeKey, selfAttributeValue);
+
+        // first child
+        QDomElement firstChild = dom.createElement(childrenName.at(0));
+        QDomText firstText = dom.createTextNode(children.at(i).firstKey());
+        firstChild.appendChild(firstText);
+
+        // second child
+        QDomElement secondChild = dom.createElement(childrenName.at(1));
+        QDomText secondText = dom.createTextNode(children.at(i).first());
+        secondChild.appendChild(secondText);
+
+        // add children
+        newElement.appendChild(firstChild);
+        newElement.appendChild(secondChild);
+        parentElement.appendChild(newElement);
+    }
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 删除节点
+void XMLProcess::removeElements(QString elementName)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    if (dom.elementsByTagName(elementName).length() == 0)
+    {
+        return;
+    }
+
+    // remobe elements
+    while (dom.elementsByTagName(elementName).length())
+    {
+        QDomNode parent = dom.elementsByTagName(elementName).at(0).parentNode();
+        parent.removeChild(dom.elementsByTagName(elementName).at(0));
+    }
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+void XMLProcess::removeElementByAttribute(QString elementName, QMap<QString, QString> attributeAndValue)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // find nodes
+    QDomNodeList targetList = dom.elementsByTagName(elementName);
+    QDomNode target;
+    for (int i=0; i<targetList.length(); ++i)
+    {
+        QDomElement element = targetList.at(i).toElement();
+        if (element.attributes().contains(attributeAndValue.firstKey()))
+        {
+            if (element.attribute(attributeAndValue.firstKey()) == attributeAndValue.first())
+            {
+                target = targetList.at(i);
+            }
+        }
+    }
+
+    // remove node
+    Q_ASSERT_X(!target.isNull(), "removeXmlElementByAttribute", "element name is not exist!");
+    QDomNode parent = target.parentNode();
+    parent.removeChild(target);
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 删除指定元素的所有子元素
+void XMLProcess::removeAllChildrenByAttribute(QString elementName, QString attributeKey, QString attributeValue)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // find node
+    QDomNodeList targetList = dom.elementsByTagName(elementName);
+    QDomNode target;
+    for (int i=0; i<targetList.length(); ++i)
+    {
+        QDomElement element = targetList.at(i).toElement();
+        if (element.attributes().contains(attributeKey))
+        {
+            if (element.attribute(attributeKey) == attributeValue)
+            {
+                target = targetList.at(i);
+            }
+        }
+    }
+
+    // remove all children
+    Q_ASSERT_X(!target.isNull(), "removeAllChildrenByAttribute", "element name is not exist!");
+    while (target.hasChildNodes())
+    {
+        target.removeChild(target.childNodes().at(0));
+    }
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 修改元素文本
+void XMLProcess::alterElementText(QString parentName, QString selfName, QString text)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // alter node
+    QDomElement parent = dom.elementsByTagName(parentName).at(0).toElement();
+    QDomElement element = parent.elementsByTagName(selfName).at(0).toElement();
+    QDomText textNode = element.childNodes().at(0).toText();
+    textNode.setData(text);
+
+    // save dom
+    savaDom(dom);
+}
+
+// 修改具有某属性的元素的文本
+void XMLProcess::alterElementTextByAttribute(QString elementName, QMap<QString, QString> attribute, QString text)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // alter node
+
+
+    // save dom
+    savaDom(dom);
+}
+
+// 修改元素属性值
+void XMLProcess::alterElementAttribute(QString elementName, QMap<QString, QString> attribute)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // alter node
+
+
+    // save dom
+    savaDom(dom);
+}
+
+// 获得数据
+QList<QMap<QString, QList<QMap<QString, QString> > > > XMLProcess::getElementAttributeValueAndChildrenText(QString elementName, QStringList elementNames)
+{
+    QList<QMap<QString, QList<QMap<QString, QString> > > > result;
+
+    QFile file(xmlPath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::warning(0, "配置文件错误", "XML 文件打开失败，无法获取用户数据！", QMessageBox::Ok);
+        return result;
+    }
+
+    QList<QMap<QString, QString> > brotherElementsTextList;
+
+    QString attributeValue;
+    QString firstValue;
+    QString secondValue;
+
+    QXmlStreamReader reader;
+    reader.setDevice(&file);
+
+    while (!reader.atEnd())
+    {
+        QXmlStreamReader::TokenType type = reader.readNext();
+
+        switch(type)
+        {
+        case QXmlStreamReader::StartElement:
+            if (reader.name() == elementName)
+            {
+                attributeValue = reader.attributes().at(0).value().toString();
+            }
+            else if (reader.name() == "url")
+            {
+                firstValue = reader.readElementText();
+            }
+            else if (reader.name() == "name")
+            {
+                secondValue = reader.readElementText();
+
+                QMap<QString, QString> brotherElementsText;
+                brotherElementsText.insert(firstValue, secondValue);
+                brotherElementsTextList.append(brotherElementsText);
+            }
+            break;
+        case QXmlStreamReader::EndElement:
+            if (!attributeValue.isNull() && reader.name()==elementName)
+            {
+                QMap<QString, QList<QMap<QString, QString> > > values;
+                values.insert(attributeValue, brotherElementsTextList);
+                result.append(values);
+                brotherElementsTextList.clear();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    file.close();
+    return result;
 }
 
 // 获取 dom
@@ -68,164 +461,9 @@ void XMLProcess::savaDom(QDomDocument dom)
     fileWriter.close();
 }
 
-// 增加元素
-void XMLProcess::addElement(QString parentNode, QString nodeName, QList<QMap<QString, QString> > attribute, QString text)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // new element
-    QDomElement parentElement = dom.elementsByTagName(parentNode).at(0).toElement();
-    QDomElement newElement = dom.createElement(nodeName);
-    for (int i=0; i<attribute.length(); ++i)
-    {
-        newElement.setAttribute(attribute.at(i).firstKey(), attribute.at(i).first());
-    }
-    if (text != "")
-    {
-        QDomText newElementText = dom.createTextNode(text);
-        newElement.appendChild(newElementText);
-    }
-    parentElement.appendChild(newElement);
-
-    // save dom
-    savaDom(dom);
-}
-
-// 增加递归节点
-void XMLProcess::addRecursiveElement(QString parentNode, QString nodeName, QList<QMap<QString, QString> > attributes, QList<QMap<QString, QString> > children)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // new element
-    QDomElement parentElement = dom.elementsByTagName(parentNode).at(0).toElement();
-    QDomElement newElement = dom.createElement(nodeName);
-    for (int i=0; i<attributes.length(); ++i)
-    {
-        newElement.setAttribute(attributes.at(i).firstKey(), attributes.at(i).first());
-    }
-
-    // add children
-    for (int i=0; i<children.length(); ++i)
-    {
-        QDomElement child = dom.createElement(children.at(i).firstKey());
-        QDomText text = dom.createTextNode(children.at(i).first());
-        child.appendChild(text);
-        newElement.appendChild(child);
-    }
-
-    // add new element
-    parentElement.appendChild(newElement);
-
-    // save dom
-    savaDom(dom);
-}
-
-// 删除节点
-void XMLProcess::removeElements(QString elementName)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // find nodes
-    QDomNodeList targetList = dom.elementsByTagName(elementName);
-    Q_ASSERT_X(targetList.length() > 0, "removeXmlElements", "element name is not exist!");
-
-    // remove node
-    for (int i=0; i<targetList.length(); ++i)
-    {
-        QDomNode parent = targetList.at(i).parentNode();
-        parent.removeChild(targetList.at(i));
-    }
-
-    // save dom
-    savaDom(dom);
-}
-
-void XMLProcess::removeElementByAttribute(QString elementName, QMap<QString, QString> attributeAndValue)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // find nodes
-    QDomNodeList targetList = dom.elementsByTagName(elementName);
-    QDomNode target;
-    for (int i=0; i<targetList.length(); ++i)
-    {
-        QDomElement element = targetList.at(i).toElement();
-        if (element.attributes().contains(attributeAndValue.firstKey()))
-        {
-            if (element.attribute(attributeAndValue.firstKey()) == attributeAndValue.first())
-            {
-                target = targetList.at(i);
-            }
-        }
-    }
-
-    // remove node
-    Q_ASSERT_X(!target.isNull(), "removeXmlElementByAttribute", "element name is not exist!");
-    QDomNode parent = target.parentNode();
-    parent.removeChild(target);
-
-    // save dom
-    savaDom(dom);
-}
-
-// 修改元素文本
-void XMLProcess::alterElementText(QString elementName)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // alter node
-
-
-    // save dom
-    savaDom(dom);
-}
-
-// 修改具有某属性的元素的文本
-void XMLProcess::alterElementTextByAttribute(QString elementName, QMap<QString, QString> attribute, QString text)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // alter node
-
-
-    // save dom
-    savaDom(dom);
-}
-
-// 修改元素属性值
-void XMLProcess::alterElementAttribute(QString elementName, QMap<QString, QString> attribute)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // alter node
-
-
-    // save dom
-    savaDom(dom);
-}
-
 // 重排 id 值
-void XMLProcess::resetId()
+void XMLProcess::resetId(QDomDocument &dom)
 {
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // reset id
     QDomNodeList two = dom.childNodes();
     QList<QDomNode> root;
     for (int i=0; i<two.length(); ++i)
@@ -238,7 +476,7 @@ void XMLProcess::resetId()
         QDomNode parent = root.at(0);
         root.pop_front();
         QDomNodeList children = parent.childNodes();
-        QString base = parent.toElement().attribute("name");
+        QString base = parent.toElement().attribute(this->MusicListElementKey);
         int num = 0;
         for (int i=0; i<children.length(); ++i)
         {
@@ -254,68 +492,4 @@ void XMLProcess::resetId()
             }
         }
     }
-
-    // save dom
-    savaDom(dom);
-}
-
-// 获得数据
-QList<QMap<QString, QList<QMap<QString, QString> > > > XMLProcess::getElementAttributeValueAndChildrenText(QString elementName, QMap<QString, QString> elementAttribute, QStringList elementNames)
-{
-    QList<QMap<QString, QList<QMap<QString, QString> > > > result;
-
-    QFile file(xmlPath);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        QMessageBox::warning(0, "配置文件错误", "XML 文件打开失败，无法获取用户数据！", QMessageBox::Ok);
-        return result;
-    }
-
-    QMap<QString, QList<QMap<QString, QString> > > values;
-    QString attributeValue;
-    QList<QMap<QString, QString> > brotherElementsTextList;
-    QString firstValue;
-    QString secondValue;
-
-    QXmlStreamReader reader;
-    reader.setDevice(&file);
-
-    while (!reader.atEnd())
-    {
-        QXmlStreamReader::TokenType type = reader.readNext();
-
-        switch(type)
-        {
-        case QXmlStreamReader::StartElement:
-            if (reader.name() == elementName)
-            {
-                attributeValue = reader.attributes().at(0).value().toString();
-            }
-            else if (reader.name() == "url")
-            {
-                firstValue = reader.readElementText();
-            }
-            else if (reader.name() == "name")
-            {
-                secondValue = reader.readElementText();
-
-                QMap<QString, QString> brotherElementsText;
-                brotherElementsText.insert(firstValue, secondValue);
-                brotherElementsTextList.append(brotherElementsText);
-            }
-            break;
-        case QXmlStreamReader::EndElement:
-            if (!attributeValue.isNull() && reader.name()==elementName)
-            {
-                values.insert(attributeValue, brotherElementsTextList);
-                result.append(values);
-                brotherElementsTextList.clear();
-            }
-            break;
-        default:
-            break;
-        }
-    }
-    file.close();
-    return result;
 }
