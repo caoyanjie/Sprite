@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QCheckBox>
 #include <QFontMetrics>
+#include <QFileInfo>
 
 #include <QMediaMetaData>   //多媒体数据
 
@@ -17,15 +18,9 @@ BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *
     QGroupBox(parent)
   ,musicList(object)
   ,setupDatabaseName(programPath + "setUp.db")
+  ,xmlPath(programPath + "ini.xml")
+  ,xml(xmlPath)
 {
-    //设置样式
-    this ->setObjectName(tr("bottomGroupBox"));                         //显示 设置 对象名
-    setStyleSheet(
-                  "#bottomGroupBox{"                                    //设置 自身样式
-                        "border: 1px;"
-                        "background: rgba(65, 65, 65, 200);"
-                  "}");
-
     //初始化 附属 部件
     setChildrenWidgets();
 
@@ -51,6 +46,14 @@ BottomGroupBox::BottomGroupBox(MusicList *object, QString programPath, QWidget *
 //    connect(bottomGroupbox, SIGNAL(slider_progress_valueChange(qint64)), this, SLOT(seek(qint64)));   //更新 进度条
     connect(musicList->player, SIGNAL(positionChanged(qint64)), this, SLOT(positionChanged(qint64)));   //更新进度条
     connect(slider_progress, SIGNAL(sliderMoved(int)), this, SLOT(seek(int)));                          //定位播放进度
+
+    //设置样式
+    this ->setObjectName(tr("bottomGroupBox"));                         //显示 设置 对象名
+    setStyleSheet(
+                  "#bottomGroupBox{"                                    //设置 自身样式
+                        "border: 1px;"
+                        "background: rgba(65, 65, 65, 200);"
+                  "}");
 }
 
 //忽略 鼠标按下 事件

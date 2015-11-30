@@ -6,7 +6,7 @@
 #include <xmlprocess.h>
 #include <QTreeWidget>
 
-#include <QSqlDatabase>
+//#include <QSqlDatabase>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
 #include <QTreeWidgetItem>
@@ -30,7 +30,6 @@ public:
     QStringList getToplevelNames();
     void openTempFile(QString file);
     void addMusicToList(int topLevelIndex, QStringList musicNames);
-    void addMusicToList(QString topLevelName, QStringList musicNames);
     void addMusicToList(QString topLevelName, QList<QMap<QString, QString> > musicUrlsAndNames);
     void setPlayMode(PlayModle::PlayMode playModeValue);
 
@@ -41,9 +40,9 @@ private:
     void initMusicList();                               // 初始化播放列表
     void loadMusicList();                               // 加载歌曲列表
     void createMusiclistToplevel(QString toplevelName); // 创建播放列表
-    void initIniFile();
+    void initDefaultMusicList();
 
-    QSqlDatabase db;
+//    QSqlDatabase db;
     const QString xmlPath;
     XMLProcess xml;
     QMediaPlayer *player;                               // 定义 多媒体播放器
@@ -63,26 +62,25 @@ private:
     int volumn;
     int toStopNum;                                      // 自定义播放模式（N首后停止）
     int selectedIndex[2];                               // 播放列表中被选中的歌曲
+    PlayModle::PlayMode playMode;
 
     QStringList DefaultList;
     const QString musicListDatabaseName;
     const QString setupDatabaseName;
 
-signals:
-    void itemPlay();                                    // 播放歌曲
-
 public slots:
-    void setCurrentRow(int currentIndex=-1, int topLevel=-1);
-    void setCurrentRow(QString text);
+    void setCurrentRow(int currentIndex, int topLevel=-1);
+    void setCurrentRow(QString text);                       // 单击检索按钮，定位当前行
 
 private slots:
     //数据库操作
-    void createDatebase(QStringList tableNames);                                                                                              //创建数据库
-    bool openDatebase(QString datebaseName, QString hostName="localhost", QString userName="", QString password="");    //打开数据库
+//    void createDatebase(QStringList tableNames);                                                                                              //创建数据库
+//    bool openDatebase(QString datebaseName, QString hostName="localhost", QString userName="", QString password="");    //打开数据库
 
     //
-    void playMusic();
-    void itemDoubleClicked(QTreeWidgetItem *item, int index);
+    void playMusic(int musicListIndex, int musicIndex);
+    void doubleClicked(QModelIndex index);
+    void rightBtnPlay();
 
 //    void searchedMusic(int, int);                       // 搜索歌曲
     void removeSelection(bool delete_file=false);       // 把歌曲移除列表
@@ -103,7 +101,10 @@ private slots:
     void setVolumnLess();
 
     //释放子线程
-    void releaseThread();
+//    void releaseThread();
+
+    //test
+
 };
 
 #endif // MUSICLIST_H

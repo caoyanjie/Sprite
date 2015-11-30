@@ -3,6 +3,7 @@
 
 #include "musiclist.h"
 #include "playmodle.h"
+#include "xmlprocess.h"
 #include <QGroupBox>
 class QToolButton;
 class QSlider;
@@ -27,7 +28,9 @@ private:
     void setChildrenWidgets();                  //初始化 附属 部件
 
     const QString setupDatabaseName;
+    const QString xmlPath;
 
+    XMLProcess xml;
     MusicList *musicList;
 
     QToolButton *tbn_play_previous;             //定义 ”上一曲“   按钮

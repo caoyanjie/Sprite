@@ -80,9 +80,9 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
 //  ,setUpDatabaseName(programPath + "setUp.db")
   ,xmlPath(programPath + "ini.xml")
   ,xml(xmlPath)
-  ,theme_defultValue(1)
-  ,volumn_defaultValue(40)
-  ,playmode_defaultValue(4)
+  ,ThemeDefultValue(1)
+  ,VolumnDefaultValue(40)
+  ,PlayModeDefaultValue(4)
 {
     ui->setupUi(this);
 
@@ -99,6 +99,12 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     animation->setStartValue(0);
     animation->setEndValue(1);
     animation->start();
+
+    // 检测配置文件
+    if (!QFileInfo(xmlPath).exists())
+    {
+        xml.initXmlFile();
+    }
 
     //初始化 界面 和 变量
     init();
@@ -138,8 +144,8 @@ DT_Music::DT_Music(QString programPath, QWidget *parent) :
     connect(toolGlobal, SIGNAL(timeout_playStop()), this, SLOT(play_stop()));
 
     //设置改变，设置信息写入配置文件
-//    connect(titleGroupBox, SIGNAL(settingDataChanged(QString,QString)),                       //设置皮肤，信息写入配置文件
-//            this, SLOT(writeSettingdateToIni(QString,QString)));
+    connect(titleGroupBox, SIGNAL(settingDataChanged(QString,QString)),                       //设置皮肤，信息写入配置文件
+            this, SLOT(writeSettingdateToIni(QString,QString)));
 			
     connect(titleGroupBox, SIGNAL(ShowVideoPlayer()), this, SLOT(ShowVideoPlayer()));                   //切换为 视频播放 模式
     connect(titleGroupBox, SIGNAL(calldMusicTitleAndAuthor()),
@@ -589,7 +595,8 @@ void DT_Music::volumn_widget()
     connect(slider_volumn, SIGNAL(valueChanged(int)), musicList->player, SLOT(setVolume(int)));         //音量控件值改变，更新多媒体播放音量
     connect(slider_volumn, SIGNAL(sliderReleased()), lab_volumnFrame, SLOT(hide()));                    //释放音量控件，音量控件隐藏
 //    connect(slider_volumn, SIGNAL(sliderReleased()), this, SLOT(update_volumn_value_of_database()));  //释放音量控件 更新数据库
-    slider_volumn->setValue(volumn_defaultValue);
+
+//    slider_volumn->setValue(volumn_defaultValue);
 }
 
 //初始化 工具栏图标
@@ -627,79 +634,64 @@ void DT_Music::create_trayIcon()
 //读取数据库，加载用户设置，如果数据库不存在，创建数据库，设置默认值
 void DT_Music::readDatabaseToSetup()
 {
-    if (QFileInfo(setUpDatabaseName).exists())
+    // set theme
+    theme = ThemeDefultValue;
+    if (!xml.isElementExist(xml.ThemeElement))
     {
-        if (!openDatebase(setUpDatabaseName))
-        {
-            QMessageBox::warning(0, tr("警告！"), tr("数据库打开失败！\n用户设置数据加载失败!!"), QMessageBox::Ok);
-            return;
-        }
-        //加载用户设置
-        QSqlQuery query(db);
-        if (!query.exec("SELECT theme, volumn, playMode FROM setUp"))
-        {
-            QMessageBox::warning(0, tr("错误！"), tr("查询用户配置信息数据库失败！"), QMessageBox::Ok);
-            db.close();
-            return;
-        }
-        while(query.next())
-        {
-            //初始化主题
-//            setTheme();
-
-            //初始化音量值
-            slider_volumn->setValue(query.value("volumn").toInt());
-
-            //初始化播放模式
-            int playMode = query.value("playMode").toInt();
-            switch(playMode)
-            {
-            case PlayModle::PlayRandom:
-                bottomGroupbox->playModle_choosed(PlayModle::PlayRandom);
-                break;
-            case PlayModle::PlayOnce:
-                bottomGroupbox->playModle_choosed(PlayModle::PlayOnce);
-                break;
-            case PlayModle::PlaySingle:
-                bottomGroupbox->playModle_choosed(PlayModle::PlaySingle);
-                break;
-            case PlayModle::PlaySequence:
-                bottomGroupbox->playModle_choosed(PlayModle::PlaySequence);
-                break;
-            case PlayModle::PlayLoop:
-                bottomGroupbox->playModle_choosed(PlayModle::PlayLoop);
-                break;
-            case PlayModle::PlayCustom:
-                bottomGroupbox->playModle_choosed(PlayModle::PlayCustom);
-                break;
-            default:
-                QMessageBox::warning(0, "错误！", "初始化读取音量值错误！", QMessageBox::Ok);
-                break;
-            }
-        }
+        xml.addElementWithText(xml.SettingElement, xml.ThemeElement, tr("%1").arg(theme));
     }
     else
     {
-        if (!openDatebase(setUpDatabaseName))
-        {
-            QMessageBox::warning(0, tr("错误！"), tr("数据库创建失败！"), QMessageBox::Ok);
-            return;
-        }
-        QSqlQuery query(db);
-        if (!query.exec("create table setUp(theme, volumn, playMode)"))
-        {
-            QMessageBox::warning(0, tr("错误！"), tr("数据库创建表失败！"), QMessageBox::Ok);
-            db.close();
-            return;
-        }
-        if (!query.exec(tr("insert into setUp values(%1, %2, %3)").arg(theme_defultValue).arg(volumn_defaultValue).arg(playmode_defaultValue)))
-        {
-            QMessageBox::warning(0, tr("错误！"), tr("数据库插入数据失败！"), QMessageBox::Ok);
-            db.close();
-            return;
-        }
+        theme = xml.getElementText(xml.ThemeElement).toInt();
     }
-    db.close();
+    setTheme(theme);
+
+    // set volumn
+    int volumn = VolumnDefaultValue;
+    if (!xml.isElementExist(xml.VolumnElement))
+    {
+        xml.addElementWithText(xml.SettingElement, xml.VolumnElement, tr("%1").arg(volumn));
+    }
+    else
+    {
+        volumn = xml.getElementText(xml.VolumnElement).toInt();
+    }
+    slider_volumn->setValue(volumn);
+
+    // set playMode
+    int playMode = PlayModeDefaultValue;
+    if (!xml.isElementExist(xml.PlayModeElement))
+    {
+        xml.addElementWithText(xml.SettingElement, xml.PlayModeElement, tr("%1").arg(playMode));
+    }
+    else
+    {
+        playMode = xml.getElementText(xml.PlayModeElement).toInt();
+    }
+    switch(playMode)
+    {
+    case PlayModle::PlayRandom:
+        bottomGroupbox->playModle_choosed(PlayModle::PlayRandom);
+        break;
+    case PlayModle::PlayOnce:
+        bottomGroupbox->playModle_choosed(PlayModle::PlayOnce);
+        break;
+    case PlayModle::PlaySingle:
+        bottomGroupbox->playModle_choosed(PlayModle::PlaySingle);
+        break;
+    case PlayModle::PlaySequence:
+        bottomGroupbox->playModle_choosed(PlayModle::PlaySequence);
+        break;
+    case PlayModle::PlayLoop:
+        bottomGroupbox->playModle_choosed(PlayModle::PlayLoop);
+        break;
+    case PlayModle::PlayCustom:
+        bottomGroupbox->playModle_choosed(PlayModle::PlayCustom);
+        break;
+    default:
+        QMessageBox::warning(0, "错误！", "初始化读取音量值错误！", QMessageBox::Ok);
+        break;
+    }
 }
 
 //添加音乐 槽函数
@@ -785,12 +777,13 @@ void DT_Music::addMusicFile(int selected)
 //    subThread.insertDatabase(SubThread::InsertDataBase, musicListDatabaseName, "默认列表", "musicName", musicNameListAdd);
 //    subThread.start();
 
+    // 更新配置文件
     QStringList childrenElementNames;
     childrenElementNames << "url" << "name";
     xml.addRecursiveElement(xml.MusicListElement, xml.MusicListElementKey, "默认列表", elementsNameAttributeAndValue, childrenElementNames, musics);
 }
 
-//单击 搜索 按钮
+//单击 检索 按钮
 void DT_Music::tbn_search_clicked()
 {
     QString search_content = ln_search->text();
@@ -1064,6 +1057,10 @@ void DT_Music::volumeChanged(int a)
 //设置 自定义主题
 void DT_Music::setTheme(int theme)
 {
+    if (theme == -1)
+    {
+        theme = this->theme;
+    }
     setStyleSheet(tr("#centralWidget{border-image: url(:/Images/bg%1.jpg);}").arg(theme));
 }
 
@@ -1238,6 +1235,13 @@ void DT_Music::searchMusicClicked(QString musicName)
     netWorkWidget->show();
     netWorkWidget->searchMusic(musicName);
     connect(netWorkWidget, SIGNAL(playInternetMusic(QString, QString)), musicList, SLOT(playInternetMusic(QString, QString)));
+}
+
+void DT_Music::writeSettingdateToIni(QString, QString value)
+{
+    setTheme(value.toInt());
+    theme = value.toInt();
+    xml.alterElementText(xml.SettingElement, xml.ThemeElement, tr("%1").arg(value));
 }
 
 //判断鼠标区域

@@ -157,10 +157,11 @@ private:
     SubThread subThread;
 
     //默认值
-    int volumn_defaultValue;
-    int theme_defultValue;
-    int playmode_defaultValue;
+    const int VolumnDefaultValue;
+    const int ThemeDefultValue;
+    const int PlayModeDefaultValue;
     int oldVolumnValue;
+    int theme;
 
 signals:
     void gotMetaData(QStringList);
@@ -205,6 +206,8 @@ private slots:
     void timeoutBear();
 
     void searchMusicClicked(QString musicName);                                      // 搜索在线音乐
+
+    void writeSettingdateToIni(QString, QString);
 };
 
 #endif // DT_MUSIC_H

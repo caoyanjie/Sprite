@@ -2,10 +2,8 @@
 
 #include <QToolButton>
 #include <QLabel>
-//#include <QEvent>
 #include <QMouseEvent>
 #include <QDesktopWidget>
-//#include <QPoint>
 
 Theme::Theme(QWidget *parent) :
     QWidget(parent)
@@ -17,26 +15,16 @@ Theme::Theme(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
 
     //设置窗口出现位置
-//    setGeometry(parent ->pos().rx(), parent ->pos().ry(), 510, 400);
     QDesktopWidget desktopWidget;
     setGeometry(
                 (desktopWidget.width() - 510) / 2,
                 (desktopWidget.height() - 400) / 2,
                 510,
                 400         //Windows OS
-//                370         //Linux OS
                 );
 
     setObjectName(tr("theme"));
-    setStyleSheet(
-                "#theme{"
-//                    "background: rgb(49, 28, 242);"
-//                    "background: rgb(56, 30, 255);"
-//                    "background: rgb(33, 35, 124);"
-                    "background: rgb(43, 45, 163);"
-//                    "border-image: url(:/Images/bg1.jpg);"
-                "}"
-                );
+    setStyleSheet("#theme{background: rgb(43, 45, 163);}");
 
     //初始化 部件
     lab_background = new QLabel(this);          //创建背景， 以设置窗口半透明
@@ -90,8 +78,6 @@ Theme::Theme(QWidget *parent) :
     //设置 部件样式
     lab_background ->setStyleSheet(                             //设置窗口 半透明
                 "QLabel{"
-//                    "background: rgba(0, 0, 0, 80);"
-//                    "background: rgba(43, 45, 163, 230);"
                     "background: rgba(0, 0, 0, 120);"
                 "}"
                 );
@@ -109,7 +95,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg1.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                    "border-image: url(:/Images/preview1.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -118,7 +103,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg2.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                  "border-image: url(:/Images/preview2.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -127,7 +111,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg3.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                    "border-image: url(:/Images/preview3.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -136,7 +119,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg4.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                    "border-image: url(:/Images/preview4.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -145,7 +127,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg5.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                  "border-image: url(:/Images/preview5.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -154,7 +135,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg6.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                  "border-image: url(:/Images/preview6.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -163,7 +143,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg7.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                  "border-image: url(:/Images/preview7.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -172,7 +151,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg8.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                    "border-image: url(:/Images/preview8.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -181,7 +159,6 @@ Theme::Theme(QWidget *parent) :
                     "border-image: url(:/Images/bg9.jpg);"
                 "}"
                 "QToolButton::hover{"
-//                  "border-image: url(:/Images/preview9.png);"
                     "border: 1px;"
                 "}"
                 );
@@ -221,33 +198,20 @@ Theme::Theme(QWidget *parent) :
     tbn_theme9 ->setToolTip(tr("点击预览"));
 
     //信号 槽
-    connect(tbn_close, SIGNAL(clicked()),
-            this, SLOT(close()));
-    connect(tbn_ok, SIGNAL(clicked()),
-            this, SLOT(tbn_ok_clicked()));
-    connect(tbn_cancle, SIGNAL(clicked()),
-            this, SLOT(tbn_cancle_clicked()));
-    connect(tbn_apply, SIGNAL(clicked()),
-            this, SLOT(tbn_apply_clicked()));
+    connect(tbn_close, SIGNAL(clicked()), this, SLOT(close()));
+    connect(tbn_ok, SIGNAL(clicked()), this, SLOT(tbn_ok_clicked()));
+    connect(tbn_cancle, SIGNAL(clicked()), this, SLOT(tbn_cancle_clicked()));
+    connect(tbn_apply, SIGNAL(clicked()), this, SLOT(tbn_apply_clicked()));
 
-    connect(tbn_theme1, SIGNAL(clicked()),
-            this, SLOT(theme1Clicked()));
-    connect(tbn_theme2, SIGNAL(clicked()),
-            this, SLOT(theme2Clicked()));
-    connect(tbn_theme3, SIGNAL(clicked()),
-            this, SLOT(theme3Clicked()));
-    connect(tbn_theme4, SIGNAL(clicked()),
-            this, SLOT(theme4Clicked()));
-    connect(tbn_theme5, SIGNAL(clicked()),
-            this, SLOT(theme5Clicked()));
-    connect(tbn_theme6, SIGNAL(clicked()),
-            this, SLOT(theme6Clicked()));
-    connect(tbn_theme7, SIGNAL(clicked()),
-            this, SLOT(theme7Clicked()));
-    connect(tbn_theme8, SIGNAL(clicked()),
-            this, SLOT(theme8Clicked()));
-    connect(tbn_theme9, SIGNAL(clicked()),
-            this, SLOT(theme9Clicked()));
+    connect(tbn_theme1, SIGNAL(clicked()), this, SLOT(theme1Clicked()));
+    connect(tbn_theme2, SIGNAL(clicked()), this, SLOT(theme2Clicked()));
+    connect(tbn_theme3, SIGNAL(clicked()), this, SLOT(theme3Clicked()));
+    connect(tbn_theme4, SIGNAL(clicked()), this, SLOT(theme4Clicked()));
+    connect(tbn_theme5, SIGNAL(clicked()), this, SLOT(theme5Clicked()));
+    connect(tbn_theme6, SIGNAL(clicked()), this, SLOT(theme6Clicked()));
+    connect(tbn_theme7, SIGNAL(clicked()), this, SLOT(theme7Clicked()));
+    connect(tbn_theme8, SIGNAL(clicked()), this, SLOT(theme8Clicked()));
+    connect(tbn_theme9, SIGNAL(clicked()), this, SLOT(theme9Clicked()));
 }
 
 //重写鼠标按下事件
@@ -290,27 +254,6 @@ bool Theme::eventFilter(QObject *target, QEvent *event)
         }
     }
 }
-
-/*
-//旧主题状态
-void Theme::oldThemeState(int theme)
-{
-    switch(theme)
-    {
-    case 1: oldTheme = 1; break;
-    case 2: oldTheme = 2; break;
-    case 3: oldTheme = 3; break;
-    case 4: oldTheme = 4; break;
-    case 5: oldTheme = 5; break;
-    case 6: oldTheme = 6; break;
-    case 7: oldTheme = 7; break;
-    case 8: oldTheme = 8; break;
-    case 9: oldTheme = 9; break;
-    default: oldTheme = 1; qDebug() << "unknown oldTheme"; break;
-    }
-
-}
-*/
 
 //主题1 被单击
 void Theme::theme1Clicked()
@@ -378,80 +321,23 @@ void Theme::theme9Clicked()
 //单击 “确定” 关闭窗口， 将新主题写入配置文件
 void Theme::tbn_ok_clicked()
 {
-    //关闭 设置主题窗口
-    close();
-
     //发送信号，将新主题写入配置文件
     emit settingDataChanged("theme", tr("%1").arg(newTheme));
-/*
-    //写入配置文件
-    QStringList oldDataes;
-    bool data_exist;
-//    QString
-    QFile writeTheme(".data.ini");
-    if (writeTheme.open(QIODevice::ReadWrite))
-    {
-        //读取配置文件
-        QTextStream in(&writeTheme);
-        while (! in.atEnd())
-        {
-            oldDataes.append(in.readLine());
-        }
 
-        //拆分配置文件字符串
-        for (int i=0; i<oldDataes.length(); i++)
-        {
-            QStringList line = oldDataes[i].split(":");
-            if (line[0] == tr("theme"))
-            {
-                data_exist = true;
-                oldDataes[i] = tr("theme:%1").arg(newTheme);
-                break;
-            }
-            if (i == oldDataes.length() - 1)
-            {
-                if (line[0] != tr("theme"))
-                {
-                    data_exist = false;             //theme数据不存在
-                }
-            }
-        }
-
-        //重新写入数据
-        writeTheme.close();
-        if (data_exist)                             //如果theme项存在，修改theme值
-        {
-            if (writeTheme.open(QIODevice::WriteOnly))
-            {
-                for (int i=0; i<oldDataes.length(); i++)
-                {
-                    writeTheme.write(oldDataes[i].toUtf8() + "\n");
-                }
-            }
-        }
-        else                                        //如果theme项不存在，添加
-        {
-            if (writeTheme.open(QIODevice::Append))
-            {
-                writeTheme.write(tr("theme:%1\n").arg(newTheme).toUtf8());
-            }
-        }
-
-        //关闭文件
-        writeTheme.close();
-    }
-    */
+    //关闭 设置主题窗口
+    close();
 }
 
 //单击 “取消”
 void Theme::tbn_cancle_clicked()
 {
+    emit themeClick(-1);
     close();
-    emit themeClick(oldTheme);
 }
 
 //单击 “应用”
 void Theme::tbn_apply_clicked()
 {
-
+    //发送信号，将新主题写入配置文件
+    emit settingDataChanged("theme", tr("%1").arg(newTheme));
 }

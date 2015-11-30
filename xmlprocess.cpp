@@ -17,7 +17,8 @@ XMLProcess::XMLProcess(const QString xmlPath) :
   ,MusicListElementKey("name")
   ,MusicElement("music")
   ,SettingElement("Setting")
-  ,VolumnElement("VolumnElement")
+  ,ThemeElement("Theme")
+  ,VolumnElement("Volumn")
   ,PlayModeElement("PlayMode")
 {
 }
@@ -36,9 +37,22 @@ void XMLProcess::initXmlFile()
     stream.setAutoFormatting(true);
     stream.writeStartDocument();                // <?xml version="1.0" encoding="UTF-8"?>
     stream.writeStartElement("UserData");       // <UserData>
+    stream.writeEmptyElement("Setting");
     stream.writeEndElement();
     stream.writeEndDocument();
     file.close();
+}
+
+bool XMLProcess::isElementExist(QString elementName)
+{
+    Q_ASSERT_X(!elementName.isEmpty(), "isElementExist", "elementName is empty!");
+
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // return result
+    return dom.elementsByTagName(elementName).length()>0 ? true : false;
 }
 
 // 增加元素
@@ -100,6 +114,25 @@ void XMLProcess::addElement(QString parentName, QString elementName, QList<QMap<
 
     // reset id
     resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
+void XMLProcess::addElementWithText(QString parentName, QString elementName, QString text)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // new element
+    QDomElement parentElement = dom.elementsByTagName(parentName).at(0).toElement();
+    QDomElement newElement = dom.createElement(elementName);
+    QDomText nodeText = dom.createTextNode(text);
+
+    // add children
+    newElement.appendChild(nodeText);
+    parentElement.appendChild(newElement);
 
     // save dom
     savaDom(dom);
@@ -321,14 +354,25 @@ void XMLProcess::removeAllChildrenByAttribute(QString elementName, QString attri
 // 修改元素文本
 void XMLProcess::alterElementText(QString parentName, QString selfName, QString text)
 {
+    Q_ASSERT_X(!parentName.isEmpty() && !selfName.isEmpty() && !text.isEmpty(), "alterElementText", "arguments is empty!");
+
     // get dom
     QDomDocument dom;
     dom = getDomFromXml();
 
+    // find nodes
+    QDomNodeList parentList = dom.elementsByTagName(parentName);
+    Q_ASSERT_X(parentList.length() == 1, "alterElementText", "parentName is not exist or not unique!");
+
+    QDomNodeList elementList = parentList.at(0).toElement().elementsByTagName(selfName);
+    Q_ASSERT_X(elementList.length() == 1, "alterElementText", "elementName is not exist or not unique!");
+
+    QDomNodeList chileren = elementList.at(0).childNodes();
+    Q_ASSERT_X(chileren.length() == 1, "alterElementText", "source data is not exist, can't alter!");
+
+    QDomText textNode = chileren.at(0).toText();
+
     // alter node
-    QDomElement parent = dom.elementsByTagName(parentName).at(0).toElement();
-    QDomElement element = parent.elementsByTagName(selfName).at(0).toElement();
-    QDomText textNode = element.childNodes().at(0).toText();
     textNode.setData(text);
 
     // save dom
@@ -424,6 +468,20 @@ QList<QMap<QString, QList<QMap<QString, QString> > > > XMLProcess::getElementAtt
 
     file.close();
     return result;
+}
+
+// get element text
+QString XMLProcess::getElementText(QString elementName)
+{
+    Q_ASSERT_X(!elementName.isEmpty(), "getElementText", "argument is empty!");
+
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // find element
+    Q_ASSERT_X(dom.elementsByTagName(elementName).length() == 1, "getElementText", "element is not exist or not unique!");
+    return dom.elementsByTagName(elementName).at(0).toElement().text();
 }
 
 // 获取 dom

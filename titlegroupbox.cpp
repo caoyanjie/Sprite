@@ -44,7 +44,7 @@ TitleGroupBox::TitleGroupBox(QWidget *parent) :
     connect(theme, SIGNAL(themeClick(int)), this, SIGNAL(themeNumClick(int)));
 
     //
-    connect(theme, SIGNAL(settingDataChanged(QString,QString)), this, SIGNAL(settingDataChanged(QString,QString)));
+    connect(theme, SIGNAL(settingDataChanged(QString, QString)), this, SIGNAL(settingDataChanged(QString, QString)));
     setMouseTracking(true);
 }
 

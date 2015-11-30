@@ -11,8 +11,6 @@ class Theme : public QWidget
 public:
     explicit Theme(QWidget *parent = 0);
 
-    int oldTheme;               //配置文件中的旧主题
-
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -43,7 +41,6 @@ signals:
     void settingDataChanged(QString, QString);   //设置信息改变，写入配置文件
 
 public slots:
-//    void oldThemeState(int);
 
     void theme1Clicked();
     void theme2Clicked();
