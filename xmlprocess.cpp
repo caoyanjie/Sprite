@@ -256,6 +256,48 @@ void XMLProcess::addRecursiveElement(QString parentName, QString parentAttribute
     savaDom(dom);
 }
 
+void XMLProcess::addRecursiveElement(QString parentName, QList<QMap<QString, QMap<QString, QString> > > selfNameAttributeKeyAndValue, QStringList childrenNames, QList<QList<QString> > childrenText)
+{
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // find parent element
+    QDomNodeList nodeList = dom.elementsByTagName(parentName);
+    Q_ASSERT_X(nodeList.length() == 1, "addRecursiveElement", "parent element is not unique or not exist!");
+
+    QDomElement parentElement = nodeList.at(0).toElement();
+
+    // add element
+    for (int i=0; i<selfNameAttributeKeyAndValue.length(); ++i)
+    {
+        // new element
+        QString selfName = selfNameAttributeKeyAndValue.at(i).firstKey();
+        QString selfAttributeKey = selfNameAttributeKeyAndValue.at(i).first().firstKey();
+        QString selfAttributeValue = selfNameAttributeKeyAndValue.at(i).first().first();
+        QDomElement newElement = dom.createElement(selfName);
+        newElement.setAttribute(selfAttributeKey, selfAttributeValue);
+
+        // add children
+        for (int j=0; j<childrenNames.length(); ++j)
+        {
+            QDomElement child = dom.createElement(childrenNames.at(j));
+            QDomText textNode = dom.createTextNode(childrenText.at(i).at(j));
+            child.appendChild(textNode);
+
+            newElement.appendChild(child);
+        }
+
+        parentElement.appendChild(newElement);
+    }
+
+    // reset id
+    resetId(dom);
+
+    // save dom
+    savaDom(dom);
+}
+
 // 删除节点
 void XMLProcess::removeElements(QString elementName)
 {
@@ -370,24 +412,10 @@ void XMLProcess::alterElementText(QString parentName, QString selfName, QString 
     QDomNodeList chileren = elementList.at(0).childNodes();
     Q_ASSERT_X(chileren.length() == 1, "alterElementText", "source data is not exist, can't alter!");
 
-    QDomText textNode = chileren.at(0).toText();
+    QDomText textNode = chileren.at(0).childNodes().at(0).toText();
 
     // alter node
     textNode.setData(text);
-
-    // save dom
-    savaDom(dom);
-}
-
-// 修改具有某属性的元素的文本
-void XMLProcess::alterElementTextByAttribute(QString elementName, QMap<QString, QString> attribute, QString text)
-{
-    // get dom
-    QDomDocument dom;
-    dom = getDomFromXml();
-
-    // alter node
-
 
     // save dom
     savaDom(dom);
@@ -402,6 +430,42 @@ void XMLProcess::alterElementAttribute(QString elementName, QMap<QString, QStrin
 
     // alter node
 
+
+    // save dom
+    savaDom(dom);
+}
+
+// 修改具有某属性的元素的文本
+void XMLProcess::alterElementTextByAttribute(QString parentName, QMap<QString, QString> parentAttribute, QString elementName, QString text)
+{
+    Q_ASSERT_X(!parentName.isEmpty() && !parentAttribute.isEmpty() && !text.isEmpty(), "alterElementTextByAttribute", "arguments is empty!");
+
+    // get dom
+    QDomDocument dom;
+    dom = getDomFromXml();
+
+    // find parent
+    QDomNodeList parenttList = dom.elementsByTagName(parentName);
+    QDomElement parent;
+    for (int i=0; i<parenttList.length(); ++i)
+    {
+        if (parenttList.at(i).attributes().contains(parentAttribute.firstKey()))
+        {
+            if (parenttList.at(i).toElement().attribute(parentAttribute.firstKey()) == parentAttribute.first())
+            {
+                parent = parenttList.at(i).toElement();
+            }
+        }
+    }
+    Q_ASSERT_X(!parent.isNull(), "alterElementTextByAttribute", "elementName is not exist or not unique!");
+
+    QDomNodeList elementList = parent.elementsByTagName(elementName);
+    Q_ASSERT_X(elementList.length() == 1, "alterElementText", "source data is not exist, can't alter!");
+
+    QDomText textNode = elementList.at(0).childNodes().at(0).toText();qDebug() << textNode.data();
+
+    // alter node
+    textNode.setData(text);
 
     // save dom
     savaDom(dom);
@@ -439,11 +503,11 @@ QList<QMap<QString, QList<QMap<QString, QString> > > > XMLProcess::getElementAtt
             {
                 attributeValue = reader.attributes().at(0).value().toString();
             }
-            else if (reader.name() == "url")
+            else if (reader.name() == elementNames.at(0))
             {
                 firstValue = reader.readElementText();
             }
-            else if (reader.name() == "name")
+            else if (reader.name() == elementNames.at(1))
             {
                 secondValue = reader.readElementText();
 
@@ -470,6 +534,125 @@ QList<QMap<QString, QList<QMap<QString, QString> > > > XMLProcess::getElementAtt
     return result;
 }
 
+QList<QMap<QString, QString> > XMLProcess::getChildrenText(QString elementName, QStringList childrenNames)
+{
+    QList<QMap<QString, QString> > result;
+
+    QFile file(xmlPath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::warning(0, "配置文件错误", "XML 文件打开失败，无法获取用户数据！", QMessageBox::Ok);
+        return result;
+    }
+
+    QString currentElement;
+    QString firstValue;
+    QString secondValue;
+
+    QXmlStreamReader reader;
+    reader.setDevice(&file);
+
+    while (!reader.atEnd())
+    {
+        QXmlStreamReader::TokenType type = reader.readNext();
+
+        switch(type)
+        {
+        case QXmlStreamReader::StartElement:
+            if (reader.name() == elementName)
+            {
+                currentElement = elementName;
+            }
+            else if (reader.name() == childrenNames.at(0) && !currentElement.isNull())
+            {
+                firstValue = reader.readElementText();
+            }
+            else if (reader.name() == childrenNames.at(1) && !currentElement.isNull())
+            {
+                secondValue = reader.readElementText();
+
+                QMap<QString, QString> brotherElementsText;
+                brotherElementsText.insert(firstValue, secondValue);
+                result.append(brotherElementsText);
+            }
+            break;
+        case QXmlStreamReader::EndElement:
+            if (!currentElement.isNull() && reader.name()==elementName)
+            {
+                file.close();
+                return result;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    file.close();
+    return result;
+}
+/*
+QList<QStringList> XMLProcess::getChildrenText(QString elementName, QStringList childrenNames)
+{
+    QList<QStringList> result;
+
+    QFile file(xmlPath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::warning(0, "配置文件错误", "XML 文件打开失败，无法获取用户数据！", QMessageBox::Ok);
+        return result;
+    }
+
+    QString currentElement;
+    QStringList children;
+
+    QXmlStreamReader reader;
+    reader.setDevice(&file);
+
+    while (!reader.atEnd())
+    {
+        QXmlStreamReader::TokenType type = reader.readNext();
+
+        switch(type)
+        {
+        case QXmlStreamReader::StartElement:
+            if (reader.name() == elementName)
+            {
+                currentElement = elementName;
+            }
+            else if (!currentElement.isNull())
+            {
+                for (int i=0; i<childrenNames.length(); ++i)
+                {
+                    if (reader.name() == childrenNames.at(i))
+                    {
+                        children.append(reader.readElementText());
+                        if (children.length() == childrenNames.length())
+                        {
+                            result.append(children);
+                            children.clear();
+                        }
+                        break;
+                    }
+                }
+            }
+            break;
+        case QXmlStreamReader::EndElement:
+            if (!currentElement.isNull() && reader.name()==elementName)
+            {
+                file.close();
+                return result;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    file.close();
+    return result;
+}
+*/
 // get element text
 QString XMLProcess::getElementText(QString elementName)
 {

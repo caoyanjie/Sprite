@@ -133,7 +133,7 @@ void BottomGroupBox::setChildrenWidgets()
     //创建部件
     tbn_play_previous = new QToolButton(this);                          //创建 上一曲    按钮
     tbn_play_previous->setFixedSize(25, 25);                            //设置固定大小
-    tbn_play_previous  ->setShortcut(Qt::Key_Left);                     //设置 快捷键
+//    tbn_play_previous  ->setShortcut(Qt::Key_Left);                     //设置 快捷键
 
     tbn_play_pause = new QToolButton(this);                             //创建 播放/暂停　按钮
     tbn_play_pause->setFixedSize(25, 25);                               //设置固定大小
@@ -141,7 +141,7 @@ void BottomGroupBox::setChildrenWidgets()
 
     tbn_play_next = new QToolButton(this);                              //创建 下一曲    按钮
     tbn_play_next->setFixedSize(25, 25);
-    tbn_play_next ->setShortcut(Qt::Key_Right);                         //设置 快捷键
+//    tbn_play_next ->setShortcut(Qt::Key_Right);                         //设置 快捷键
 
     lab_fram = new QLabel(this);                                        //创建 工具框    区域
     lab_playLogo = new QLabel(this);                                    //创建 播放图标

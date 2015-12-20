@@ -373,6 +373,14 @@ bool DT_Music::eventFilter(QObject *target, QEvent *event)
             return QWidget::eventFilter(target, event);
         }
     }
+    else if (target == game)
+    {
+        if (event->type() == QEvent::Enter)
+        {
+            game->setFocus();
+        }
+    }
+    return QWidget::eventFilter(target, event);
 }
 
 //初始化 界面 和 变量
@@ -1174,6 +1182,7 @@ void DT_Music::gameStateChange(bool gameState)
     if (gameState)
     {
         game = new Game(this);
+        game->installEventFilter(this);
         game->move(lrcView->pos().x()+250, lrcView->pos().y()+50);
         lrcView->setLrcTextView(false);
         game->show();

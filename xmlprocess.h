@@ -33,6 +33,8 @@ public:
     void addElements(QString parentName, QList<QMap<QString, QMap<QString, QString> > > children);
     void addRecursiveElement(QString parentNode, QString nodeName, QList<QMap<QString, QString> > attributes, QList<QMap<QString, QString> > children);
     void addRecursiveElement(QString parentName, QString parentAttributeKey, QString parentAttributeValue, QList<QMap<QString, QMap<QString, QString> > > selfNameAttributeKeyAndValue, QStringList childrenName, QList<QMap<QString, QString> > children);
+    void addRecursiveElement(QString parentName, QList<QMap<QString, QMap<QString, QString> > > selfNameAttributeKeyAndValue, QStringList childrenNames, QList<QList<QString> > childrenText);
+    void addRecursiveElement(QString parentName, QList<QMap<QString, QList<QMap<QString, QString> > > > selfNameAndAttributes, QStringList childrenNames, QList<QList<QString> > childrenText);
 
     // 删除元素
     void removeElements(QString elementName);
@@ -41,11 +43,13 @@ public:
 
     // 修改元素
     void alterElementText(QString parentName, QString selfName, QString text);
-    void alterElementTextByAttribute(QString elementName, QMap<QString, QString>attribute, QString text);
     void alterElementAttribute(QString elementName, QMap<QString, QString>attribute);
+    void alterElementTextByAttribute(QString parentName, QMap<QString, QString>parentAttribute, QString elementName, QString text);
 
     // 获得数据
     QList<QMap<QString, QList<QMap<QString, QString> > > > getElementAttributeValueAndChildrenText(QString elementName, QStringList elementNames);
+    QList<QMap<QString, QString> > getChildrenText(QString elementName, QStringList childrenNames);
+//    QList<QStringList> getChildrenText(QString elementName, QStringList childrenNames);
     QString getElementText(QString elementName);
 
     const QString FirstChildElement;

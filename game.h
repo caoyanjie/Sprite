@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <QWidget>
-#include "gamer.h"
+#include "gamepiece.h"
 class QLabel;
 class QGridLayout;
 class Game : public QWidget
@@ -15,13 +15,25 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-    enum forward{LEFT, RIGHT, UP, DOWN};
-    void produce();
-    void moveGamer(forward moveForwad);
+    enum Forward{
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    };
 
-    QLabel *labBg[4][4];
-    Gamer *flagGamer[4][4];
-    Gamer *newGamer;
+    void produceChessPiece();                   // 产生新子
+    void moveGamer(Forward moveForwad);         // 移动棋子
+    void moveChessPiece(Forward forward);                      // 移动棋子
+    void moveLeft();                            // 左移
+    void moveRight();                           // 右移
+    void moveUp();                              // 上移
+    void moveDown();                            // 下移
+
+    static const unsigned int LINES = 4;       // 棋盘格数
+
+    QLabel *labBg[LINES][LINES];
+    GamePiece *chessboardGrid[LINES][LINES];
 
     QGridLayout *layout;
 

@@ -10,7 +10,7 @@ QT       += multimediawidgets
 QT       += sql
 QT       += network
 QT       += xml
-CONFIG+=qaxcontainer
+CONFIG   += qaxcontainer c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -42,10 +42,10 @@ SOURCES += main.cpp\
     databaseoperation.cpp \
     helpkeepawake.cpp \
     network.cpp \
-    gamer.cpp \
     subthread.cpp \
     networkwidget.cpp \
-    xmlprocess.cpp
+    xmlprocess.cpp \
+    gamepiece.cpp
 
 HEADERS  += dt_music.h \
     titlegroupbox.h \
@@ -70,10 +70,10 @@ HEADERS  += dt_music.h \
     databaseoperation.h \
     helpkeepawake.h \
     network.h \
-    gamer.h \
     subthread.h \
     networkwidget.h \
-    xmlprocess.h
+    xmlprocess.h \
+    gamepiece.h
 
 FORMS    += dt_music.ui
 
