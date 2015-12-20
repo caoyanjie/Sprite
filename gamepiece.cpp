@@ -33,9 +33,9 @@ void GamePiece::setTextNum(const QString &val)
     int num = val.toInt();
     if (num > 999)
     {
-        this->setStyleSheet("QLabel{font-size:12pt;}");
+        this->setStyleSheet("QLabel{font-size:25pt;}");
     }
-    if (num > 99)
+    else if (num > 99)
     {
         this->setStyleSheet("QLabel{font-size:30pt;}");
     }
