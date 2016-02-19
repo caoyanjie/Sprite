@@ -4,16 +4,16 @@ A media player to play musics and videos.
 基于 Qt 的跨平台多媒体播放器，有播放音频和视频的功能。
 
 音乐界面：
-![image](htttps://github.com/caoyanjie/Sprite/Images/ShowMusicGUI1.png)
+![image](htttps://github.com/caoyanjie/Sprite/raw/master/Images/ShowMusicGUI1.png)
 
 切换视频的初始化界面：
-![image](htttps://github.com/caoyanjie/Sprite/Images/ShowVideoGUI1.png)
+![image](htttps://github.com/caoyanjie/Sprite/raw/master/Images/ShowVideoGUI1.png)
 
 当鼠标在界面上移动时出现操作按钮：
-![image](htttps://github.com/caoyanjie/Sprite/Images/ShowVideoGUI2.png)
+![image](htttps://github.com/caoyanjie/Sprite/raw/master/Images/ShowVideoGUI2.png)
 
 播放视频时界面清爽，没有多余部分
-![image](htttps://github.com/caoyanjie/Sprite/Images/ShowVideoGUI3.png)
+![image](htttps://github.com/caoyanjie/Sprite/raw/master/Images/ShowVideoGUI3.png)
 
 当鼠标在界面上移动时才出现操作按钮
-![image](htttps://github.com/caoyanjie/Sprite/Images/ShowVideoGUI4.png)
+![image](htttps://github.com/caoyanjie/Sprite/raw/master/Images/ShowVideoGUI4.png)
